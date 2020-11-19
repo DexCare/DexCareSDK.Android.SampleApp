@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.dexcare.sampleapp.ui.demographics.DemographicsFragmentViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:visibility="@{viewModel.visibilityState}">
+
+        <!-- First name -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="First name"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/firstNameInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.firstName}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Last name -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Last name"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/lastNameInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.lastName}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Email -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email address"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.email}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- Date of birth -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date of birth"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dateOfBirthInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:focusable="false"
+                android:text="@{viewModel.dateOfBirthString}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Gender -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Gender"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/genderInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:focusable="false"
+                android:text="@{viewModel.genderString}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- SSN -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Last 4 SSN"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/last4SSNInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.last4SSN}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Phone -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone number"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phoneNumberInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.phoneNumber}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Address view model (Street address, address line 2, City, State, Zip) -->
+
+        <include
+            android:id="@+id/layoutInputAddress"
+            layout="@layout/layout_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_input_margin"
+            app:layout_constraintEnd_toEndOf="@+id/inputFirstName"
+            app:layout_constraintStart_toStartOf="@+id/inputFirstName"
+            app:layout_constraintTop_toBottomOf="@+id/inputPhone"
+            app:viewModel="@{viewModel.addressViewModel}" />
+
+    </LinearLayout>
+
+</layout>

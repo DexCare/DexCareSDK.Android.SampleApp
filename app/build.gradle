@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "org.dexcare.sampleapp"
+        minSdkVersion 24
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [auth0Domain: "@string/auth0_domain", auth0Scheme: "https"]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
+
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjvm-default=compatibility']
+        jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // Authentication is required for access to the DexCare binaries.
+    // See the project's build.gradle or the Readme for instructions on how to set up authentication.
+    implementation "org.dexcare:dexcare:3.0.2"
+
+    // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
+    implementation "com.auth0.android:lock:2.20.0"
+
+    implementation "androidx.navigation:navigation-runtime-ktx:$androidxNavigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$androidxNavigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$androidxNavigationVersion"
+
+    // Koin version needs to match DexCare SDK's Koin version
+    // This limitation may be removed in a future SDK version
+    implementation "org.koin:koin-android:$koinVersion"
+    implementation "org.koin:koin-core-ext:$koinVersion"
+
+    // places autocomplete
+    // api 'com.seatgeek:placesautocomplete:0.3-SNAPSHOT'
+    // forked from: https://github.com/seatgeek/android-PlacesAutocompleteTextView and built on JitPack
+    // added 2 missing features:
+    // - clear button not shown when address field is empty
+    // - filtering results by country
+    // pull requests submitted
+    implementation 'com.github.vitalnik:android-PlacesAutocompleteTextView:0.0.4'
+
+    // Chuck library for debugging network requests
+    implementation "com.readystatesoftware.chuck:library:1.1.0"
+    releaseImplementation "com.readystatesoftware.chuck:library-no-op:1.1.0"
+}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="org.dexcare.sampleapp.ui.payment.PaymentFragmentViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Insurance provider"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/insuranceProviderInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:maxLines="1"
+                android:focusable="false"
+                android:text="@{viewModel.insuranceProviderName}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Insurance Member Id"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}"
+            tools:hint="LayoutInputTyped">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/insuranceMemberIdInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.insuranceMemberId}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/btnVirtual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_standard"
+            android:padding="@dimen/spacing_medium2"
+            android:text="Book Visit"/>
+
+    </LinearLayout>
+</layout>

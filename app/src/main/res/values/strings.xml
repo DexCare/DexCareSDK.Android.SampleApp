@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">DexCare SDK Sample App</string>
+    <string name="virtual">Virtual</string>
+    <string name="what_is_the_reason_for_your_visit">What is the reason for your visit?</string>
+    <string name="button_continue">Continue</string>
+    <string name="address_autocomplete_country" translatable="false">us</string>
+    <!-- TODO: Set up Firebase and Google API key -->
+    <string name="GOOGLE_API_KEY">API_KEY_GOES_HERE</string>
+    <string name="cancel">Cancel</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="other">Other</string>
+    <string name="gender">Gender</string>
+    <string name="insurance_providers">Insurance Providers</string>
+</resources>

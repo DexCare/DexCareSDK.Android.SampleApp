@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth0_domain"> </string>
+    <string name="auth0_client_id"> </string>
+    <string name="brand"> </string>
+    <string name="dexcare_domain"> </string>
+    <string name="dexcare_api_key"> </string>
+    <string name="dexcare_fhirorch_url"> </string>
+    <string name="dexcare_virtualvisit_url"> </string>
+    <string name="dexcare_pcp_url"> </string>
+</resources>

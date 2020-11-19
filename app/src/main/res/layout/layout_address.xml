@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.dexcare.sampleapp.ui.common.viewmodel.input.address.AddressViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="@{viewModel.visibilityState}">
+
+        <!-- Address -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/streetAddressInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Address"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColorHint="@color/gray2">
+
+            <com.seatgeek.placesautocomplete.PlacesAutocompleteTextView
+                android:id="@+id/editAddressAutocomplete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions=""
+                android:inputType="text"
+                android:text="@={viewModel.streetAddress}"
+                app:clearButton="@{@drawable/ic_clear_button}"
+                app:country="@{@string/address_autocomplete_country}"
+                app:pacv_adapterClass="org.dexcare.sampleapp.ui.common.viewmodel.input.address.AddressAutocompleteAdapter"
+                app:pacv_clearEnabled="true"
+                app:pacv_googleMapsApiKey="@string/GOOGLE_API_KEY"
+                tools:text="Address Autocomplete" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Address line 2 -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/addressLine2InputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Address Line 2 (Optional)"
+            app:layout_constraintTop_toBottomOf="@+id/streetAddressInputLayout"
+            app:layout_constraintStart_toStartOf="@+id/streetAddressInputLayout"
+            app:layout_constraintEnd_toEndOf="@+id/streetAddressInputLayout"
+            android:textColorHint="@color/gray2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/addressLine2InputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.addressLine2}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- City -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cityInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="City"
+            app:layout_constraintTop_toBottomOf="@+id/addressLine2InputLayout"
+            app:layout_constraintStart_toStartOf="@+id/addressLine2InputLayout"
+            app:layout_constraintEnd_toEndOf="@+id/addressLine2InputLayout"
+            android:textColorHint="@color/gray2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cityInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.city}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- State -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/stateInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="State"
+            app:layout_constraintTop_toBottomOf="@+id/cityInputLayout"
+            app:layout_constraintStart_toStartOf="@+id/cityInputLayout"
+            app:layout_constraintEnd_toStartOf="@+id/zipCodeInputLayout"
+            android:layout_marginEnd="@dimen/spacing_small"
+            android:textColorHint="@color/gray2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/stateInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.state}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Zip -->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/zipCodeInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Zip Code"
+            android:layout_marginStart="@dimen/spacing_small"
+            app:layout_constraintTop_toBottomOf="@+id/cityInputLayout"
+            app:layout_constraintStart_toEndOf="@+id/stateInputLayout"
+            app:layout_constraintEnd_toEndOf="@+id/streetAddressInputLayout"
+            android:textColorHint="@color/gray2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/zipCodeInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.zipCode}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

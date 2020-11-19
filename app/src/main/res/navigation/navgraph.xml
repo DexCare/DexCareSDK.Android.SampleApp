@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navgraph"
+    app:startDestination="@id/dashboardFragment">
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="org.dexcare.sampleapp.ui.dashboard.DashboardFragment"
+        android:label="dashboard_fragment"
+        tools:layout="@layout/dashboard_fragment" >
+        <action
+            android:id="@+id/toVirtualRegionFragment"
+            app:destination="@id/virtualRegionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/virtualRegionFragment"
+        android:name="org.dexcare.sampleapp.ui.virtual.region.VirtualRegionFragment"
+        android:label="virtual_region_fragment"
+        tools:layout="@layout/virtual_region_fragment" >
+        <action
+            android:id="@+id/toReasonForVisitFragment"
+            app:destination="@id/reasonForVisitFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reasonForVisitFragment"
+        android:name="org.dexcare.sampleapp.ui.reasonforvisit.ReasonForVisitFragment"
+        android:label="ReasonForVisitFragment" >
+        <action
+            android:id="@+id/toDemographicsFragment"
+            app:destination="@id/demographicsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/demographicsFragment"
+        android:name="org.dexcare.sampleapp.ui.demographics.DemographicsFragment"
+        android:label="DemographicsFragment" >
+        <action
+            android:id="@+id/toPaymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="org.dexcare.sampleapp.ui.payment.PaymentFragment"
+        android:label="PaymentFragment" />
+
+</navigation>

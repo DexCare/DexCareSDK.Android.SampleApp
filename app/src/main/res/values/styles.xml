@@ -1,0 +1,30 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="buttonStyle">@style/Button</item>
+        <item name="android:textColorHint">@color/gray2</item>
+    </style>
+
+    <style name="MyLock.Theme" parent="Lock.Theme" />
+    <style name="MyLock.Theme.Customized">
+        <item name="Auth0.HeaderTitleColor">@color/shallow_white</item>
+        <item name="Auth0.HeaderBackground">@color/shallow_white</item>
+        <item name="Auth0.DarkPrimaryColor">@color/colorPrimaryDark</item>
+        <item name="Auth0.PrimaryColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="Button" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">@drawable/toggleable_rounded_button</item>
+        <item name="android:padding">@dimen/spacing_medium2</item>
+    </style>
+
+    <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/colorAccent</item>
+    </style>
+
+</resources>
