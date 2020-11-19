@@ -8,4 +8,7 @@
     <string name="dexcare_fhirorch_url"> </string>
     <string name="dexcare_virtualvisit_url"> </string>
     <string name="dexcare_pcp_url"> </string>
+
+    <!-- TODO: Set up Firebase and Google API key -->
+    <string name="GOOGLE_API_KEY">API_KEY_GOES_HERE</string>
 </resources>
