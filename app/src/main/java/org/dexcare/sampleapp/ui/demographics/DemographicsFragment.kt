@@ -5,17 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import org.dexcare.DexCareSDK
-import org.dexcare.exts.patientService
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.DemographicsFragmentBinding
 import org.dexcare.sampleapp.ext.showItemListDialog
 import org.dexcare.sampleapp.modules.GENDER_MAP
 import org.dexcare.sampleapp.services.DemographicsService
-import org.dexcare.sampleapp.ui.virtual.VirtualSchedulingFlow
+import org.dexcare.sampleapp.ui.common.SchedulingFlow
+import org.dexcare.sampleapp.ui.common.SchedulingFlow.*
+import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.services.patient.models.Address
 import org.dexcare.services.patient.models.Gender
 import org.dexcare.services.patient.models.HumanName
@@ -27,9 +30,10 @@ import java.util.*
 
 class DemographicsFragment : Fragment() {
 
+    private val args: DemographicsFragmentArgs by navArgs()
     private val viewModel: DemographicsFragmentViewModel by viewModels()
     private lateinit var binding: DemographicsFragmentBinding
-    private val virtualSchedulingFlow: VirtualSchedulingFlow by inject()
+    private val schedulingInfo: SchedulingInfo by inject()
     private val demographicsService: DemographicsService by inject()
 
     private val genderMap: HashMap<String, Gender> by inject(GENDER_MAP)
@@ -77,21 +81,11 @@ class DemographicsFragment : Fragment() {
 
             val demographics = collectDemographics()
             viewModel.loading = true
-            DexCareSDK.patientService
-                .createPatientUsingVisitState(
-                    virtualSchedulingFlow.region?.regionId!!,
-                    demographics,
-                    getString(R.string.brand)
-                )
-                .subscribe({
-                    get<DemographicsService>().setDemographics(it)
 
-                    virtualSchedulingFlow.patientDemographics = demographics
-                    findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment())
-                }, {
-                    Timber.e(it)
-                }).onDisposed = {
-                viewModel.loading = false
+            when(args.schedulingFlow) {
+                Retail -> createPatientUsingEhrSystem(demographics)
+                Virtual -> createPatientUsingVisitState(demographics)
+                Unknown -> Toast.makeText(requireContext(), "Unknown flow", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -153,5 +147,38 @@ class DemographicsFragment : Fragment() {
             dateOfBirth.get(Calendar.DAY_OF_MONTH)
         )
             .show()
+    }
+
+    private fun createPatientUsingVisitState(demographics: PatientDemographics) {
+        DexCareSDK.patientService
+            .createPatientUsingVisitState(
+                schedulingInfo.region?.regionId!!,
+                demographics,
+                getString(R.string.brand)
+            )
+            .subscribe({
+                get<DemographicsService>().setDemographics(it)
+                schedulingInfo.patientDemographics = demographics
+                findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment(args.schedulingFlow))
+            }, {
+                Timber.e(it)
+            }).onDisposed = {
+            viewModel.loading = false
+        }
+    }
+
+    private fun createPatientUsingEhrSystem(demographics: PatientDemographics) {
+        val ehrSystem = schedulingInfo.clinic!!.ehrSystemName
+        DexCareSDK.patientService
+            .createPatientInEhrSystem(ehrSystem, demographics)
+            .subscribe({
+                get<DemographicsService>().setDemographics(it)
+                schedulingInfo.patientDemographics = demographics
+                findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment(args.schedulingFlow))
+            }, {
+                Timber.e(it)
+            }).onDisposed = {
+            viewModel.loading = false
+        }
     }
 }

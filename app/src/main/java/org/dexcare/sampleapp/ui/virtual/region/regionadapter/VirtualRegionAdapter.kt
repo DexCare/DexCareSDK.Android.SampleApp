@@ -6,10 +6,10 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
 import androidx.navigation.findNavController
 import org.dexcare.sampleapp.databinding.RecycleritemRegionBinding
+import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.recyclerview.ViewModelAdapter
-import org.dexcare.sampleapp.ui.virtual.VirtualSchedulingFlow
+import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.sampleapp.ui.virtual.region.VirtualRegionFragmentDirections
-import org.dexcare.services.virtualvisit.models.Region
 import org.koin.core.KoinComponent
 import org.koin.core.get
 
@@ -22,8 +22,9 @@ class VirtualRegionAdapter(regionsList: MutableList<VirtualRegionViewModel>) : V
     ): ViewDataBinding? {
         return RecycleritemRegionBinding.inflate(inflater).also { binding ->
             binding.btnRegion.setOnClickListener {
-                get<VirtualSchedulingFlow>().region = binding.viewModel?.region
-                it.findNavController().navigate(VirtualRegionFragmentDirections.toReasonForVisitFragment())
+                get<SchedulingInfo>().region = binding.viewModel?.region
+                it.findNavController().navigate(VirtualRegionFragmentDirections.toReasonForVisitFragment(
+                    SchedulingFlow.Virtual))
             }
         }
     }

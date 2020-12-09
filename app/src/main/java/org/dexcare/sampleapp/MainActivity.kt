@@ -9,10 +9,9 @@ import com.auth0.android.lock.*
 import com.auth0.android.lock.utils.LockException
 import com.auth0.android.result.Credentials
 import org.dexcare.DexCareSDK
-import org.dexcare.exts.patientService
 import org.dexcare.sampleapp.services.AuthService
 import org.dexcare.sampleapp.services.DemographicsService
-import org.dexcare.sampleapp.ui.virtual.VirtualSchedulingFlow
+import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private val authService: AuthService by inject()
     private val demographicsService: DemographicsService by inject()
-    private val virtualSchedulingFlow: VirtualSchedulingFlow by inject()
+    private val schedulingInfo: SchedulingInfo by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +114,7 @@ class MainActivity : AppCompatActivity() {
                 // Currently resultCode will be either Activity.RESULT_OK or RESULT_CANCELED
                 // For this sample app, we can just return to the dashboard in both cases.
                 navigateToDashboardFragment()
-                virtualSchedulingFlow.clear()
+                schedulingInfo.clear()
             }
         }
     }

@@ -27,6 +27,10 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnRetail.setOnClickListener {
+            findNavController().navigate(DashboardFragmentDirections.toRetailClinicsFragment())
+        }
+
         binding.btnVirtual.setOnClickListener {
             findNavController().navigate(DashboardFragmentDirections.toVirtualRegionFragment())
         }

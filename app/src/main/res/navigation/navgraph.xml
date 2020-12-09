@@ -13,6 +13,9 @@
         <action
             android:id="@+id/toVirtualRegionFragment"
             app:destination="@id/virtualRegionFragment" />
+        <action
+            android:id="@+id/toRetailClinicsFragment"
+            app:destination="@id/retailClinicsFragment" />
     </fragment>
 
     <fragment
@@ -32,6 +35,9 @@
         <action
             android:id="@+id/toDemographicsFragment"
             app:destination="@id/demographicsFragment" />
+        <argument
+            android:name="schedulingFlow"
+            app:argType="org.dexcare.sampleapp.ui.common.SchedulingFlow" />
     </fragment>
 
     <fragment
@@ -41,10 +47,26 @@
         <action
             android:id="@+id/toPaymentFragment"
             app:destination="@id/paymentFragment" />
+        <argument
+            android:name="schedulingFlow"
+            app:argType="org.dexcare.sampleapp.ui.common.SchedulingFlow" />
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
         android:name="org.dexcare.sampleapp.ui.payment.PaymentFragment"
-        android:label="PaymentFragment" />
+        android:label="PaymentFragment" >
+        <argument
+            android:name="schedulingFlow"
+            app:argType="org.dexcare.sampleapp.ui.common.SchedulingFlow" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/retailClinicsFragment"
+        android:name="org.dexcare.sampleapp.ui.retail.RetailClinicsFragment"
+        android:label="RetailClinicsFragment" >
+        <action
+            android:id="@+id/toReasonForVisitFragment"
+            app:destination="@id/reasonForVisitFragment" />
+    </fragment>
 
 </navigation>

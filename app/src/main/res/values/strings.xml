@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">DexCare SDK Sample App</string>
     <string name="virtual">Virtual</string>
+    <string name="retail">Retail</string>
     <string name="what_is_the_reason_for_your_visit">What is the reason for your visit?</string>
     <string name="button_continue">Continue</string>
     <string name="address_autocomplete_country" translatable="false">us</string>
@@ -10,4 +11,7 @@
     <string name="other">Other</string>
     <string name="gender">Gender</string>
     <string name="insurance_providers">Insurance Providers</string>
+    <string name="timeslots">Timeslots</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
 </resources>

@@ -2,13 +2,13 @@ package org.dexcare.sampleapp.ui.virtual.region
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import org.dexcare.DexCareSDK
 import org.dexcare.exts.virtualService
+import org.dexcare.sampleapp.ui.common.viewmodel.BaseViewModel
 import org.dexcare.services.virtualvisit.models.Region
 import timber.log.Timber
 
-class VirtualRegionFragmentViewModel : ViewModel() {
+class VirtualRegionFragmentViewModel : BaseViewModel() {
 
     private val regions = MutableLiveData<List<Region>>()
 
