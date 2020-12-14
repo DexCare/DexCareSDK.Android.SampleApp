@@ -4,6 +4,7 @@ import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.patient.models.PatientDemographics
 import org.dexcare.services.retail.models.Clinic
 import org.dexcare.services.retail.models.TimeSlot
+import org.dexcare.services.virtualvisit.models.CatchmentArea
 import org.dexcare.services.virtualvisit.models.Region
 
 class SchedulingInfo {
@@ -13,6 +14,7 @@ class SchedulingInfo {
     var reasonForVisit: String = ""
     var patientDemographics: PatientDemographics? = null
     var paymentMethod: PaymentMethod? = null
+    var catchmentArea: CatchmentArea? = null
 
     fun clear() {
         region = null
@@ -21,5 +23,6 @@ class SchedulingInfo {
         reasonForVisit = ""
         patientDemographics = null
         paymentMethod = null
+        catchmentArea = null
     }
 }

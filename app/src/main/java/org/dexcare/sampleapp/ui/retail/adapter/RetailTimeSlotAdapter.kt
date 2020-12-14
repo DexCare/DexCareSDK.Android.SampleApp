@@ -10,12 +10,12 @@ import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.sampleapp.ui.common.recyclerview.ViewModelAdapter
 import org.dexcare.sampleapp.ui.virtual.region.VirtualRegionFragmentDirections
-import org.koin.core.KoinComponent
-import org.koin.core.get
 
-class RetailTimeSlotAdapter(viewModels: MutableList<RetailTimeSlotViewModel>) :
-    ViewModelAdapter<RetailTimeSlotViewModel>(viewModels),
-    KoinComponent {
+class RetailTimeSlotAdapter(
+    private val schedulingInfo: SchedulingInfo,
+    viewModels: MutableList<RetailTimeSlotViewModel>
+) :
+    ViewModelAdapter<RetailTimeSlotViewModel>(viewModels) {
     override fun getViewDataBinding(
         objectInstance: ViewModel,
         inflater: LayoutInflater,
@@ -24,7 +24,7 @@ class RetailTimeSlotAdapter(viewModels: MutableList<RetailTimeSlotViewModel>) :
     ): ViewDataBinding? {
         return RecycleritemTimeslotBinding.inflate(inflater).also { binding ->
             binding.btnTimeSlot.setOnClickListener {
-                get<SchedulingInfo>().apply {
+                schedulingInfo.apply {
                     timeSlot = binding.viewModel?.timeSlot
                     clinic = binding.viewModel?.clinic
                 }

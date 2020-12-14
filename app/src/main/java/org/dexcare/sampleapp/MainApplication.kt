@@ -30,7 +30,7 @@ class MainApplication : Application() {
             )
         }
 
-        DexCareSDK.initWithKoinSupport(this,
+        DexCareSDK.init(this,
             object : Environment {
                 override val isProd: Boolean = false
                 override val fhirOrchUrl: String = getString(R.string.dexcare_fhirorch_url)

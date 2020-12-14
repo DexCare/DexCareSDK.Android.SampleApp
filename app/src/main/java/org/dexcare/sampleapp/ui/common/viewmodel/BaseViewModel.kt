@@ -5,7 +5,7 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.ViewModel
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 abstract class BaseViewModel : ViewModel(), Observable, KoinComponent {
 

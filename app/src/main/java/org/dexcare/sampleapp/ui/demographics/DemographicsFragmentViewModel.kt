@@ -9,8 +9,8 @@ import org.dexcare.services.patient.models.Gender
 import org.dexcare.services.patient.models.PatientDemographics
 import org.dexcare.util.EmailValidator
 import org.dexcare.util.PhoneValidator
-import org.koin.core.get
-import org.koin.core.inject
+import org.koin.core.component.get
+import org.koin.core.component.inject
 import java.text.SimpleDateFormat
 import java.util.*
 

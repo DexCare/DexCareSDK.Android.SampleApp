@@ -59,7 +59,7 @@ dependencies {
 
     // Authentication is required for access to the DexCare binaries.
     // See the project's build.gradle or the Readme for instructions on how to set up authentication.
-    implementation "org.dexcare:dexcare:3.0.3"
+    implementation "org.dexcare:dexcare:4.0.0"
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
     implementation "com.auth0.android:lock:2.20.0"
@@ -67,11 +67,6 @@ dependencies {
     implementation "androidx.navigation:navigation-runtime-ktx:$androidxNavigationVersion"
     implementation "androidx.navigation:navigation-fragment-ktx:$androidxNavigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$androidxNavigationVersion"
-
-    // Koin version needs to match DexCare SDK's Koin version
-    // This limitation may be removed in a future SDK version
-    implementation "org.koin:koin-android:$koinVersion"
-    implementation "org.koin:koin-core-ext:$koinVersion"
 
     // places autocomplete
     // api 'com.seatgeek:placesautocomplete:0.3-SNAPSHOT'

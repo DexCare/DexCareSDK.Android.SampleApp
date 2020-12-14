@@ -16,13 +16,13 @@ import org.dexcare.sampleapp.databinding.DemographicsFragmentBinding
 import org.dexcare.sampleapp.ext.showItemListDialog
 import org.dexcare.sampleapp.modules.GENDER_MAP
 import org.dexcare.sampleapp.services.DemographicsService
-import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.SchedulingFlow.*
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.services.patient.models.Address
 import org.dexcare.services.patient.models.Gender
 import org.dexcare.services.patient.models.HumanName
 import org.dexcare.services.patient.models.PatientDemographics
+import org.dexcare.services.virtualvisit.models.CatchmentArea
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -82,10 +82,11 @@ class DemographicsFragment : Fragment() {
             val demographics = collectDemographics()
             viewModel.loading = true
 
-            when(args.schedulingFlow) {
-                Retail -> createPatientUsingEhrSystem(demographics)
+            when (args.schedulingFlow) {
+                Retail -> findOrCreatePatientUsingEhrSystem(demographics)
                 Virtual -> createPatientUsingVisitState(demographics)
-                Unknown -> Toast.makeText(requireContext(), "Unknown flow", Toast.LENGTH_LONG).show()
+                Unknown -> Toast.makeText(requireContext(), "Unknown flow", Toast.LENGTH_LONG)
+                    .show()
             }
         }
     }
@@ -150,27 +151,44 @@ class DemographicsFragment : Fragment() {
     }
 
     private fun createPatientUsingVisitState(demographics: PatientDemographics) {
-        DexCareSDK.patientService
-            .createPatientUsingVisitState(
-                schedulingInfo.region?.regionId!!,
-                demographics,
-                getString(R.string.brand)
+        DexCareSDK.patientService.getCatchmentArea(
+            schedulingInfo.region?.regionId!!,
+            demographics.addresses.first().state,
+            demographics.addresses.first().postalCode,
+            getString(R.string.brand)
+        ).subscribe({ catchmentArea ->
+            schedulingInfo.catchmentArea = catchmentArea
+            findOrCreatePatientUsingCatchmentArea(
+                catchmentArea,
+                demographics
             )
-            .subscribe({
-                get<DemographicsService>().setDemographics(it)
-                schedulingInfo.patientDemographics = demographics
-                findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment(args.schedulingFlow))
-            }, {
-                Timber.e(it)
-            }).onDisposed = {
+        }, {
+            Timber.e(it)
+        })
+    }
+
+    private fun findOrCreatePatientUsingCatchmentArea(
+        catchmentArea: CatchmentArea,
+        demographics: PatientDemographics
+    ) {
+        DexCareSDK.patientService.findOrCreatePatient(
+            catchmentArea.ehrSystem,
+            demographics
+        ).subscribe({
+            get<DemographicsService>().setDemographics(it)
+            schedulingInfo.patientDemographics = demographics
+            findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment(args.schedulingFlow))
+        }, {
+            Timber.e(it)
+        }).onDisposed = {
             viewModel.loading = false
         }
     }
 
-    private fun createPatientUsingEhrSystem(demographics: PatientDemographics) {
+    private fun findOrCreatePatientUsingEhrSystem(demographics: PatientDemographics) {
         val ehrSystem = schedulingInfo.clinic!!.ehrSystemName
         DexCareSDK.patientService
-            .createPatientInEhrSystem(ehrSystem, demographics)
+            .findOrCreatePatient(ehrSystem, demographics)
             .subscribe({
                 get<DemographicsService>().setDemographics(it)
                 schedulingInfo.patientDemographics = demographics

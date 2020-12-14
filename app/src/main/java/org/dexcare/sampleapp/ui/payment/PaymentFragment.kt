@@ -14,6 +14,7 @@ import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.PaymentFragmentBinding
 import org.dexcare.sampleapp.ext.showItemListDialog
+import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.services.models.InsuranceManualSelf
@@ -23,6 +24,7 @@ import org.dexcare.services.models.SelfPayment
 import org.dexcare.services.retail.models.RetailVisitInformation
 import org.dexcare.services.virtualvisit.models.RegisterPushNotification
 import org.dexcare.services.virtualvisit.models.VirtualVisitInformation
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -116,7 +118,9 @@ class PaymentFragment : Fragment() {
                     schedulingInfo.region!!.regionId,
                     schedulingInfo.patientDemographics!!.email,
                     schedulingInfo.patientDemographics!!.homePhone
-                )
+                ),
+                schedulingInfo.catchmentArea!!,
+                get<DemographicsService>().getDemographics()!!
             )
             .subscribe({
                 val visitId = it.first
@@ -140,7 +144,9 @@ class PaymentFragment : Fragment() {
                     schedulingInfo.patientDemographics!!.email,
                     schedulingInfo.patientDemographics!!.homePhone
                 ),
-                schedulingInfo.timeSlot!!
+                schedulingInfo.timeSlot!!,
+                schedulingInfo.clinic!!.ehrSystemName,
+                get<DemographicsService>().getDemographics()!!
             ).subscribe({
                 Toast.makeText(requireContext(), "Retail visit booked", Toast.LENGTH_LONG).show()
                 findNavController().navigate(R.id.dashboardFragment)
