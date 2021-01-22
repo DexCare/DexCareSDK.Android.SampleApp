@@ -1,12 +1,15 @@
 package org.dexcare.sampleapp
 
 import android.app.Application
+import com.google.firebase.messaging.FirebaseMessaging
 import org.dexcare.DexCareSDK
 import org.dexcare.Environment
 import org.dexcare.sampleapp.modules.serviceModule
 import org.dexcare.sampleapp.modules.storageModule
 import org.dexcare.sampleapp.modules.utilModule
 import org.dexcare.sampleapp.modules.viewModelModule
+import org.dexcare.sampleapp.ui.common.SchedulingInfo
+import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
@@ -38,5 +41,11 @@ class MainApplication : Application() {
                 override val pcpUrl: String = getString(R.string.dexcare_pcp_url)
             }
         )
+
+        FirebaseMessaging.getInstance()
+            .token.addOnCompleteListener {
+                if (it.isSuccessful)
+                    get<SchedulingInfo>().fcmId = it.result ?: ""
+            }
     }
 }

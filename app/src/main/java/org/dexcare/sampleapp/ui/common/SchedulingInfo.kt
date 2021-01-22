@@ -15,6 +15,7 @@ class SchedulingInfo {
     var patientDemographics: PatientDemographics? = null
     var paymentMethod: PaymentMethod? = null
     var catchmentArea: CatchmentArea? = null
+    var fcmId: String = ""
 
     fun clear() {
         region = null
@@ -24,5 +25,6 @@ class SchedulingInfo {
         patientDemographics = null
         paymentMethod = null
         catchmentArea = null
+        fcmId = ""
     }
 }
