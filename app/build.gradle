@@ -59,7 +59,7 @@ dependencies {
 
     // Authentication is required for access to the DexCare binaries.
     // See the project's build.gradle or the Readme for instructions on how to set up authentication.
-    implementation "org.dexcare:dexcare:4.0.1"
+    implementation "org.dexcare:dexcare:4.0.2"
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
     implementation "com.auth0.android:lock:2.20.0"
