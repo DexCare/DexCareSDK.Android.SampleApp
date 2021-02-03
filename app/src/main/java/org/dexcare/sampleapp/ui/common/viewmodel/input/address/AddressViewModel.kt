@@ -82,7 +82,7 @@ class AddressViewModel : BaseViewModel() {
         city = cityStr
     }
 
-    fun clear() {
+    fun reset() {
         streetAddress = ""
         addressLine2 = ""
         city = ""

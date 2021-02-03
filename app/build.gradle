@@ -21,7 +21,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -78,6 +78,5 @@ dependencies {
     implementation 'com.github.vitalnik:android-PlacesAutocompleteTextView:0.0.4'
 
     // Chuck library for debugging network requests
-    implementation "com.readystatesoftware.chuck:library:1.1.0"
-    releaseImplementation "com.readystatesoftware.chuck:library-no-op:1.1.0"
+    debugImplementation "com.readystatesoftware.chuck:library:1.1.0"
 }

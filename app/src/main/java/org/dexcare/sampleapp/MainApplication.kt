@@ -38,5 +38,7 @@ class MainApplication : Application() {
                 override val pcpUrl: String = getString(R.string.dexcare_pcp_url)
             }
         )
+
+        DexCareSDK.getEnvironment()
     }
 }
