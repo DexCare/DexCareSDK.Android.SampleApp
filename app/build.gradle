@@ -57,9 +57,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    // Authentication is required for access to the DexCare binaries.
-    // See the project's build.gradle or the Readme for instructions on how to set up authentication.
-    implementation "org.dexcare:dexcare:4.0.3"
+    implementation "org.dexcare:dexcare:5.0.0"
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
     implementation "com.auth0.android:lock:2.20.0"
@@ -78,6 +76,6 @@ dependencies {
     implementation 'com.github.vitalnik:android-PlacesAutocompleteTextView:0.0.4'
 
     // Chuck library for debugging network requests
-    implementation "com.readystatesoftware.chuck:library:1.1.0"
+    debugImplementation "com.readystatesoftware.chuck:library:1.1.0"
     releaseImplementation "com.readystatesoftware.chuck:library-no-op:1.1.0"
 }

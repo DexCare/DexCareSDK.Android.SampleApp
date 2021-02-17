@@ -13,8 +13,8 @@ import org.dexcare.sampleapp.ui.virtual.region.VirtualRegionFragmentDirections
 
 class VirtualRegionAdapter(
     private val schedulingInfo: SchedulingInfo,
-    regionsList: MutableList<VirtualRegionViewModel>
-) : ViewModelAdapter<VirtualRegionViewModel>(regionsList) {
+    regionsList: MutableList<VirtualPracticeRegionViewModel>
+) : ViewModelAdapter<VirtualPracticeRegionViewModel>(regionsList) {
     override fun getViewDataBinding(
         objectInstance: ViewModel,
         inflater: LayoutInflater,
@@ -23,7 +23,7 @@ class VirtualRegionAdapter(
     ): ViewDataBinding? {
         return RecycleritemRegionBinding.inflate(inflater).also { binding ->
             binding.btnRegion.setOnClickListener {
-                schedulingInfo.region = binding.viewModel?.region
+                schedulingInfo.virtualPracticeRegion = binding.viewModel?.region
                 it.findNavController().navigate(
                     VirtualRegionFragmentDirections.toReasonForVisitFragment(
                         SchedulingFlow.Virtual

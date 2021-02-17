@@ -35,7 +35,6 @@ class MainApplication : Application() {
                 override val isProd: Boolean = false
                 override val fhirOrchUrl: String = getString(R.string.dexcare_fhirorch_url)
                 override val virtualVisitUrl: String = getString(R.string.dexcare_virtualvisit_url)
-                override val pcpUrl: String = getString(R.string.dexcare_pcp_url)
             }
         )
     }

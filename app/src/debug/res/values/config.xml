@@ -8,13 +8,13 @@
     <string name="dexcare_fhirorch_url"> </string>
     <string name="dexcare_virtualvisit_url"> </string>
 
-    <!-- PCP is currently an unsupported feature.  It is planned to be expanded upon in a future SDK version.
-         The URL still needs to be in the https format, it cannot be blank. -->
-    <string name="dexcare_pcp_url">https://www.example.com</string>
-
     <!-- Used for Push Notifications.  Needs to be in the format: [stage|prod].FCM.[brand].HealthConnect -->
     <string name="fcm_app_id"> </string>
 
     <!-- TODO: Set up Firebase and Google API key -->
     <string name="GOOGLE_API_KEY">API_KEY_GOES_HERE</string>
+
+    <!-- This will vary per-environment, but can be hardcoded for each Virtual Practice you want to support -->
+    <!-- This value is for the Acme Environment only -->
+    <string name="virtual_practice_id">038afb0c-f4fc-44fc-816a-9bde7acc9d86</string>
 </resources>

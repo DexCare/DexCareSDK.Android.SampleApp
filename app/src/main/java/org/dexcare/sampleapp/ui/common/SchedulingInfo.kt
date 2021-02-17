@@ -5,10 +5,10 @@ import org.dexcare.services.patient.models.PatientDemographics
 import org.dexcare.services.retail.models.Clinic
 import org.dexcare.services.retail.models.TimeSlot
 import org.dexcare.services.virtualvisit.models.CatchmentArea
-import org.dexcare.services.virtualvisit.models.Region
+import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 
 class SchedulingInfo {
-    var region: Region? = null
+    var virtualPracticeRegion: VirtualPracticeRegion? = null
     var clinic: Clinic? = null
     var timeSlot: TimeSlot? = null
     var reasonForVisit: String = ""
@@ -17,7 +17,7 @@ class SchedulingInfo {
     var catchmentArea: CatchmentArea? = null
 
     fun clear() {
-        region = null
+        virtualPracticeRegion = null
         clinic = null
         timeSlot = null
         reasonForVisit = ""

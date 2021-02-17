@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.VirtualRegionFragmentBinding
 import org.dexcare.sampleapp.ui.virtual.region.regionadapter.VirtualRegionAdapter
-import org.dexcare.sampleapp.ui.virtual.region.regionadapter.VirtualRegionViewModel
+import org.dexcare.sampleapp.ui.virtual.region.regionadapter.VirtualPracticeRegionViewModel
 import org.koin.android.ext.android.get
 
 class VirtualRegionFragment : Fragment() {
@@ -35,11 +35,11 @@ class VirtualRegionFragment : Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 2)
         }
 
-        viewModel.getRegions(getString(R.string.brand))
-            .observe(viewLifecycleOwner, { regionsList ->
+        viewModel.getVirtualPractice(getString(R.string.virtual_practice_id))
+            .observe(viewLifecycleOwner, { virtualPractice ->
                 (binding.recyclerRegions.adapter as? VirtualRegionAdapter)?.items =
-                    regionsList.map { region ->
-                        VirtualRegionViewModel(region)
+                    virtualPractice.practiceRegions.map { region ->
+                        VirtualPracticeRegionViewModel(region)
                     }.toMutableList()
             })
     }

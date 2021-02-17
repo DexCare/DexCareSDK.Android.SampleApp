@@ -152,7 +152,7 @@ class DemographicsFragment : Fragment() {
 
     private fun createPatientUsingVisitState(demographics: PatientDemographics) {
         DexCareSDK.patientService.getCatchmentArea(
-            schedulingInfo.region?.regionId!!,
+            schedulingInfo.virtualPracticeRegion!!.regionCode,
             demographics.addresses.first().state,
             demographics.addresses.first().postalCode,
             getString(R.string.brand)

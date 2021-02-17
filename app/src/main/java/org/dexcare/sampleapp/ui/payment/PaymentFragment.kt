@@ -115,12 +115,15 @@ class PaymentFragment : Fragment() {
                 VirtualVisitInformation(
                     schedulingInfo.reasonForVisit,
                     PatientDeclaration.Self,
-                    schedulingInfo.region!!.regionId,
+                    schedulingInfo.virtualPracticeRegion!!.regionCode,
                     schedulingInfo.patientDemographics!!.email,
-                    schedulingInfo.patientDemographics!!.homePhone
+                    schedulingInfo.patientDemographics!!.homePhone,
+                    practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId
                 ),
                 schedulingInfo.catchmentArea!!,
-                get<DemographicsService>().getDemographics()!!
+                get<DemographicsService>().getDemographics()!!,
+                null, // This is always null for "myself" visits
+                getString(R.string.virtual_practice_id)
             )
             .subscribe({
                 val visitId = it.first

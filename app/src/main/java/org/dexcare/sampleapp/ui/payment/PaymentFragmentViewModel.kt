@@ -5,7 +5,6 @@ import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import org.dexcare.DexCareSDK
-import org.dexcare.exts.virtualService
 import org.dexcare.sampleapp.ui.common.viewmodel.BaseViewModel
 import org.dexcare.services.models.InsurancePayer
 import timber.log.Timber
