@@ -14,4 +14,11 @@
     <string name="timeslots">Timeslots</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="mother">Mother</string>
+    <string name="father">Father</string>
+    <string name="significant_other">Significant Other</string>
+    <string name="sister">Sister</string>
+    <string name="brother">Brother</string>
+    <string name="legal_guardian">Legal Guardian</string>
+    <string name="relationship_to_patient">Relationship to Patient</string>
 </resources>

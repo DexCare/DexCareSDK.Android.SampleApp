@@ -104,6 +104,23 @@ class PaymentFragment : Fragment() {
     }
 
     private fun bookVirtualVisit() {
+        // Patient represents the person receiving care (not necessarily the app user)
+        val patient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.dependentPatient!!
+            else -> get<DemographicsService>().getDemographics()!!
+        }
+
+        // Actor represents the app user booking for someone else
+        val actor = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!
+            else -> null
+        }
+
+        val relationshipToPatient = when(schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.actorRelationshipToPatient!!
+            else -> null
+        }
+
         DexCareSDK.virtualService
             .startVirtualVisit(
                 this,
@@ -114,16 +131,17 @@ class PaymentFragment : Fragment() {
                 ),
                 VirtualVisitInformation(
                     schedulingInfo.reasonForVisit,
-                    PatientDeclaration.Self,
+                    schedulingInfo.patientDeclaration,
                     schedulingInfo.virtualPracticeRegion!!.regionCode,
                     schedulingInfo.patientDemographics!!.email,
                     schedulingInfo.patientDemographics!!.homePhone,
-                    practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId
+                    practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId,
+                    actorRelationshipToPatient = relationshipToPatient
                 ),
                 schedulingInfo.catchmentArea!!,
-                get<DemographicsService>().getDemographics()!!,
-                null, // This is always null for "myself" visits
-                getString(R.string.virtual_practice_id)
+                patientDexCarePatient = patient,
+                actorDexCarePatient = actor,
+                practiceId = getString(R.string.virtual_practice_id)
             )
             .subscribe({
                 val visitId = it.first
@@ -138,25 +156,47 @@ class PaymentFragment : Fragment() {
     }
 
     private fun bookRetailVisit() {
+        // Patient represents the person receiving care (not necessarily the app user)
+        val patient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.dependentPatient!!
+            else -> get<DemographicsService>().getDemographics()!!
+        }
+
+        // Actor represents the app user booking for someone else
+        val actor = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!
+            else -> null
+        }
+
+        val relationshipToPatient = when(schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.actorRelationshipToPatient!!
+            else -> null
+        }
+
+        viewModel.loading = true
         DexCareSDK.retailService
             .scheduleRetailAppointment(
                 SelfPayment(),
                 RetailVisitInformation(
                     schedulingInfo.reasonForVisit,
-                    PatientDeclaration.Self,
+                    schedulingInfo.patientDeclaration,
                     schedulingInfo.patientDemographics!!.email,
-                    schedulingInfo.patientDemographics!!.homePhone
+                    schedulingInfo.patientDemographics!!.homePhone,
+                    actorRelationshipToPatient = relationshipToPatient
                 ),
                 schedulingInfo.timeSlot!!,
                 schedulingInfo.clinic!!.ehrSystemName,
-                get<DemographicsService>().getDemographics()!!
+                patientDexCarePatient = patient,
+                actorDexCarePatient = actor
             ).subscribe({
                 Toast.makeText(requireContext(), "Retail visit booked", Toast.LENGTH_LONG).show()
                 findNavController().navigate(R.id.dashboardFragment)
                 schedulingInfo.clear()
             }, {
                 Timber.e(it)
-            })
+            }).onDisposed = {
+                viewModel.loading = false
+            }
     }
 
     private fun createRegisterPushNotification(): RegisterPushNotification {
