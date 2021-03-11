@@ -10,14 +10,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.tabs.TabLayout
 import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.DemographicsFragmentBinding
 import org.dexcare.sampleapp.ext.showItemListDialog
 import org.dexcare.sampleapp.modules.GENDER_MAP
+import org.dexcare.sampleapp.modules.RELATIONSHIP_TO_PATIENT_LIST
 import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingFlow.*
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
+import org.dexcare.services.models.PatientDeclaration
+import org.dexcare.services.models.RelationshipToPatient
 import org.dexcare.services.patient.models.Address
 import org.dexcare.services.patient.models.Gender
 import org.dexcare.services.patient.models.HumanName
@@ -37,11 +41,14 @@ class DemographicsFragment : Fragment() {
     private val demographicsService: DemographicsService by inject()
 
     private val genderMap: HashMap<String, Gender> by inject(GENDER_MAP)
+    private val relationshipToPatientList: List<Pair<String, RelationshipToPatient>> by inject(
+        RELATIONSHIP_TO_PATIENT_LIST
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DemographicsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -51,40 +58,47 @@ class DemographicsFragment : Fragment() {
         binding.viewModel = viewModel
 
         demographicsService.getDemographics()?.demographicsLinks?.firstOrNull()?.let {
-            viewModel.setFromExistingDemographics(it)
+            viewModel.appUserDemographics.setFromExistingDemographics(it)
         }
 
-        binding.selfDemographicsLayout.parentInputLayout.genderInputText.apply {
+        setupClickListenersMySelfTab()
+        setupClickListenersSomeoneElseTab()
 
-            setOnClickListener {
-                showGenderPickerDialog()
+        binding.tabLayoutDemographics.addOnTabSelectedListener(object :
+            TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(p0: TabLayout.Tab?) {
+                when (p0) {
+                    // Someone Else tab
+                    binding.tabLayoutDemographics.getTabAt(1) -> {
+                        binding.selfDemographicsLayout.root.visibility = View.GONE
+                        binding.someoneElseDemographicsLayout.root.visibility = View.VISIBLE
+                        schedulingInfo.patientDeclaration = PatientDeclaration.Other
+                    }
+                    else -> {
+                        binding.selfDemographicsLayout.root.visibility = View.VISIBLE
+                        binding.someoneElseDemographicsLayout.root.visibility = View.GONE
+                        schedulingInfo.patientDeclaration = PatientDeclaration.Self
+                    }
+                }
             }
 
-            setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) showGenderPickerDialog()
-            }
-        }
+            override fun onTabUnselected(p0: TabLayout.Tab?) {
 
-        binding.selfDemographicsLayout.parentInputLayout.dateOfBirthInputText.apply {
-            setOnClickListener {
-                showDatePickerDialog()
             }
 
-            setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) showDatePickerDialog()
-            }
-        }
+            override fun onTabReselected(p0: TabLayout.Tab?) {
 
+            }
+        })
 
         binding.btnContinue.setOnClickListener {
             if (!verifyInput()) return@setOnClickListener
 
-            val demographics = collectDemographics()
             viewModel.loading = true
 
             when (args.schedulingFlow) {
-                Retail -> findOrCreatePatientUsingEhrSystem(demographics)
-                Virtual -> createPatientUsingVisitState(demographics)
+                Retail -> onContinueClickedRetail()
+                Virtual -> onContinueClickedVirtual()
                 Unknown -> Toast.makeText(requireContext(), "Unknown flow", Toast.LENGTH_LONG)
                     .show()
             }
@@ -92,13 +106,21 @@ class DemographicsFragment : Fragment() {
     }
 
     private fun verifyInput(): Boolean {
-        return viewModel.isValid()
+        return when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Self -> viewModel.appUserDemographics.isValid()
+            PatientDeclaration.Other -> {
+                viewModel.appUserDemographics.isValid()
+                        && viewModel.someoneElseDemographics.isValid()
+                        // relationship to patient is only required for the actor on someone else visits
+                        && viewModel.appUserDemographics.relationshipToPatient != null
+            }
+        }
     }
 
-    private fun collectDemographics(): PatientDemographics {
-        return viewModel.run {
+    private fun collectAppUserDemographics(): PatientDemographics {
+        return viewModel.appUserDemographics.run {
             PatientDemographics(
-                listOf(collectAddress()),
+                listOf(collectAddress(this)),
                 dateOfBirth!!,
                 email,
                 gender!!,
@@ -109,11 +131,26 @@ class DemographicsFragment : Fragment() {
         }
     }
 
-    private fun collectAddress(): Address = viewModel.addressViewModel.run {
-        Address(streetAddress, addressLine2, city, state, zipCode)
+    private fun collectDependentPatientDemographics(): PatientDemographics {
+        return viewModel.someoneElseDemographics.run {
+            PatientDemographics(
+                listOf(collectAddress(this)),
+                dateOfBirth!!,
+                email,
+                gender!!,
+                HumanName(lastName, firstName),
+                last4SSN,
+                phoneNumber
+            )
+        }
     }
 
-    private fun showGenderPickerDialog() {
+    private fun collectAddress(viewModel: DemographicsViewModel): Address =
+        viewModel.addressViewModel.run {
+            Address(streetAddress, addressLine2, city, state, zipCode)
+        }
+
+    private fun showGenderPickerDialog(viewModel: DemographicsViewModel) {
         activity?.showItemListDialog(
             genderMap.map {
                 it.key
@@ -128,7 +165,25 @@ class DemographicsFragment : Fragment() {
         }
     }
 
-    private fun showDatePickerDialog() {
+    private fun showRelationshipPickerDialog(viewModel: DemographicsViewModel) {
+        activity?.showItemListDialog(
+            relationshipToPatientList.map {
+                it.first
+            },
+            getString(R.string.relationship_to_patient)
+        ) {
+            val selectionText = relationshipToPatientList.map { listEntry ->
+                listEntry.first
+            }[it]
+
+            val relationshipToPatient = relationshipToPatientList.first { it.first == selectionText }.second
+
+            viewModel.relationshipToPatient = relationshipToPatient
+            schedulingInfo.actorRelationshipToPatient = relationshipToPatient
+        }
+    }
+
+    private fun showDatePickerDialog(viewModel: DemographicsViewModel) {
         val dateOfBirth = Calendar.getInstance().apply {
             viewModel.dateOfBirth?.let {
                 time = it
@@ -150,7 +205,35 @@ class DemographicsFragment : Fragment() {
             .show()
     }
 
-    private fun createPatientUsingVisitState(demographics: PatientDemographics) {
+    private fun onContinueClickedVirtual() {
+        val demographics = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Self -> collectAppUserDemographics()
+            PatientDeclaration.Other -> collectDependentPatientDemographics()
+        }
+
+        // The patient is required to have a demographic link in the EHR system of the virtual department.
+        // EHR system can be determined with catchment area.
+        // The set demographics passed in to getCatchmentArea matters - it should always be the patient.
+        getCatchmentAreaForDemographics(demographics, callback = {
+            val ehrSystem = it.ehrSystem
+            if (schedulingInfo.patientDeclaration == PatientDeclaration.Other) {
+                findOrCreateDependentPatient(ehrSystem, callback = {
+                    // The requirement for the Actor is that they have at least one demographic link.
+                    // The EHR System of the Actor's demographic link does not matter for dependent visits, they just need to have a link.
+                    // For simplicity in this sample app, we are always calling findOrCreatePatient which will ensure a link exists.
+                    // If the Actor already has an existing link, calling findOrCreatePatient is not required.
+                    findOrCreateAppUserPatient(ehrSystem)
+                })
+            } else if (schedulingInfo.patientDeclaration == PatientDeclaration.Self) {
+                findOrCreateAppUserPatient(ehrSystem)
+            }
+        })
+    }
+
+    private fun getCatchmentAreaForDemographics(
+        demographics: PatientDemographics,
+        callback: (catchmentArea: CatchmentArea) -> Unit
+    ) {
         DexCareSDK.patientService.getCatchmentArea(
             schedulingInfo.virtualPracticeRegion!!.regionCode,
             demographics.addresses.first().state,
@@ -158,45 +241,136 @@ class DemographicsFragment : Fragment() {
             getString(R.string.brand)
         ).subscribe({ catchmentArea ->
             schedulingInfo.catchmentArea = catchmentArea
-            findOrCreatePatientUsingCatchmentArea(
-                catchmentArea,
-                demographics
-            )
+
+            callback.invoke(catchmentArea)
         }, {
+            Timber.e(it)
+            viewModel.loading = false
+        })
+    }
+
+    private fun onContinueClickedRetail() {
+        val ehrSystem = schedulingInfo.clinic!!.ehrSystemName
+
+        if (schedulingInfo.patientDeclaration == PatientDeclaration.Other) {
+            findOrCreateDependentPatient(ehrSystem) {
+                // The requirement for the Actor is that they have at least one demographic link.
+                // The EHR System of the Actor's demographic link does not matter for dependent visits, they just need to have a link.
+                // For simplicity in this sample app, we are always calling findOrCreatePatient which will ensure a link exists.
+                // If the Actor already has an existing link, calling findOrCreatePatient is not required.
+                findOrCreateAppUserPatient(ehrSystem)
+            }
+            return
+        }
+
+        findOrCreateAppUserPatient(ehrSystem)
+    }
+
+    private fun findOrCreateDependentPatient(ehrSystem: String, callback: () -> Unit) {
+        DexCareSDK.patientService.findOrCreateDependentPatient(
+            ehrSystem,
+            collectDependentPatientDemographics()
+        ).subscribe({
+            schedulingInfo.dependentPatient = it
+            callback.invoke()
+        }, {
+            viewModel.loading = false
             Timber.e(it)
         })
     }
 
-    private fun findOrCreatePatientUsingCatchmentArea(
-        catchmentArea: CatchmentArea,
-        demographics: PatientDemographics
-    ) {
-        DexCareSDK.patientService.findOrCreatePatient(
-            catchmentArea.ehrSystem,
-            demographics
-        ).subscribe({
-            get<DemographicsService>().setDemographics(it)
-            schedulingInfo.patientDemographics = demographics
-            findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment(args.schedulingFlow))
-        }, {
-            Timber.e(it)
-        }).onDisposed = {
-            viewModel.loading = false
-        }
-    }
 
-    private fun findOrCreatePatientUsingEhrSystem(demographics: PatientDemographics) {
-        val ehrSystem = schedulingInfo.clinic!!.ehrSystemName
+    private fun findOrCreateAppUserPatient(ehrSystem: String) {
+        val appUserDemographics = collectAppUserDemographics()
         DexCareSDK.patientService
-            .findOrCreatePatient(ehrSystem, demographics)
+            .findOrCreatePatient(ehrSystem, appUserDemographics)
             .subscribe({
                 get<DemographicsService>().setDemographics(it)
-                schedulingInfo.patientDemographics = demographics
+                schedulingInfo.patientDemographics = appUserDemographics
                 findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment(args.schedulingFlow))
             }, {
                 Timber.e(it)
             }).onDisposed = {
             viewModel.loading = false
+        }
+    }
+
+    private fun setupClickListenersMySelfTab() {
+        binding.selfDemographicsLayout.genderInputText.apply {
+
+            setOnClickListener {
+                showGenderPickerDialog(viewModel.appUserDemographics)
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showGenderPickerDialog(viewModel.appUserDemographics)
+            }
+        }
+
+        binding.selfDemographicsLayout.dateOfBirthInputText.apply {
+            setOnClickListener {
+                showDatePickerDialog(viewModel.appUserDemographics)
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showDatePickerDialog(viewModel.appUserDemographics)
+            }
+        }
+    }
+
+    private fun setupClickListenersSomeoneElseTab() {
+        // On Someone Else tab, the patient is the "someone else"
+        binding.someoneElseDemographicsLayout.patientGenderInputText.apply {
+
+            setOnClickListener {
+                showGenderPickerDialog(viewModel.someoneElseDemographics)
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showGenderPickerDialog(viewModel.someoneElseDemographics)
+            }
+        }
+
+        binding.someoneElseDemographicsLayout.patientDateOfBirthInputText.apply {
+            setOnClickListener {
+                showDatePickerDialog(viewModel.someoneElseDemographics)
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showDatePickerDialog(viewModel.someoneElseDemographics)
+            }
+        }
+
+        // actor is the app user
+        binding.someoneElseDemographicsLayout.actorGenderInputText.apply {
+
+            setOnClickListener {
+                showGenderPickerDialog(viewModel.appUserDemographics)
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showGenderPickerDialog(viewModel.appUserDemographics)
+            }
+        }
+
+        binding.someoneElseDemographicsLayout.actorDateOfBirthInputText.apply {
+            setOnClickListener {
+                showDatePickerDialog(viewModel.appUserDemographics)
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showDatePickerDialog(viewModel.appUserDemographics)
+            }
+        }
+
+        binding.someoneElseDemographicsLayout.relationshipToPatientInputText.apply {
+            setOnClickListener {
+                showRelationshipPickerDialog(viewModel.appUserDemographics)
+            }
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showRelationshipPickerDialog(viewModel.appUserDemographics)
+            }
         }
     }
 }

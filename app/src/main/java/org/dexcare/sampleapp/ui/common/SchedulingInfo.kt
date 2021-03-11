@@ -1,6 +1,9 @@
 package org.dexcare.sampleapp.ui.common
 
+import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.models.PaymentMethod
+import org.dexcare.services.models.RelationshipToPatient
+import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.PatientDemographics
 import org.dexcare.services.retail.models.Clinic
 import org.dexcare.services.retail.models.TimeSlot
@@ -15,6 +18,9 @@ class SchedulingInfo {
     var patientDemographics: PatientDemographics? = null
     var paymentMethod: PaymentMethod? = null
     var catchmentArea: CatchmentArea? = null
+    var patientDeclaration: PatientDeclaration = PatientDeclaration.Self
+    var dependentPatient: DexCarePatient? = null
+    var actorRelationshipToPatient: RelationshipToPatient? = null
 
     fun clear() {
         virtualPracticeRegion = null
@@ -24,5 +30,8 @@ class SchedulingInfo {
         patientDemographics = null
         paymentMethod = null
         catchmentArea = null
+        patientDeclaration = PatientDeclaration.Self
+        dependentPatient = null
+        actorRelationshipToPatient = null
     }
 }

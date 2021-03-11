@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="org.dexcare.sampleapp.ui.payment.PaymentFragmentViewModel" />
@@ -25,9 +27,9 @@
                 android:id="@+id/insuranceProviderInputText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusable="false"
                 android:inputType="none"
                 android:maxLines="1"
-                android:focusable="false"
                 android:text="@{viewModel.insuranceProviderName}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -50,14 +52,26 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            app:isVisible="@{viewModel.loading}"
+            app:layout_constraintBottom_toBottomOf="@id/btnContinue"
+            app:layout_constraintEnd_toEndOf="@id/btnContinue"
+            app:layout_constraintStart_toStartOf="@id/btnContinue"
+            app:layout_constraintTop_toTopOf="@id/btnContinue" />
+
+        <Button
             android:id="@+id/btnBookVisit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/spacing_standard"
             android:padding="@dimen/spacing_medium2"
-            android:text="Book Visit"/>
+            android:text="Book Visit"
+            app:isVisible="@{!viewModel.loading}" />
 
     </LinearLayout>
 </layout>

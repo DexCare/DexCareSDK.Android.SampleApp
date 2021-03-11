@@ -15,8 +15,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginStart="@dimen/spacing_medium"
-        android:layout_marginEnd="@dimen/spacing_medium"
-        android:visibility="@{viewModel.visibilityState}">
+        android:layout_marginEnd="@dimen/spacing_medium">
 
         <!-- First name -->
 
@@ -25,7 +24,7 @@
             android:layout_height="wrap_content"
             android:hint="First name"
             android:textColorHint="@color/gray2"
-            android:visibility="@{viewModel.visibilityState}"
+            android:visibility="@{viewModel.appUserDemographics.visibilityState}"
             tools:hint="LayoutInputTyped">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -34,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="@={viewModel.firstName}" />
+                android:text="@={viewModel.appUserDemographics.firstName}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -45,7 +44,7 @@
             android:layout_height="wrap_content"
             android:hint="Last name"
             android:textColorHint="@color/gray2"
-            android:visibility="@{viewModel.visibilityState}"
+            android:visibility="@{viewModel.appUserDemographics.visibilityState}"
             tools:hint="LayoutInputTyped">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -54,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="@={viewModel.lastName}" />
+                android:text="@={viewModel.appUserDemographics.lastName}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,7 +64,7 @@
             android:layout_height="wrap_content"
             android:hint="Email address"
             android:textColorHint="@color/gray2"
-            android:visibility="@{viewModel.visibilityState}"
+            android:visibility="@{viewModel.appUserDemographics.visibilityState}"
             tools:hint="LayoutInputTyped">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -74,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="@={viewModel.email}" />
+                android:text="@={viewModel.appUserDemographics.email}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,7 +85,7 @@
             android:layout_height="wrap_content"
             android:hint="Date of birth"
             android:textColorHint="@color/gray2"
-            android:visibility="@{viewModel.visibilityState}"
+            android:visibility="@{viewModel.appUserDemographics.visibilityState}"
             tools:hint="LayoutInputTyped">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -95,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:focusable="false"
-                android:text="@{viewModel.dateOfBirthString}" />
+                android:text="@{viewModel.appUserDemographics.dateOfBirthString}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -106,7 +105,7 @@
             android:layout_height="wrap_content"
             android:hint="Gender"
             android:textColorHint="@color/gray2"
-            android:visibility="@{viewModel.visibilityState}"
+            android:visibility="@{viewModel.appUserDemographics.visibilityState}"
             tools:hint="LayoutInputTyped">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -115,7 +114,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:focusable="false"
-                android:text="@{viewModel.genderString}" />
+                android:text="@{viewModel.appUserDemographics.genderString}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -126,7 +125,7 @@
             android:layout_height="wrap_content"
             android:hint="Last 4 SSN"
             android:textColorHint="@color/gray2"
-            android:visibility="@{viewModel.visibilityState}"
+            android:visibility="@{viewModel.appUserDemographics.visibilityState}"
             tools:hint="LayoutInputTyped">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -135,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="@={viewModel.last4SSN}" />
+                android:text="@={viewModel.appUserDemographics.last4SSN}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -146,7 +145,7 @@
             android:layout_height="wrap_content"
             android:hint="Phone number"
             android:textColorHint="@color/gray2"
-            android:visibility="@{viewModel.visibilityState}"
+            android:visibility="@{viewModel.appUserDemographics.visibilityState}"
             tools:hint="LayoutInputTyped">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -155,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:maxLines="1"
-                android:text="@={viewModel.phoneNumber}" />
+                android:text="@={viewModel.appUserDemographics.phoneNumber}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -170,7 +169,7 @@
             app:layout_constraintEnd_toEndOf="@+id/inputFirstName"
             app:layout_constraintStart_toStartOf="@+id/inputFirstName"
             app:layout_constraintTop_toBottomOf="@+id/inputPhone"
-            app:viewModel="@{viewModel.addressViewModel}" />
+            app:viewModel="@{viewModel.appUserDemographics.addressViewModel}" />
 
     </LinearLayout>
 

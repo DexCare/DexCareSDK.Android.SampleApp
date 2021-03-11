@@ -25,6 +25,13 @@ class PaymentFragmentViewModel : BaseViewModel() {
             notifyPropertyChanged(BR.insuranceProviderName)
         }
 
+    @Bindable
+    var loading: Boolean = false
+    set(value) {
+        field = value
+        notifyPropertyChanged(BR.loading)
+    }
+
     private val insuranceProviders =
         MutableLiveData<List<InsurancePayer>>()
 

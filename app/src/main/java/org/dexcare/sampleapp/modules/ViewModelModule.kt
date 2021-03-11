@@ -1,7 +1,7 @@
 package org.dexcare.sampleapp.modules
 
 import org.dexcare.sampleapp.ui.common.viewmodel.input.address.AddressViewModel
-import org.dexcare.sampleapp.ui.demographics.DemographicsFragmentViewModel
+import org.dexcare.sampleapp.ui.demographics.DemographicsViewModel
 import org.koin.dsl.module
 
 
@@ -12,5 +12,9 @@ val viewModelModule = module {
 
     factory {
         AddressViewModel()
+    }
+
+    factory {
+        DemographicsViewModel()
     }
 }
