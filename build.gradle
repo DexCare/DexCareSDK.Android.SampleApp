@@ -28,7 +28,7 @@ allprojects {
         // required for tokbox (DexCare SDK dependency)
         maven { url 'https://tokbox.bintray.com/maven' }
 
-        mavenLocal()
+//        mavenLocal()
 
         // required for DexCare SDK
         maven {
