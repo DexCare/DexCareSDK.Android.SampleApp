@@ -34,7 +34,7 @@ allprojects {
 
         // required for DexCare SDK
         maven {
-            url "https://maven.pkg.github.com/Health-V2-Consortium/DexCareSDK-Android/"
+            url "https://maven.pkg.github.com/DexCare/DexCareSDK-Android/"
 
             credentials {
                 // You need to be authenticated in order to access the DexCare SDK binaries.
