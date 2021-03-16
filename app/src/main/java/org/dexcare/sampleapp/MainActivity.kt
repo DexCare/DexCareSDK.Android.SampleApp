@@ -9,6 +9,7 @@ import com.auth0.android.lock.*
 import com.auth0.android.lock.utils.LockException
 import com.auth0.android.result.Credentials
 import org.dexcare.DexCareSDK
+import org.dexcare.sampleapp.ext.showMaterialDialog
 import org.dexcare.sampleapp.services.AuthService
 import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
@@ -104,6 +105,7 @@ class MainActivity : AppCompatActivity() {
                 navigateToDashboardFragment()
             }, {
                 Timber.e(it)
+                showMaterialDialog(message = getString(R.string.unexpected_error_message))
             })
     }
 

@@ -8,8 +8,8 @@ class ReasonForVisitFragmentViewModel : BaseViewModel() {
 
     @Bindable
     var reasonForVisit: String = ""
-    set(value) {
-        field = value
-        notifyPropertyChanged(BR.reasonForVisit)
-    }
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.reasonForVisit)
+        }
 }

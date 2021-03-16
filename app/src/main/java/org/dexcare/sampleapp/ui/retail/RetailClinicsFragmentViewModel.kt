@@ -31,6 +31,7 @@ class RetailClinicsFragmentViewModel : BaseViewModel() {
                 clinics.value = it.sortedBy { it.departmentName }
                 loading = false
             }, {
+                errorLiveData.value = it
                 Timber.e(it)
             })
     }
@@ -52,6 +53,7 @@ class RetailClinicsFragmentViewModel : BaseViewModel() {
 
                     semaphore.release()
                 }, {
+                    errorLiveData.value = it
                     Timber.e(it)
                 })
         }

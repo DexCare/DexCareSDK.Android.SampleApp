@@ -4,10 +4,14 @@ import androidx.databinding.Bindable
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.databinding.library.baseAdapters.BR
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import org.dexcare.services.virtualvisit.models.VirtualPractice
 import org.koin.core.component.KoinComponent
 
 abstract class BaseViewModel : ViewModel(), Observable, KoinComponent {
+
+    val errorLiveData = MutableLiveData<Throwable?>()
 
     private var visibilityState: VisibilityState = VisibilityState.Visible
 

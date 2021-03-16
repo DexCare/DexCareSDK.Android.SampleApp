@@ -15,6 +15,7 @@ import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.DemographicsFragmentBinding
 import org.dexcare.sampleapp.ext.showItemListDialog
+import org.dexcare.sampleapp.ext.showMaterialDialog
 import org.dexcare.sampleapp.modules.GENDER_MAP
 import org.dexcare.sampleapp.modules.RELATIONSHIP_TO_PATIENT_LIST
 import org.dexcare.sampleapp.services.DemographicsService
@@ -57,6 +58,12 @@ class DemographicsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
 
+        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+            it?.let {
+                showMaterialDialog(message = it.message)
+            }
+        })
+
         demographicsService.getDemographics()?.demographicsLinks?.firstOrNull()?.let {
             viewModel.appUserDemographics.setFromExistingDemographics(it)
         }
@@ -92,7 +99,13 @@ class DemographicsFragment : Fragment() {
         })
 
         binding.btnContinue.setOnClickListener {
-            if (!verifyInput()) return@setOnClickListener
+            if (!verifyInput()) {
+                showMaterialDialog(
+                    getString(R.string.invalid_input_title),
+                    getString(R.string.invalid_input_message)
+                )
+                return@setOnClickListener
+            }
 
             viewModel.loading = true
 
@@ -244,6 +257,7 @@ class DemographicsFragment : Fragment() {
 
             callback.invoke(catchmentArea)
         }, {
+            viewModel.errorLiveData.value = it
             Timber.e(it)
             viewModel.loading = false
         })
@@ -274,6 +288,7 @@ class DemographicsFragment : Fragment() {
             schedulingInfo.dependentPatient = it
             callback.invoke()
         }, {
+            viewModel.errorLiveData.value = it
             viewModel.loading = false
             Timber.e(it)
         })
@@ -289,6 +304,7 @@ class DemographicsFragment : Fragment() {
                 schedulingInfo.patientDemographics = appUserDemographics
                 findNavController().navigate(DemographicsFragmentDirections.toPaymentFragment(args.schedulingFlow))
             }, {
+                viewModel.errorLiveData.value = it
                 Timber.e(it)
             }).onDisposed = {
             viewModel.loading = false

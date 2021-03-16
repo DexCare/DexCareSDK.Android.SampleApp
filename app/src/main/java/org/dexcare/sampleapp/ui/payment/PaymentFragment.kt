@@ -14,6 +14,7 @@ import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.PaymentFragmentBinding
 import org.dexcare.sampleapp.ext.showItemListDialog
+import org.dexcare.sampleapp.ext.showMaterialDialog
 import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
@@ -40,7 +41,7 @@ class PaymentFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = PaymentFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
@@ -50,6 +51,12 @@ class PaymentFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = viewModel
+
+        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+            it?.let {
+                showMaterialDialog(message = it.message)
+            }
+        })
 
         viewModel.getInsuranceProviders(getString(R.string.brand))
             .observe(viewLifecycleOwner, { insuranceProviders ->
@@ -121,6 +128,7 @@ class PaymentFragment : Fragment() {
             else -> null
         }
 
+        viewModel.loading = true
         DexCareSDK.virtualService
             .startVirtualVisit(
                 this,
@@ -151,8 +159,11 @@ class PaymentFragment : Fragment() {
                     MainActivity.VIRTUAL_REQUEST_CODE
                 )
             }, {
+                viewModel.errorLiveData.value = it
                 Timber.e(it)
-            })
+            }).onDisposed = {
+                viewModel.loading = false
+        }
     }
 
     private fun bookRetailVisit() {
@@ -193,6 +204,7 @@ class PaymentFragment : Fragment() {
                 findNavController().navigate(R.id.dashboardFragment)
                 schedulingInfo.clear()
             }, {
+                viewModel.errorLiveData.value = it
                 Timber.e(it)
             }).onDisposed = {
                 viewModel.loading = false

@@ -21,4 +21,9 @@
     <string name="brother">Brother</string>
     <string name="legal_guardian">Legal Guardian</string>
     <string name="relationship_to_patient">Relationship to Patient</string>
+    <string name="ok">OK</string>
+
+    <string name="invalid_input_title">Invalid Input</string>
+    <string name="invalid_input_message">Check your inputs and try again.</string>
+    <string name="unexpected_error_message">An unexpected error has occurred.  Check your network connection and try again.</string>
 </resources>

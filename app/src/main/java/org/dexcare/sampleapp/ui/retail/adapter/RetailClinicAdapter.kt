@@ -14,7 +14,7 @@ class RetailClinicAdapter(viewModels: MutableList<RetailClinicViewModel>) :
         inflater: LayoutInflater,
         parent: ViewGroup,
         attachToRoot: Boolean
-    ): ViewDataBinding? {
+    ): ViewDataBinding {
         return RecycleritemClinicBinding.inflate(inflater)
     }
 }

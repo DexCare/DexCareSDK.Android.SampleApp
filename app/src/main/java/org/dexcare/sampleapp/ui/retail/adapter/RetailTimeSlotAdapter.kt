@@ -21,7 +21,7 @@ class RetailTimeSlotAdapter(
         inflater: LayoutInflater,
         parent: ViewGroup,
         attachToRoot: Boolean
-    ): ViewDataBinding? {
+    ): ViewDataBinding {
         return RecycleritemTimeslotBinding.inflate(inflater).also { binding ->
             binding.btnTimeSlot.setOnClickListener {
                 schedulingInfo.apply {

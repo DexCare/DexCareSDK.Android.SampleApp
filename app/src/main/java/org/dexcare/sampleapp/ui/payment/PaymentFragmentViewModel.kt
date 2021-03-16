@@ -48,6 +48,7 @@ class PaymentFragmentViewModel : BaseViewModel() {
                 insuranceProviders.value = it
             }, {
                 Timber.e(it)
+                errorLiveData.value = it
             })
     }
 }

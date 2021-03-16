@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.RetailClinicsFragmentBinding
+import org.dexcare.sampleapp.ext.showMaterialDialog
 import org.dexcare.sampleapp.ui.retail.adapter.RetailClinicAdapter
 import org.dexcare.sampleapp.ui.retail.adapter.RetailClinicViewModel
 
@@ -20,7 +21,7 @@ class RetailClinicsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = RetailClinicsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,6 +34,12 @@ class RetailClinicsFragment : Fragment() {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
+
+        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+            it?.let {
+                showMaterialDialog(message = it.message)
+            }
+        })
 
         viewModel.getClinics(getString(R.string.brand))
             .observe(viewLifecycleOwner, { clinicList ->

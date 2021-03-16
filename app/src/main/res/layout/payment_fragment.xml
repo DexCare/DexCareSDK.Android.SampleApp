@@ -18,7 +18,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Insurance provider"
+            android:hint="Insurance Provider"
             android:textColorHint="@color/gray2"
             android:visibility="@{viewModel.visibilityState}"
             tools:hint="LayoutInputTyped">
@@ -57,11 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            app:isVisible="@{viewModel.loading}"
-            app:layout_constraintBottom_toBottomOf="@id/btnContinue"
-            app:layout_constraintEnd_toEndOf="@id/btnContinue"
-            app:layout_constraintStart_toStartOf="@id/btnContinue"
-            app:layout_constraintTop_toTopOf="@id/btnContinue" />
+            app:isVisible="@{viewModel.loading}" />
 
         <Button
             android:id="@+id/btnBookVisit"

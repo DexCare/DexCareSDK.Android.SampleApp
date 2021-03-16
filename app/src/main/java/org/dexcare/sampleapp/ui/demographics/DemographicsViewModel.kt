@@ -94,9 +94,10 @@ class DemographicsViewModel : BaseViewModel() {
             field = value
 
             relationshipToPatientString = value?.let {
-                get<List<Pair<String, RelationshipToPatient>>>(RELATIONSHIP_TO_PATIENT_LIST).asIterable().firstOrNull {
-                    it.second == value
-                }?.first ?: ""
+                get<List<Pair<String, RelationshipToPatient>>>(RELATIONSHIP_TO_PATIENT_LIST).asIterable()
+                    .firstOrNull {
+                        it.second == value
+                    }?.first ?: ""
             } ?: ""
         }
 

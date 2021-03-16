@@ -9,8 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.VirtualRegionFragmentBinding
-import org.dexcare.sampleapp.ui.virtual.region.regionadapter.VirtualRegionAdapter
+import org.dexcare.sampleapp.ext.showMaterialDialog
 import org.dexcare.sampleapp.ui.virtual.region.regionadapter.VirtualPracticeRegionViewModel
+import org.dexcare.sampleapp.ui.virtual.region.regionadapter.VirtualRegionAdapter
 import org.koin.android.ext.android.get
 
 class VirtualRegionFragment : Fragment() {
@@ -35,12 +36,17 @@ class VirtualRegionFragment : Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 2)
         }
 
-        viewModel.getVirtualPractice(getString(R.string.virtual_practice_id))
-            .observe(viewLifecycleOwner, { virtualPractice ->
-                (binding.recyclerRegions.adapter as? VirtualRegionAdapter)?.items =
-                    virtualPractice.practiceRegions.map { region ->
-                        VirtualPracticeRegionViewModel(region)
-                    }.toMutableList()
-            })
+        viewModel.getVirtualPractice(getString(R.string.virtual_practice_id)).observe(viewLifecycleOwner, { virtualPractice ->
+            (binding.recyclerRegions.adapter as? VirtualRegionAdapter)?.items =
+                virtualPractice.practiceRegions.map { region ->
+                    VirtualPracticeRegionViewModel(region)
+                }.toMutableList()
+        })
+
+        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+            it?.let {
+                showMaterialDialog(message = it.message)
+            }
+        })
     }
 }
