@@ -42,7 +42,7 @@ class PaymentFragmentViewModel : BaseViewModel() {
     }
 
     private fun loadInsuranceProviders(brand: String) {
-        DexCareSDK.virtualService
+        DexCareSDK.paymentService
             .getInsurancePayers(brand)
             .subscribe({
                 insuranceProviders.value = it
