@@ -26,6 +26,27 @@ class PaymentFragmentViewModel : BaseViewModel() {
         }
 
     @Bindable
+    var couponCode: String = ""
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.couponCode)
+        }
+
+    @Bindable
+    var discountAmount: String = "$0.00"
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.discountAmount)
+        }
+
+    @Bindable
+    var verifyCouponCodeLoading: Boolean = false
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.verifyCouponCodeLoading)
+        }
+
+    @Bindable
     var loading: Boolean = false
     set(value) {
         field = value

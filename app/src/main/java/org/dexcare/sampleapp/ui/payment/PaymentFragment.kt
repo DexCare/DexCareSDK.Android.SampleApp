@@ -5,10 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.payment_fragment.*
+import kotlinx.coroutines.selects.select
 import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
@@ -18,16 +22,14 @@ import org.dexcare.sampleapp.ext.showMaterialDialog
 import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
-import org.dexcare.services.models.InsuranceManualSelf
-import org.dexcare.services.models.InsurancePayer
-import org.dexcare.services.models.PatientDeclaration
-import org.dexcare.services.models.SelfPayment
+import org.dexcare.services.models.*
 import org.dexcare.services.retail.models.RetailVisitInformation
 import org.dexcare.services.virtualvisit.models.RegisterPushNotification
 import org.dexcare.services.virtualvisit.models.VirtualVisitInformation
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import java.text.NumberFormat
 
 class PaymentFragment : Fragment() {
 
@@ -52,9 +54,22 @@ class PaymentFragment : Fragment() {
 
         binding.viewModel = viewModel
 
+        when (args.schedulingFlow) {
+            SchedulingFlow.Retail -> {
+                // Retail will just use SelfPayment in this sample app.
+                // See https://developers.dexcarehealth.com/paymentmethod/ for supported
+                // Payment types for each method of care
+                binding.paymentInputsLayout.visibility = View.GONE
+                binding.tabLayoutPayment.visibility = View.GONE
+            }
+            SchedulingFlow.Virtual -> {
+                binding.layoutCouponCodeInput.root.visibility = View.GONE
+            }
+        }
+
         viewModel.errorLiveData.observe(viewLifecycleOwner, {
             it?.let {
-                showMaterialDialog(message = it.message)
+                showMaterialDialog(message = it.javaClass.simpleName)
             }
         })
 
@@ -64,7 +79,36 @@ class PaymentFragment : Fragment() {
                 this.insuranceProviders.addAll(insuranceProviders)
             })
 
-        binding.insuranceProviderInputText.apply {
+        binding.tabLayoutPayment.addOnTabSelectedListener(object :
+            TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(p0: TabLayout.Tab?) {
+                when (p0) {
+                    // Coupon Code tab
+                    binding.tabLayoutPayment.getTabAt(1) -> {
+                        binding.layoutCouponCodeInput.root.visibility = View.VISIBLE
+                        binding.layoutInsuranceInput.root.visibility = View.GONE
+                        binding.btnBookVisit.isEnabled = false
+                        schedulingInfo.selectedPaymentOption = PaymentOption.COUPON_CODE
+                    }
+                    else -> {
+                        binding.layoutCouponCodeInput.root.visibility = View.GONE
+                        binding.layoutInsuranceInput.root.visibility = View.VISIBLE
+                        binding.btnBookVisit.isEnabled = true
+                        schedulingInfo.selectedPaymentOption = PaymentOption.INSURANCE
+                    }
+                }
+            }
+
+            override fun onTabUnselected(p0: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(p0: TabLayout.Tab?) {
+
+            }
+        })
+
+        binding.layoutInsuranceInput.insuranceProviderInputText.apply {
             setOnClickListener {
                 showInsuranceProviderList()
             }
@@ -74,6 +118,22 @@ class PaymentFragment : Fragment() {
             }
         }
 
+        binding.layoutCouponCodeInput.couponCodeInputText.addTextChangedListener {
+            viewModel.discountAmount = "$0.00"
+            binding.btnBookVisit.isEnabled = false
+        }
+
+        binding.layoutCouponCodeInput.btnVerifyCouponCode.setOnClickListener {
+            DexCareSDK.paymentService.verifyCouponCode(viewModel.couponCode)
+                .subscribe({
+                    val formattedDiscount = NumberFormat.getCurrencyInstance().format(it)
+                    viewModel.discountAmount = formattedDiscount
+                    binding.btnBookVisit.isEnabled = true
+                }, {
+                    viewModel.errorLiveData.value = it
+                })
+        }
+
         binding.btnBookVisit.setOnClickListener {
 
             when (args.schedulingFlow) {
@@ -81,8 +141,6 @@ class PaymentFragment : Fragment() {
                     bookRetailVisit()
                 }
                 SchedulingFlow.Virtual -> {
-                    if (selectedInsurancePayer == null) return@setOnClickListener
-
                     bookVirtualVisit()
                 }
                 else -> {
@@ -123,20 +181,24 @@ class PaymentFragment : Fragment() {
             else -> null
         }
 
-        val relationshipToPatient = when(schedulingInfo.patientDeclaration) {
+        val relationshipToPatient = when (schedulingInfo.patientDeclaration) {
             PatientDeclaration.Other -> schedulingInfo.actorRelationshipToPatient!!
             else -> null
         }
 
+        val payment = createPaymentMethod()
+        if (payment == null) {
+            showMaterialDialog(message = "Invalid payment information")
+            return
+        }
+
         viewModel.loading = true
+
         DexCareSDK.virtualService
             .startVirtualVisit(
                 this,
                 createRegisterPushNotification(),
-                InsuranceManualSelf(
-                    viewModel.insuranceMemberId,
-                    selectedInsurancePayer!!.payerId
-                ),
+                payment,
                 VirtualVisitInformation(
                     schedulingInfo.reasonForVisit,
                     schedulingInfo.patientDeclaration,
@@ -162,8 +224,9 @@ class PaymentFragment : Fragment() {
                 viewModel.errorLiveData.value = it
                 Timber.e(it)
             }).onDisposed = {
-                viewModel.loading = false
+            viewModel.loading = false
         }
+
     }
 
     private fun bookRetailVisit() {
@@ -179,15 +242,21 @@ class PaymentFragment : Fragment() {
             else -> null
         }
 
-        val relationshipToPatient = when(schedulingInfo.patientDeclaration) {
+        val relationshipToPatient = when (schedulingInfo.patientDeclaration) {
             PatientDeclaration.Other -> schedulingInfo.actorRelationshipToPatient!!
             else -> null
+        }
+
+        val payment = createPaymentMethod()
+        if (payment == null) {
+            showMaterialDialog(message = "Invalid payment information")
+            return
         }
 
         viewModel.loading = true
         DexCareSDK.retailService
             .scheduleRetailAppointment(
-                SelfPayment(),
+                payment,
                 RetailVisitInformation(
                     schedulingInfo.reasonForVisit,
                     schedulingInfo.patientDeclaration,
@@ -200,15 +269,15 @@ class PaymentFragment : Fragment() {
                 patientDexCarePatient = patient,
                 actorDexCarePatient = actor
             ).subscribe({
-                Toast.makeText(requireContext(), "Retail visit booked", Toast.LENGTH_LONG).show()
+                showMaterialDialog(message = "Retail visit booked")
                 findNavController().navigate(R.id.dashboardFragment)
                 schedulingInfo.clear()
             }, {
                 viewModel.errorLiveData.value = it
                 Timber.e(it)
             }).onDisposed = {
-                viewModel.loading = false
-            }
+            viewModel.loading = false
+        }
     }
 
     private fun createRegisterPushNotification(): RegisterPushNotification {
@@ -217,5 +286,24 @@ class PaymentFragment : Fragment() {
             getString(R.string.fcm_app_id),
             "cZj396LBT3A:APA91bFruyeb4xOSKE2Pz2x5xPzoZgV0k_LiNc9zw64OoM3gu2_Q0gEQxEHA3Yhfny6HjK2inFj-wYor8BD24L-9XQUlY8Pz4brJ9myFI6DKVNucSobEBDJkMujsiHpuDX2ENTDzgZbn"
         )
+    }
+
+    private fun createPaymentMethod(): PaymentMethod? {
+        return when(args.schedulingFlow) {
+            SchedulingFlow.Retail -> SelfPayment()
+            SchedulingFlow.Virtual -> {
+                when (schedulingInfo.selectedPaymentOption) {
+                    PaymentOption.INSURANCE -> {
+                        if (selectedInsurancePayer == null) return null
+                        InsuranceManualSelf(
+                            viewModel.insuranceMemberId,
+                            selectedInsurancePayer!!.payerId
+                        )
+                    }
+                    PaymentOption.COUPON_CODE -> CouponCode(viewModel.couponCode)
+                }
+            }
+            else -> null
+        }
     }
 }

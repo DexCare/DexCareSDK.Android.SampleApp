@@ -1,5 +1,6 @@
 package org.dexcare.sampleapp.ui.common
 
+import org.dexcare.sampleapp.ui.payment.PaymentOption
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.models.RelationshipToPatient
@@ -21,6 +22,7 @@ class SchedulingInfo {
     var patientDeclaration: PatientDeclaration = PatientDeclaration.Self
     var dependentPatient: DexCarePatient? = null
     var actorRelationshipToPatient: RelationshipToPatient? = null
+    var selectedPaymentOption: PaymentOption = PaymentOption.INSURANCE
 
     fun clear() {
         virtualPracticeRegion = null
@@ -33,5 +35,6 @@ class SchedulingInfo {
         patientDeclaration = PatientDeclaration.Self
         dependentPatient = null
         actorRelationshipToPatient = null
+        selectedPaymentOption = PaymentOption.INSURANCE
     }
 }

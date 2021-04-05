@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="org.dexcare.sampleapp.ui.payment.PaymentFragmentViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutCouponCode"
+            app:layout_constraintEnd_toStartOf="@+id/btnVerifyCouponCode"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:hint="LayoutInputTyped"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Coupon Code"
+            android:textColorHint="@color/gray2"
+            android:visibility="@{viewModel.visibilityState}">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/couponCodeInputText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@={viewModel.couponCode}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnVerifyCouponCode"
+            app:isVisible="@{!viewModel.verifyCouponCodeLoading}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/textInputLayoutCouponCode"
+            app:layout_constraintTop_toTopOf="@id/textInputLayoutCouponCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_small"
+            android:enabled="@{viewModel.couponCode.length() != 0}"
+            android:padding="@dimen/spacing_medium2"
+            android:text="Verify" />
+
+        <ProgressBar
+            android:id="@+id/progressBarVerifyCouponCode"
+            app:isVisible="@{viewModel.verifyCouponCodeLoading}"
+            app:layout_constraintBottom_toBottomOf="@id/btnVerifyCouponCode"
+            app:layout_constraintEnd_toEndOf="@id/btnVerifyCouponCode"
+            app:layout_constraintStart_toStartOf="@id/btnVerifyCouponCode"
+            app:layout_constraintTop_toTopOf="@id/btnVerifyCouponCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtCouponDiscountAmountApplied"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCouponCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Discount Applied:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_18sp" />
+
+        <TextView
+            android:id="@+id/txtCouponDiscountAmountValue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/txtCouponDiscountAmountApplied"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCouponCode"
+            tools:text="$0.00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:text="@{viewModel.discountAmount}"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_18sp"
+            android:textStyle="bold" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

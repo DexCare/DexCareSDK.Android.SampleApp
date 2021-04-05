@@ -37,7 +37,7 @@ class RetailClinicsFragment : Fragment() {
 
         viewModel.errorLiveData.observe(viewLifecycleOwner, {
             it?.let {
-                showMaterialDialog(message = it.message)
+                showMaterialDialog(message = it.javaClass.simpleName)
             }
         })
 
