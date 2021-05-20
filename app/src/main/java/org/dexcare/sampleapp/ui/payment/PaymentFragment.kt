@@ -23,6 +23,7 @@ import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.services.models.*
+import org.dexcare.services.provider.models.ProviderVisitInformation
 import org.dexcare.services.retail.models.RetailVisitInformation
 import org.dexcare.services.virtualvisit.models.RegisterPushNotification
 import org.dexcare.services.virtualvisit.models.VirtualVisitInformation
@@ -55,8 +56,9 @@ class PaymentFragment : Fragment() {
         binding.viewModel = viewModel
 
         when (args.schedulingFlow) {
+            SchedulingFlow.Provider,
             SchedulingFlow.Retail -> {
-                // Retail will just use SelfPayment in this sample app.
+                // Retail and Provider will just use SelfPayment in this sample app.
                 // See https://developers.dexcarehealth.com/paymentmethod/ for supported
                 // Payment types for each method of care
                 binding.paymentInputsLayout.visibility = View.GONE
@@ -137,6 +139,9 @@ class PaymentFragment : Fragment() {
         binding.btnBookVisit.setOnClickListener {
 
             when (args.schedulingFlow) {
+                SchedulingFlow.Provider -> {
+                    bookProviderVisit()
+                }
                 SchedulingFlow.Retail -> {
                     bookRetailVisit()
                 }
@@ -229,6 +234,62 @@ class PaymentFragment : Fragment() {
 
     }
 
+    private fun bookProviderVisit() {
+        // Patient represents the person receiving care (not necessarily the app user)
+        val patient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.dependentPatient!!
+            else -> get<DemographicsService>().getDemographics()!!
+        }
+
+        // Actor represents the app user booking for someone else
+        val actor = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!
+            else -> null
+        }
+
+        val relationshipToPatient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.actorRelationshipToPatient!!
+            else -> null
+        }
+
+        val payment = createPaymentMethod()
+        if (payment == null) {
+            showMaterialDialog(message = "Invalid payment information")
+            return
+        }
+
+        val ehrSystemName = schedulingInfo.provider!!.departments.first {
+            it.departmentId == schedulingInfo.timeSlot!!.departmentId
+        }.ehrSystemName
+
+        viewModel.loading = true
+        DexCareSDK.providerService
+            .scheduleProviderVisit(
+                payment,
+                ProviderVisitInformation(
+                    visitReason = schedulingInfo.reasonForVisit,
+                    patientDeclaration = schedulingInfo.patientDeclaration,
+                    userEmail = schedulingInfo.patientDemographics!!.email,
+                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone,
+                    actorRelationshipToPatient = relationshipToPatient
+                ),
+                timeSlot = schedulingInfo.timeSlot!!,
+                ehrSystemName = ehrSystemName,
+                patientDexCarePatient = patient,
+                actorDexCarePatient = actor
+            ).subscribe({
+                // Note: there's no way to cancel Provider visits through the SDK.
+                showMaterialDialog(message = "Provider visit booked")
+                findNavController().navigate(R.id.dashboardFragment)
+                schedulingInfo.clear()
+            }, {
+                viewModel.errorLiveData.value = it
+                Timber.e(it)
+            }).onDisposed = {
+            viewModel.loading = false
+        }
+    }
+
     private fun bookRetailVisit() {
         // Patient represents the person receiving care (not necessarily the app user)
         val patient = when (schedulingInfo.patientDeclaration) {
@@ -290,6 +351,7 @@ class PaymentFragment : Fragment() {
 
     private fun createPaymentMethod(): PaymentMethod? {
         return when(args.schedulingFlow) {
+            SchedulingFlow.Provider,
             SchedulingFlow.Retail -> SelfPayment()
             SchedulingFlow.Virtual -> {
                 when (schedulingInfo.selectedPaymentOption) {

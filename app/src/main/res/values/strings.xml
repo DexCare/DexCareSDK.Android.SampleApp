@@ -2,6 +2,7 @@
     <string name="app_name">DexCare SDK Sample App</string>
     <string name="virtual">Virtual</string>
     <string name="retail">Retail</string>
+    <string name="provider">Provider</string>
     <string name="what_is_the_reason_for_your_visit">What is the reason for your visit?</string>
     <string name="button_continue">Continue</string>
     <string name="address_autocomplete_country" translatable="false">us</string>
@@ -26,4 +27,6 @@
     <string name="invalid_input_title">Invalid Input</string>
     <string name="invalid_input_message">Check your inputs and try again.</string>
     <string name="unexpected_error_message">An unexpected error has occurred.  Check your network connection and try again.</string>
+
+    <string name="no_timeslots_found">No times are available.</string>
 </resources>

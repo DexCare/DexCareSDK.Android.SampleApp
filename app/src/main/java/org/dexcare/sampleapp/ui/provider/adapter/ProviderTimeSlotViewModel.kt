@@ -1,10 +1,10 @@
-package org.dexcare.sampleapp.ui.retail.adapter
+package org.dexcare.sampleapp.ui.provider.adapter
 
 import org.dexcare.sampleapp.ui.common.viewmodel.BaseTimeSlotViewModel
-import org.dexcare.services.retail.models.Clinic
+import org.dexcare.services.provider.models.Provider
 import org.dexcare.services.retail.models.TimeSlot
 
-class RetailTimeSlotViewModel(
+class ProviderTimeSlotViewModel(
     val timeSlot: TimeSlot? = null,
-    val clinic: Clinic? = null
+    val provider: Provider? = null
 ) : BaseTimeSlotViewModel(timeSlot)

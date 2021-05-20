@@ -1,4 +1,4 @@
-package org.dexcare.sampleapp.ui.retail.adapter
+package org.dexcare.sampleapp.ui.provider.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,11 +11,11 @@ import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.sampleapp.ui.common.recyclerview.ViewModelAdapter
 import org.dexcare.sampleapp.ui.virtual.region.VirtualRegionFragmentDirections
 
-class RetailTimeSlotAdapter(
+class ProviderTimeSlotAdapter(
     private val schedulingInfo: SchedulingInfo,
-    viewModels: MutableList<RetailTimeSlotViewModel>
+    viewModels: MutableList<ProviderTimeSlotViewModel>
 ) :
-    ViewModelAdapter<RetailTimeSlotViewModel>(viewModels) {
+    ViewModelAdapter<ProviderTimeSlotViewModel>(viewModels) {
     override fun getViewDataBinding(
         objectInstance: ViewModel,
         inflater: LayoutInflater,
@@ -24,16 +24,16 @@ class RetailTimeSlotAdapter(
     ): ViewDataBinding {
         return RecycleritemTimeslotBinding.inflate(inflater).also { binding ->
             binding.btnTimeSlot.setOnClickListener {
-                (binding.viewModel as? RetailTimeSlotViewModel)?.let { viewModel ->
+                (binding.viewModel as? ProviderTimeSlotViewModel)?.let { viewModel ->
 
                     schedulingInfo.apply {
                         timeSlot = viewModel.timeSlot
-                        clinic = viewModel.clinic
+                        provider = viewModel.provider
                     }
 
                     it.findNavController().navigate(
                         VirtualRegionFragmentDirections.toReasonForVisitFragment(
-                            SchedulingFlow.Retail
+                            SchedulingFlow.Provider
                         )
                     )
                 }

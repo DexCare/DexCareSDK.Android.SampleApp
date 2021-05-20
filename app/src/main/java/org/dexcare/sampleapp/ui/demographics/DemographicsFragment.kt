@@ -110,6 +110,7 @@ class DemographicsFragment : Fragment() {
             viewModel.loading = true
 
             when (args.schedulingFlow) {
+                Provider -> onContinueClickedProvider()
                 Retail -> onContinueClickedRetail()
                 Virtual -> onContinueClickedVirtual()
                 Unknown -> Toast.makeText(requireContext(), "Unknown flow", Toast.LENGTH_LONG)
@@ -263,21 +264,33 @@ class DemographicsFragment : Fragment() {
         })
     }
 
+    private fun onContinueClickedProvider() {
+        val department = schedulingInfo.provider!!.departments.first {
+            it.departmentId == schedulingInfo.timeSlot!!.departmentId
+        }
+
+        val ehrSystem = department.ehrSystemName
+        findOrCreatePatientsWithEhrSystemName(ehrSystem)
+    }
+
     private fun onContinueClickedRetail() {
         val ehrSystem = schedulingInfo.clinic!!.ehrSystemName
+        findOrCreatePatientsWithEhrSystemName(ehrSystem)
+    }
 
+    fun findOrCreatePatientsWithEhrSystemName(ehrSystemName: String) {
         if (schedulingInfo.patientDeclaration == PatientDeclaration.Other) {
-            findOrCreateDependentPatient(ehrSystem) {
+            findOrCreateDependentPatient(ehrSystemName) {
                 // The requirement for the Actor is that they have at least one demographic link.
                 // The EHR System of the Actor's demographic link does not matter for dependent visits, they just need to have a link.
                 // For simplicity in this sample app, we are always calling findOrCreatePatient which will ensure a link exists.
                 // If the Actor already has an existing link, calling findOrCreatePatient is not required.
-                findOrCreateAppUserPatient(ehrSystem)
+                findOrCreateAppUserPatient(ehrSystemName)
             }
             return
         }
 
-        findOrCreateAppUserPatient(ehrSystem)
+        findOrCreateAppUserPatient(ehrSystemName)
     }
 
     private fun findOrCreateDependentPatient(ehrSystem: String, callback: () -> Unit) {

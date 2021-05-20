@@ -25,6 +25,10 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnProvider.setOnClickListener {
+            findNavController().navigate(DashboardFragmentDirections.toProviderFragment())
+        }
+
         binding.btnRetail.setOnClickListener {
             findNavController().navigate(DashboardFragmentDirections.toRetailClinicsFragment())
         }

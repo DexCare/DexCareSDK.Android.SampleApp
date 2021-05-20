@@ -9,20 +9,24 @@
         android:id="@+id/dashboardFragment"
         android:name="org.dexcare.sampleapp.ui.dashboard.DashboardFragment"
         android:label="dashboard_fragment"
-        tools:layout="@layout/dashboard_fragment" >
+        tools:layout="@layout/dashboard_fragment">
         <action
             android:id="@+id/toVirtualRegionFragment"
             app:destination="@id/virtualRegionFragment" />
         <action
             android:id="@+id/toRetailClinicsFragment"
             app:destination="@id/retailClinicsFragment" />
+
+        <action
+            android:id="@+id/toProviderFragment"
+            app:destination="@id/providerFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/virtualRegionFragment"
         android:name="org.dexcare.sampleapp.ui.virtual.region.VirtualRegionFragment"
         android:label="virtual_region_fragment"
-        tools:layout="@layout/virtual_region_fragment" >
+        tools:layout="@layout/virtual_region_fragment">
         <action
             android:id="@+id/toReasonForVisitFragment"
             app:destination="@id/reasonForVisitFragment" />
@@ -31,7 +35,7 @@
     <fragment
         android:id="@+id/reasonForVisitFragment"
         android:name="org.dexcare.sampleapp.ui.reasonforvisit.ReasonForVisitFragment"
-        android:label="ReasonForVisitFragment" >
+        android:label="ReasonForVisitFragment">
         <action
             android:id="@+id/toDemographicsFragment"
             app:destination="@id/demographicsFragment" />
@@ -43,7 +47,7 @@
     <fragment
         android:id="@+id/demographicsFragment"
         android:name="org.dexcare.sampleapp.ui.demographics.DemographicsFragment"
-        android:label="DemographicsFragment" >
+        android:label="DemographicsFragment">
         <action
             android:id="@+id/toPaymentFragment"
             app:destination="@id/paymentFragment" />
@@ -54,7 +58,7 @@
     <fragment
         android:id="@+id/paymentFragment"
         android:name="org.dexcare.sampleapp.ui.payment.PaymentFragment"
-        android:label="PaymentFragment" >
+        android:label="PaymentFragment">
         <argument
             android:name="schedulingFlow"
             app:argType="org.dexcare.sampleapp.ui.common.SchedulingFlow" />
@@ -63,7 +67,15 @@
     <fragment
         android:id="@+id/retailClinicsFragment"
         android:name="org.dexcare.sampleapp.ui.retail.RetailClinicsFragment"
-        android:label="RetailClinicsFragment" >
+        android:label="RetailClinicsFragment">
+        <action
+            android:id="@+id/toReasonForVisitFragment"
+            app:destination="@id/reasonForVisitFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/providerFragment"
+        android:name="org.dexcare.sampleapp.ui.provider.ProviderFragment"
+        android:label="ProviderFragment">
         <action
             android:id="@+id/toReasonForVisitFragment"
             app:destination="@id/reasonForVisitFragment" />
