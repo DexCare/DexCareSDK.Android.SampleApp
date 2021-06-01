@@ -205,15 +205,14 @@ class PaymentFragment : Fragment() {
                 createRegisterPushNotification(),
                 payment,
                 VirtualVisitInformation(
-                    schedulingInfo.reasonForVisit,
-                    schedulingInfo.patientDeclaration,
-                    schedulingInfo.virtualPracticeRegion!!.regionCode,
-                    schedulingInfo.patientDemographics!!.email,
-                    schedulingInfo.patientDemographics!!.homePhone,
+                    visitReason = schedulingInfo.reasonForVisit,
+                    patientDeclaration = schedulingInfo.patientDeclaration,
+                    userEmail = schedulingInfo.patientDemographics!!.email,
+                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone,
                     practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId,
                     actorRelationshipToPatient = relationshipToPatient
                 ),
-                schedulingInfo.catchmentArea!!,
+                catchmentArea = schedulingInfo.catchmentArea!!,
                 patientDexCarePatient = patient,
                 actorDexCarePatient = actor,
                 practiceId = getString(R.string.virtual_practice_id)

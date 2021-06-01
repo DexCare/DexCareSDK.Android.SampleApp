@@ -7,11 +7,11 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.seatgeek.placesautocomplete.PlacesAutocompleteTextView
-import org.dexcare.exts.toCalendar
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.ui.retail.adapter.RetailTimeSlotAdapter
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 object CustomBindingAdapter {
     @BindingAdapter("isVisible")
@@ -42,26 +42,25 @@ object CustomBindingAdapter {
 
     @BindingAdapter("setDay")
     @JvmStatic
-    fun setDay(textView: TextView, startTime: Date? = null) {
+    fun setDay(textView: TextView, startTime: ZonedDateTime? = null) {
         if (startTime == null) {
             textView.text = ""
             return
         }
 
-        val day = startTime.toCalendar().get(Calendar.DAY_OF_MONTH)
+        val day = startTime.dayOfMonth
         val today: Int
         val tomorrow: Int
-        Date().toCalendar().run {
-            today = get(Calendar.DAY_OF_MONTH)
 
-            add(Calendar.DAY_OF_MONTH, 1)
-            tomorrow = get(Calendar.DAY_OF_MONTH)
+        LocalDate.now().run {
+            today = dayOfMonth
+            tomorrow = dayOfMonth + 1
         }
 
         textView.text = when (day) {
             today -> textView.context.getString(R.string.today)
             tomorrow -> textView.context.getString(R.string.tomorrow)
-            else -> SimpleDateFormat("E", Locale.getDefault()).format(startTime)
+            else -> DateTimeFormatter.ofPattern("E").format(startTime)
         }
     }
 }
