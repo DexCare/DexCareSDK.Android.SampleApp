@@ -38,6 +38,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
+            style="@style/SampleAppButton"
             android:id="@+id/btnVerifyCouponCode"
             app:isVisible="@{!viewModel.verifyCouponCodeLoading}"
             app:layout_constraintEnd_toEndOf="parent"

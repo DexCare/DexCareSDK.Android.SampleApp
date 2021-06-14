@@ -11,8 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.payment_fragment.*
-import kotlinx.coroutines.selects.select
 import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
@@ -42,7 +40,8 @@ class PaymentFragment : Fragment() {
     private var selectedInsurancePayer: InsurancePayer? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = PaymentFragmentBinding.inflate(inflater, container, false)
@@ -218,20 +217,20 @@ class PaymentFragment : Fragment() {
                 practiceId = getString(R.string.virtual_practice_id)
             )
             .subscribe({
+                // You can save this visitId for a later `resumeVirtualVisit`
+                // if something goes wrong.
                 val visitId = it.first
                 val virtualVisitIntent = it.second
-                requireActivity().startActivityForResult(
-                    virtualVisitIntent,
-                    MainActivity.VIRTUAL_REQUEST_CODE
-                )
+
+                (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
             }, {
                 viewModel.errorLiveData.value = it
                 Timber.e(it)
             }).onDisposed = {
             viewModel.loading = false
         }
-
     }
+
 
     private fun bookProviderVisit() {
         // Patient represents the person receiving care (not necessarily the app user)
@@ -349,7 +348,7 @@ class PaymentFragment : Fragment() {
     }
 
     private fun createPaymentMethod(): PaymentMethod? {
-        return when(args.schedulingFlow) {
+        return when (args.schedulingFlow) {
             SchedulingFlow.Provider,
             SchedulingFlow.Retail -> SelfPayment()
             SchedulingFlow.Virtual -> {

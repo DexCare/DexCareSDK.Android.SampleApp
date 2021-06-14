@@ -2,6 +2,8 @@ package org.dexcare.sampleapp
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.auth0.android.Auth0
@@ -13,22 +15,36 @@ import org.dexcare.sampleapp.ext.showMaterialDialog
 import org.dexcare.sampleapp.services.AuthService
 import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
+import org.dexcare.services.virtualvisit.VirtualService
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        const val VIRTUAL_REQUEST_CODE = 5231
-    }
-
     private val authService: AuthService by inject()
     private val demographicsService: DemographicsService by inject()
     private val schedulingInfo: SchedulingInfo by inject()
+    lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_sample)
+        activityResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+                result.resultCode
+
+                // The result codes returned by the SDK are found on VirtualService:
+                VirtualService.VISIT_SUCCESS_RESULT_CODE
+                VirtualService.VISIT_CANCELLED_RESULT_CODE
+                VirtualService.VISIT_DECLINED_BY_PROVIDER_RESULT_CODE
+                VirtualService.VISIT_DISCONNECTED_RESULT_CODE
+                VirtualService.VISIT_USER_JOINED_ELSEWHERE_RESULT_CODE
+
+                // For this sample app, we can just return to the dashboard in all cases.
+                navigateToDashboardFragment()
+                schedulingInfo.clear()
+            }
     }
 
     override fun onResume() {
@@ -107,17 +123,5 @@ class MainActivity : AppCompatActivity() {
                 Timber.e(it)
                 showMaterialDialog(message = getString(R.string.unexpected_error_message))
             })
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            VIRTUAL_REQUEST_CODE -> {
-                // Currently resultCode will be either Activity.RESULT_OK or RESULT_CANCELED
-                // For this sample app, we can just return to the dashboard in both cases.
-                navigateToDashboardFragment()
-                schedulingInfo.clear()
-            }
-        }
     }
 }

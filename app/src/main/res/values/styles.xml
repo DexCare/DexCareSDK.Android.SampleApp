@@ -5,7 +5,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="buttonStyle">@style/Button</item>
         <item name="android:textColorHint">@color/gray2</item>
     </style>
 
@@ -17,7 +16,7 @@
         <item name="Auth0.PrimaryColor">@color/colorPrimary</item>
     </style>
 
-    <style name="Button" parent="Widget.AppCompat.Button">
+    <style name="SampleAppButton" parent="Widget.AppCompat.Button">
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:background">@drawable/toggleable_rounded_button</item>
         <item name="android:padding">@dimen/spacing_medium2</item>
