@@ -11,6 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
+import com.stripe.android.Stripe
+import com.stripe.android.model.CardParams
 import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
@@ -65,6 +67,7 @@ class PaymentFragment : Fragment() {
             }
             SchedulingFlow.Virtual -> {
                 binding.layoutCouponCodeInput.root.visibility = View.GONE
+                binding.layoutCreditCardInput.root.visibility = View.GONE
             }
         }
 
@@ -74,7 +77,7 @@ class PaymentFragment : Fragment() {
             }
         })
 
-        viewModel.getInsuranceProviders(getString(R.string.brand))
+        viewModel.getInsuranceProviders(getString(R.string.tenant))
             .observe(viewLifecycleOwner, { insuranceProviders ->
                 this.insuranceProviders.clear()
                 this.insuranceProviders.addAll(insuranceProviders)
@@ -83,19 +86,32 @@ class PaymentFragment : Fragment() {
         binding.tabLayoutPayment.addOnTabSelectedListener(object :
             TabLayout.OnTabSelectedListener {
             override fun onTabSelected(p0: TabLayout.Tab?) {
-                when (p0) {
-                    // Coupon Code tab
-                    binding.tabLayoutPayment.getTabAt(1) -> {
-                        binding.layoutCouponCodeInput.root.visibility = View.VISIBLE
+
+                when (p0?.text) {
+                    getString(R.string.insurance) -> {
+                        binding.layoutInsuranceInput.root.visibility = View.VISIBLE
+                        binding.layoutCreditCardInput.root.visibility = View.GONE
+                        binding.layoutCouponCodeInput.root.visibility = View.GONE
+                        binding.btnBookVisit.isEnabled = true
+                        schedulingInfo.selectedPaymentOption = PaymentOption.INSURANCE
+                    }
+                    getString(R.string.credit_card) -> {
                         binding.layoutInsuranceInput.root.visibility = View.GONE
+                        binding.layoutCreditCardInput.root.visibility = View.VISIBLE
+                        binding.layoutCouponCodeInput.root.visibility = View.GONE
+                        binding.btnBookVisit.isEnabled = true
+                        schedulingInfo.selectedPaymentOption = PaymentOption.CREDIT_CARD
+                    }
+                    getString(R.string.coupon_code) -> {
+                        binding.layoutInsuranceInput.root.visibility = View.GONE
+                        binding.layoutCreditCardInput.root.visibility = View.GONE
+                        binding.layoutCouponCodeInput.root.visibility = View.VISIBLE
                         binding.btnBookVisit.isEnabled = false
                         schedulingInfo.selectedPaymentOption = PaymentOption.COUPON_CODE
                     }
+
                     else -> {
-                        binding.layoutCouponCodeInput.root.visibility = View.GONE
-                        binding.layoutInsuranceInput.root.visibility = View.VISIBLE
-                        binding.btnBookVisit.isEnabled = true
-                        schedulingInfo.selectedPaymentOption = PaymentOption.INSURANCE
+                        throw Exception("Unsupported tab")
                     }
                 }
             }
@@ -359,6 +375,13 @@ class PaymentFragment : Fragment() {
                             viewModel.insuranceMemberId,
                             selectedInsurancePayer!!.payerId
                         )
+                    }
+                    PaymentOption.CREDIT_CARD -> {
+                        val cardParams = binding.layoutCreditCardInput.cardInputWidget.cardParams
+                            ?: return null
+                        val token = Stripe(requireContext(), getString(R.string.stripe_publishable_key))
+                            .createCardTokenSynchronous(cardParams)
+                        CreditCard(token!!.id)
                     }
                     PaymentOption.COUPON_CODE -> CouponCode(viewModel.couponCode)
                 }

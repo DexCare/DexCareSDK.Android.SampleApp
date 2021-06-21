@@ -22,4 +22,6 @@
     Ideally your health system would have a database of all of its Providers and could retrieve NPIs from that.
     This value is defined here for a minimal sample of the SDK's ProviderService. -->
     <string name="hardcoded_national_provider_id"> </string>
+
+    <string name="stripe_publishable_key"> </string>
 </resources>

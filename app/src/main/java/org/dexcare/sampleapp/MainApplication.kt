@@ -1,6 +1,7 @@
 package org.dexcare.sampleapp
 
 import android.app.Application
+import com.stripe.android.PaymentConfiguration
 import org.dexcare.DexCareSDK
 import org.dexcare.Environment
 import org.dexcare.sampleapp.modules.serviceModule
@@ -145,5 +146,7 @@ class MainApplication : Application() {
                 // The waiting room was disconnected, and the SDK is attempting to reconnect.
             }
         }
+
+        PaymentConfiguration.init(applicationContext, getString(R.string.stripe_publishable_key))
     }
 }
