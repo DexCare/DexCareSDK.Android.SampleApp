@@ -77,7 +77,7 @@ class PaymentFragment : Fragment() {
             }
         })
 
-        viewModel.getInsuranceProviders(getString(R.string.tenant))
+        viewModel.getInsuranceProviders(getString(R.string.brand))
             .observe(viewLifecycleOwner, { insuranceProviders ->
                 this.insuranceProviders.clear()
                 this.insuranceProviders.addAll(insuranceProviders)
