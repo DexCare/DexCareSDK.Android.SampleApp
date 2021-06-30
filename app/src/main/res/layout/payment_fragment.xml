@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -26,13 +27,19 @@
                 android:id="@+id/tabItemInsurance"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Insurance" />
+                android:text="@string/insurance" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/tabItemCreditCard"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/credit_card" />
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/tabItemCouponCode"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Coupon Code" />
+                android:text="@string/coupon_code" />
 
         </com.google.android.material.tabs.TabLayout>
 
@@ -48,17 +55,25 @@
             <include
                 android:id="@+id/layoutInsuranceInput"
                 layout="@layout/layout_payment_insurance"
-                app:viewModel="@{viewModel}"/>
+                app:viewModel="@{viewModel}" />
+
+            <include
+                android:id="@+id/layoutCreditCardInput"
+                layout="@layout/layout_payment_credit_card"
+                app:viewModel="@{viewModel}"
+                tools:visibility="gone" />
 
             <include
                 android:id="@+id/layoutCouponCodeInput"
                 layout="@layout/layout_payment_coupon_code"
-                app:viewModel="@{viewModel}"/>
+                app:viewModel="@{viewModel}"
+                tools:visibility="gone" />
         </LinearLayout>
 
 
         <Button
             android:id="@+id/btnBookVisit"
+            style="@style/SampleAppButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_standard"

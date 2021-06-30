@@ -9,6 +9,7 @@ import org.dexcare.sampleapp.ui.common.viewmodel.BaseViewModel
 import org.dexcare.services.provider.models.Provider
 import org.dexcare.services.provider.models.ProviderTimeSlot
 import timber.log.Timber
+import java.time.LocalDate
 import java.util.*
 
 class ProviderFragmentViewModel : BaseViewModel() {
@@ -58,10 +59,8 @@ class ProviderFragmentViewModel : BaseViewModel() {
             )
                 .subscribe({ maxLookaheadDays ->
 
-                    val newEndDate = Calendar.getInstance().apply {
-                        // Only dividing by three to get less data
-                        add(Calendar.DAY_OF_YEAR, maxLookaheadDays / 3)
-                    }.time
+                    // Only dividing by three to get less data
+                    val newEndDate = LocalDate.now().plusDays((maxLookaheadDays / 3).toLong())
 
                     DexCareSDK.providerService.getProviderTimeslots(
                         it.providerNationalId,

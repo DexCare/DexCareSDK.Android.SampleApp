@@ -29,4 +29,7 @@
     <string name="unexpected_error_message">An unexpected error has occurred.  Check your network connection and try again.</string>
 
     <string name="no_timeslots_found">No times are available.</string>
+    <string name="insurance">Insurance</string>
+    <string name="credit_card">Credit Card</string>
+    <string name="coupon_code">Coupon Code</string>
 </resources>

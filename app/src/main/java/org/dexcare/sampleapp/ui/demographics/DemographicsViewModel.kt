@@ -13,7 +13,8 @@ import org.dexcare.util.EmailValidator
 import org.dexcare.util.PhoneValidator
 import org.koin.core.component.get
 import org.koin.core.component.inject
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class DemographicsViewModel : BaseViewModel() {
@@ -39,12 +40,10 @@ class DemographicsViewModel : BaseViewModel() {
             notifyPropertyChanged(BR.email)
         }
 
-    var dateOfBirth: Date? = null
+    var dateOfBirth: LocalDate? = null
         set(value) {
             field = value
-            dateOfBirthString = value?.let {
-                SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(it)
-            } ?: ""
+            dateOfBirthString = value?.format(DateTimeFormatter.ofPattern("MM-dd-yyyy")) ?: ""
         }
 
     @Bindable

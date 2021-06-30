@@ -31,6 +31,8 @@ import org.dexcare.services.virtualvisit.models.CatchmentArea
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import java.time.LocalDate
+import java.time.Month
 import java.util.*
 
 class DemographicsFragment : Fragment() {
@@ -198,23 +200,22 @@ class DemographicsFragment : Fragment() {
     }
 
     private fun showDatePickerDialog(viewModel: DemographicsViewModel) {
-        val dateOfBirth = Calendar.getInstance().apply {
-            viewModel.dateOfBirth?.let {
-                time = it
-            } ?: set(1980, 0, 1)
-        }
+        val dateOfBirth = viewModel.dateOfBirth ?: LocalDate.of(1980, Month.JANUARY, 1)
 
+        // The Java 8 Date Time models have month values of 1-12.
+        // Java Calendar has month values of 0-11.
+        // We need to add and subtract 1 here to get the proper month values
+        // for use with this date picker dialog
         DatePickerDialog(
-            requireContext(), R.style.AlertDialog, { _, year, month, dayOfMonth ->
-                val newDateTime = Calendar.getInstance().apply {
-                    set(year, month, dayOfMonth)
-                }.time
-
+            requireContext(),
+            R.style.AlertDialog,
+            { _, year, month, dayOfMonth ->
+                val newDateTime = LocalDate.of(year, month + 1, dayOfMonth)
                 viewModel.dateOfBirth = newDateTime
             },
-            dateOfBirth.get(Calendar.YEAR),
-            dateOfBirth.get(Calendar.MONTH),
-            dateOfBirth.get(Calendar.DAY_OF_MONTH)
+            dateOfBirth.year,
+            dateOfBirth.monthValue - 1,
+            dateOfBirth.dayOfMonth
         )
             .show()
     }

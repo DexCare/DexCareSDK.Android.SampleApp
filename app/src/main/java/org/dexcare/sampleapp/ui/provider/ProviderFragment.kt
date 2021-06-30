@@ -14,7 +14,7 @@ import org.dexcare.sampleapp.ui.provider.adapter.ProviderTimeSlotAdapter
 import org.dexcare.sampleapp.ui.provider.adapter.ProviderTimeSlotViewModel
 import org.dexcare.services.provider.models.Provider
 import org.koin.android.ext.android.get
-import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class ProviderFragment : Fragment() {
@@ -68,8 +68,9 @@ class ProviderFragment : Fragment() {
                     return@observe
                 }
 
-                val dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-                viewModel.timeSlotDate = dateFormat.format(nextDayWithTimeSlots.date)
+
+                val dateFormat = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
+                viewModel.timeSlotDate = nextDayWithTimeSlots.localDate.format(dateFormat)
                 val timeSlots = nextDayWithTimeSlots.timeSlots
 
                 (binding.recyclerTimeSlots.adapter as? ProviderTimeSlotAdapter)?.items =

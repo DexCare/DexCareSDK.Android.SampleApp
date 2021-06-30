@@ -11,8 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.payment_fragment.*
-import kotlinx.coroutines.selects.select
+import com.stripe.android.Stripe
+import com.stripe.android.model.CardParams
 import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
@@ -42,7 +42,8 @@ class PaymentFragment : Fragment() {
     private var selectedInsurancePayer: InsurancePayer? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = PaymentFragmentBinding.inflate(inflater, container, false)
@@ -66,6 +67,7 @@ class PaymentFragment : Fragment() {
             }
             SchedulingFlow.Virtual -> {
                 binding.layoutCouponCodeInput.root.visibility = View.GONE
+                binding.layoutCreditCardInput.root.visibility = View.GONE
             }
         }
 
@@ -84,19 +86,32 @@ class PaymentFragment : Fragment() {
         binding.tabLayoutPayment.addOnTabSelectedListener(object :
             TabLayout.OnTabSelectedListener {
             override fun onTabSelected(p0: TabLayout.Tab?) {
-                when (p0) {
-                    // Coupon Code tab
-                    binding.tabLayoutPayment.getTabAt(1) -> {
-                        binding.layoutCouponCodeInput.root.visibility = View.VISIBLE
+
+                when (p0?.text) {
+                    getString(R.string.insurance) -> {
+                        binding.layoutInsuranceInput.root.visibility = View.VISIBLE
+                        binding.layoutCreditCardInput.root.visibility = View.GONE
+                        binding.layoutCouponCodeInput.root.visibility = View.GONE
+                        binding.btnBookVisit.isEnabled = true
+                        schedulingInfo.selectedPaymentOption = PaymentOption.INSURANCE
+                    }
+                    getString(R.string.credit_card) -> {
                         binding.layoutInsuranceInput.root.visibility = View.GONE
+                        binding.layoutCreditCardInput.root.visibility = View.VISIBLE
+                        binding.layoutCouponCodeInput.root.visibility = View.GONE
+                        binding.btnBookVisit.isEnabled = true
+                        schedulingInfo.selectedPaymentOption = PaymentOption.CREDIT_CARD
+                    }
+                    getString(R.string.coupon_code) -> {
+                        binding.layoutInsuranceInput.root.visibility = View.GONE
+                        binding.layoutCreditCardInput.root.visibility = View.GONE
+                        binding.layoutCouponCodeInput.root.visibility = View.VISIBLE
                         binding.btnBookVisit.isEnabled = false
                         schedulingInfo.selectedPaymentOption = PaymentOption.COUPON_CODE
                     }
+
                     else -> {
-                        binding.layoutCouponCodeInput.root.visibility = View.GONE
-                        binding.layoutInsuranceInput.root.visibility = View.VISIBLE
-                        binding.btnBookVisit.isEnabled = true
-                        schedulingInfo.selectedPaymentOption = PaymentOption.INSURANCE
+                        throw Exception("Unsupported tab")
                     }
                 }
             }
@@ -205,34 +220,33 @@ class PaymentFragment : Fragment() {
                 createRegisterPushNotification(),
                 payment,
                 VirtualVisitInformation(
-                    schedulingInfo.reasonForVisit,
-                    schedulingInfo.patientDeclaration,
-                    schedulingInfo.virtualPracticeRegion!!.regionCode,
-                    schedulingInfo.patientDemographics!!.email,
-                    schedulingInfo.patientDemographics!!.homePhone,
+                    visitReason = schedulingInfo.reasonForVisit,
+                    patientDeclaration = schedulingInfo.patientDeclaration,
+                    userEmail = schedulingInfo.patientDemographics!!.email,
+                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone,
                     practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId,
                     actorRelationshipToPatient = relationshipToPatient
                 ),
-                schedulingInfo.catchmentArea!!,
+                catchmentArea = schedulingInfo.catchmentArea!!,
                 patientDexCarePatient = patient,
                 actorDexCarePatient = actor,
                 practiceId = getString(R.string.virtual_practice_id)
             )
             .subscribe({
+                // You can save this visitId for a later `resumeVirtualVisit`
+                // if something goes wrong.
                 val visitId = it.first
                 val virtualVisitIntent = it.second
-                requireActivity().startActivityForResult(
-                    virtualVisitIntent,
-                    MainActivity.VIRTUAL_REQUEST_CODE
-                )
+
+                (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
             }, {
                 viewModel.errorLiveData.value = it
                 Timber.e(it)
             }).onDisposed = {
             viewModel.loading = false
         }
-
     }
+
 
     private fun bookProviderVisit() {
         // Patient represents the person receiving care (not necessarily the app user)
@@ -350,7 +364,7 @@ class PaymentFragment : Fragment() {
     }
 
     private fun createPaymentMethod(): PaymentMethod? {
-        return when(args.schedulingFlow) {
+        return when (args.schedulingFlow) {
             SchedulingFlow.Provider,
             SchedulingFlow.Retail -> SelfPayment()
             SchedulingFlow.Virtual -> {
@@ -361,6 +375,13 @@ class PaymentFragment : Fragment() {
                             viewModel.insuranceMemberId,
                             selectedInsurancePayer!!.payerId
                         )
+                    }
+                    PaymentOption.CREDIT_CARD -> {
+                        val cardParams = binding.layoutCreditCardInput.cardInputWidget.cardParams
+                            ?: return null
+                        val token = Stripe(requireContext(), getString(R.string.stripe_publishable_key))
+                            .createCardTokenSynchronous(cardParams)
+                        CreditCard(token!!.id)
                     }
                     PaymentOption.COUPON_CODE -> CouponCode(viewModel.couponCode)
                 }

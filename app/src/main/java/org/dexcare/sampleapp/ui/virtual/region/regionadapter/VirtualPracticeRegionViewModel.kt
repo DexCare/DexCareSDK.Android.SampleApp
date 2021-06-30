@@ -3,7 +3,6 @@ package org.dexcare.sampleapp.ui.virtual.region.regionadapter
 import androidx.databinding.Bindable
 import org.dexcare.sampleapp.BR
 import org.dexcare.sampleapp.ui.common.viewmodel.BaseViewModel
-import org.dexcare.services.virtualvisit.models.Region
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 
 class VirtualPracticeRegionViewModel(val region: VirtualPracticeRegion? = null) : BaseViewModel() {
