@@ -13,7 +13,9 @@
         android:theme="@style/AppTheme"
         tools:replace="android:theme">
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,11 +24,20 @@
         </activity>
 
         <activity
-            android:name="com.auth0.android.lock.LockActivity"
-            android:label="Classic Lock"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyLock.Theme.Customized" />
+            android:name="org.dexcare.services.virtualvisit.video.VirtualVisitActivity"
+            android:exported="false"
+            tools:node="merge" />
+
+        <activity
+            android:name="com.readystatesoftware.chuck.internal.ui.MainActivity"
+            android:exported="false"
+            tools:node="merge" />
+        <activity
+            android:name="com.readystatesoftware.chuck.internal.ui.TransactionActivity"
+            android:exported="false"
+            tools:node="merge" />
+
+
     </application>
 
 </manifest>
