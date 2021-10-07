@@ -77,7 +77,7 @@ class PaymentFragment : Fragment() {
             }
         })
 
-        viewModel.getInsuranceProviders(getString(R.string.brand))
+        viewModel.getInsuranceProviders(getString(R.string.tenant))
             .observe(viewLifecycleOwner, { insuranceProviders ->
                 this.insuranceProviders.clear()
                 this.insuranceProviders.addAll(insuranceProviders)
@@ -217,7 +217,7 @@ class PaymentFragment : Fragment() {
         DexCareSDK.virtualService
             .startVirtualVisit(
                 this,
-                createRegisterPushNotification(),
+                null,
                 payment,
                 VirtualVisitInformation(
                     visitReason = schedulingInfo.reasonForVisit,
@@ -238,7 +238,9 @@ class PaymentFragment : Fragment() {
                 val visitId = it.first
                 val virtualVisitIntent = it.second
 
-                (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
+                findNavController().navigate(PaymentFragmentDirections.toWebViewFragment(visitId))
+
+//                (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
             }, {
                 viewModel.errorLiveData.value = it
                 Timber.e(it)

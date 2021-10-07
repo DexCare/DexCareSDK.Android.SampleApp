@@ -20,6 +20,10 @@
         <action
             android:id="@+id/toProviderFragment"
             app:destination="@id/providerFragment" />
+
+        <action
+            android:id="@+id/toWebViewFragment"
+            app:destination="@+id/webViewFragment" />
     </fragment>
 
     <fragment
@@ -62,6 +66,9 @@
         <argument
             android:name="schedulingFlow"
             app:argType="org.dexcare.sampleapp.ui.common.SchedulingFlow" />
+        <action
+            android:id="@+id/toWebViewFragment"
+            app:destination="@id/webViewFragment" />
     </fragment>
 
     <fragment
@@ -80,5 +87,16 @@
             android:id="@+id/toReasonForVisitFragment"
             app:destination="@id/reasonForVisitFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/webViewFragment"
+        android:name="org.dexcare.sampleapp.ui.webview.WebViewFragment"
+        android:label="WebViewFragment">
+
+        <argument
+            android:name="visitId"
+            app:argType="string" />
+    </fragment>
+
 
 </navigation>
