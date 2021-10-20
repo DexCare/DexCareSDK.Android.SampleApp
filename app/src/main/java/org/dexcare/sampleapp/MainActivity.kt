@@ -1,10 +1,15 @@
 package org.dexcare.sampleapp
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
@@ -24,6 +29,9 @@ import org.koin.android.ext.android.inject
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        const val ACTION_VOLUME_CHANGE = "org.dexcare.sampleapp.changevolume"
+    }
 
     private val authService: AuthService by inject()
     private val demographicsService: DemographicsService by inject()
@@ -232,5 +240,12 @@ class MainActivity : AppCompatActivity() {
                 // The waiting room was disconnected, and the SDK is attempting to reconnect.
             }
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_VOLUME_CHANGE))
+        }
+        return super.onKeyDown(keyCode, event)
     }
 }

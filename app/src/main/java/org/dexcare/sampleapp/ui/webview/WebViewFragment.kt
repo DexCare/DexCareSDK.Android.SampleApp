@@ -1,14 +1,20 @@
 package org.dexcare.sampleapp.ui.webview
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
-import android.net.http.SslError
+import android.media.AudioManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.navArgs
+import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.databinding.WebviewFragmentBinding
 import timber.log.Timber
 
@@ -24,6 +30,20 @@ class WebViewFragment : Fragment() {
     ): View {
         binding = WebviewFragmentBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+            keyEventBroadcastReceiver,
+            IntentFilter(MainActivity.ACTION_VOLUME_CHANGE)
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LocalBroadcastManager.getInstance(requireContext())
+            .unregisterReceiver(keyEventBroadcastReceiver)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,10 +83,21 @@ class WebViewFragment : Fragment() {
                     super.onPageFinished(view, url)
                     Timber.d("Finished loading url: $url")
                 }
-                
+
             }
 
             loadUrl("https://th.frosh.dex.care/visit/${args.visitId}?brand=providence")
+        }
+    }
+
+    /**
+     * To listen volume key event
+     */
+    private val keyEventBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            activity?.apply {
+                volumeControlStream = AudioManager.STREAM_MUSIC
+            }
         }
     }
 }
