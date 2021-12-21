@@ -7,8 +7,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.lock.*
-import com.auth0.android.lock.utils.LockException
 import com.auth0.android.result.Credentials
 import org.dexcare.DexCareSDK
 import org.dexcare.Environment
@@ -62,10 +62,7 @@ class MainActivity : AppCompatActivity() {
         val auth0 = Auth0(
             getString(R.string.auth0_client_id),
             getString(R.string.auth0_domain)
-        ).apply {
-            isOIDCConformant = true
-            isLoggingEnabled = BuildConfig.DEBUG
-        }
+        )
 
         val builder = Lock.newBuilder(auth0, lockWidgetCallback).apply {
             withAudience("https://${getString(R.string.auth0_domain)}/api/v2/")
@@ -88,9 +85,7 @@ class MainActivity : AppCompatActivity() {
             hideMainScreenTitle(true)
         }
 
-        builder.build(applicationContext)?.let {
-            startActivity(it.newIntent(applicationContext))
-        }
+        startActivity(builder.build(applicationContext).newIntent(applicationContext))
     }
 
     private fun navigateToDashboardFragment() {
@@ -99,9 +94,9 @@ class MainActivity : AppCompatActivity() {
 
     private val lockWidgetCallback: LockCallback = object : AuthenticationCallback() {
         override fun onAuthentication(credentials: Credentials) {
-            val accessToken: String? = credentials.accessToken
+            val accessToken: String = credentials.accessToken
             val refreshToken: String? = credentials.refreshToken
-            if (accessToken != null && refreshToken != null) {
+            if (refreshToken != null) {
                 initializeDexCareSDK()
                 DexCareSDK.signIn(accessToken)
                 authService.saveToken(accessToken)
@@ -110,11 +105,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        override fun onCanceled() {
-            // do nothing
-        }
-
-        override fun onError(error: LockException) {
+        override fun onError(error: AuthenticationException) {
+            //Do nothing
         }
     }
 

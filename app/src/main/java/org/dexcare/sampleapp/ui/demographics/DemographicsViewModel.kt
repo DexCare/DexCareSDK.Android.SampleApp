@@ -125,7 +125,7 @@ class DemographicsViewModel : BaseViewModel() {
         last4SSN = patientDemographics.last4SSN
         dateOfBirth = patientDemographics.birthdate
         email = patientDemographics.email
-        phoneNumber = patientDemographics.homePhone
+        phoneNumber = patientDemographics.homePhone!!
         patientDemographics.addresses.firstOrNull()?.let {
             addressViewModel.apply {
                 streetAddress = it.line1

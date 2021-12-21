@@ -13,7 +13,9 @@
         android:theme="@style/AppTheme"
         tools:replace="android:theme">
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,6 +27,7 @@
             android:name="com.auth0.android.lock.LockActivity"
             android:label="Classic Lock"
             android:launchMode="singleTask"
+            tools:replace="android:theme"
             android:screenOrientation="portrait"
             android:theme="@style/MyLock.Theme.Customized" />
     </application>
