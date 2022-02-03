@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
 import com.stripe.android.Stripe
-import com.stripe.android.model.CardParams
 import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
@@ -223,7 +222,7 @@ class PaymentFragment : Fragment() {
                     visitReason = schedulingInfo.reasonForVisit,
                     patientDeclaration = schedulingInfo.patientDeclaration,
                     userEmail = schedulingInfo.patientDemographics!!.email,
-                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone,
+                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
                     practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId,
                     actorRelationshipToPatient = relationshipToPatient
                 ),
@@ -284,7 +283,7 @@ class PaymentFragment : Fragment() {
                     visitReason = schedulingInfo.reasonForVisit,
                     patientDeclaration = schedulingInfo.patientDeclaration,
                     userEmail = schedulingInfo.patientDemographics!!.email,
-                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone,
+                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
                     actorRelationshipToPatient = relationshipToPatient
                 ),
                 timeSlot = schedulingInfo.timeSlot!!,
@@ -336,7 +335,7 @@ class PaymentFragment : Fragment() {
                     schedulingInfo.reasonForVisit,
                     schedulingInfo.patientDeclaration,
                     schedulingInfo.patientDemographics!!.email,
-                    schedulingInfo.patientDemographics!!.homePhone,
+                    schedulingInfo.patientDemographics!!.homePhone!!,
                     actorRelationshipToPatient = relationshipToPatient
                 ),
                 schedulingInfo.timeSlot!!,
