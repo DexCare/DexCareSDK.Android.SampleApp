@@ -6,39 +6,41 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#E8EEF1"
+        android:padding="@dimen/spacing_medium"
         tools:context=".ui.dashboard.DashboardFragment">
 
         <Button
             style="@style/SampleAppButton"
             android:id="@+id/btnProvider"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="@dimen/spacing_standard"
-            android:padding="@dimen/spacing_medium2"
+            android:padding="@dimen/spacing_large"
             android:text="@string/provider"/>
 
         <Button
             style="@style/SampleAppButton"
             android:id="@+id/btnRetail"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="@+id/btnProvider"
             app:layout_constraintRight_toRightOf="@+id/btnProvider"
             app:layout_constraintTop_toBottomOf="@id/btnProvider"
             android:layout_marginTop="@dimen/spacing_standard"
-            android:padding="@dimen/spacing_medium2"
+            android:padding="@dimen/spacing_large"
             android:text="@string/retail"/>
 
         <Button
             style="@style/SampleAppButton"
             android:id="@+id/btnVirtual"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_standard"
-            android:padding="@dimen/spacing_medium2"
+            android:padding="@dimen/spacing_large"
             android:text="@string/virtual"
             app:layout_constraintLeft_toLeftOf="@+id/btnProvider"
             app:layout_constraintRight_toRightOf="@+id/btnProvider"
