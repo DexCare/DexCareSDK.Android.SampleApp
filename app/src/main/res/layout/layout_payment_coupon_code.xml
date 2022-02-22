@@ -11,9 +11,21 @@
             type="org.dexcare.sampleapp.ui.payment.PaymentFragmentViewModel" />
     </data>
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardMaxElevation="12dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="@dimen/spacing_medium"
+        >
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutCouponCode"
@@ -91,4 +103,5 @@
             android:textStyle="bold" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </layout>
