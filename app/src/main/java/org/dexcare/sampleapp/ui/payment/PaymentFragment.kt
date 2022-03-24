@@ -216,7 +216,7 @@ class PaymentFragment : Fragment() {
         DexCareSDK.virtualService
             .startVirtualVisit(
                 this,
-                createRegisterPushNotification(),
+                null,//createRegisterPushNotification(),
                 payment,
                 VirtualVisitInformation(
                     visitReason = schedulingInfo.reasonForVisit,
