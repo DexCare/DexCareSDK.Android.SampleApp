@@ -3,11 +3,11 @@ package org.dexcare.sampleapp.ui.retail.adapter
 import androidx.databinding.Bindable
 import org.dexcare.sampleapp.BR
 import org.dexcare.sampleapp.ui.common.viewmodel.BaseViewModel
-import org.dexcare.services.retail.models.Clinic
-import org.dexcare.services.retail.models.ClinicTimeSlot
+import org.dexcare.services.retail.models.RetailAppointmentTimeSlot
+import org.dexcare.services.retail.models.RetailDepartment
 import org.koin.core.component.get
 
-class RetailClinicViewModel(val clinic: Clinic? = null) : BaseViewModel() {
+class RetailClinicViewModel(val clinic: RetailDepartment? = null) : BaseViewModel() {
 
     @Bindable
     var clinicTitle: String = clinic?.displayName ?: ""
@@ -17,10 +17,10 @@ class RetailClinicViewModel(val clinic: Clinic? = null) : BaseViewModel() {
         }
 
     @Bindable
-    var clinicTimeSlot: ClinicTimeSlot? = null
+    var retailAppointmentTimeSlot: RetailAppointmentTimeSlot? = null
         set(value) {
             field = value
-            clinicTimeSlot?.let { clinicTimeSlot ->
+            retailAppointmentTimeSlot?.let { clinicTimeSlot ->
                 val viewModels = clinicTimeSlot.scheduleDays.firstOrNull()?.timeSlots?.map {
                     RetailTimeSlotViewModel(it, clinic)
                 }?.toMutableList() ?: mutableListOf()
@@ -30,7 +30,7 @@ class RetailClinicViewModel(val clinic: Clinic? = null) : BaseViewModel() {
                 )
                 loading = false
             }
-            notifyPropertyChanged(BR.clinicTimeSlot)
+            notifyPropertyChanged(BR.retailAppointmentTimeSlot)
         }
 
     @Bindable

@@ -22,10 +22,11 @@ import org.dexcare.sampleapp.services.DemographicsService
 import org.dexcare.sampleapp.ui.common.SchedulingFlow
 import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.services.models.*
+import org.dexcare.services.virtualvisit.models.*
+import org.dexcare.VisitStatus.*
 import org.dexcare.services.provider.models.ProviderVisitInformation
 import org.dexcare.services.retail.models.RetailVisitInformation
 import org.dexcare.services.virtualvisit.models.RegisterPushNotification
-import org.dexcare.services.virtualvisit.models.VirtualVisitInformation
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -214,28 +215,39 @@ class PaymentFragment : Fragment() {
         viewModel.loading = true
 
         DexCareSDK.virtualService
-            .startVirtualVisit(
-                this,
-                null,//createRegisterPushNotification(),
-                payment,
-                VirtualVisitInformation(
-                    visitReason = schedulingInfo.reasonForVisit,
+            .createVirtualVisit(
+                fragment = this,
+                patient = patient,//createRegisterPushNotification(),
+                virtualVisitDetails = VirtualVisitDetails(
+                    acceptedTerms = true,
+                    assignmentQualifiers = listOf(DefaultVirtualVisitAssignmentQualifiers.Adult.qualifier),
                     patientDeclaration = schedulingInfo.patientDeclaration,
+                    stateLicensure = "WA",
+                    visitReason = schedulingInfo.reasonForVisit,
+                    visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
+                    practiceId = getString(R.string.virtual_practice_id),
+                    assessmentToolUsed = "assessmentToolUsed",
+                    brand = "brand",
+                    interpreterLanguage = "interpreterLanguage",
                     userEmail = schedulingInfo.patientDemographics!!.email,
                     contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
-                    practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId,
-                    actorRelationshipToPatient = relationshipToPatient
+                    preTriageTags = listOf("preTriageTag"),
+                    urgency = 1,
+                    initialStatus = DefaultVisitStatus.Requested.status
                 ),
+                paymentMethod = payment,
+                virtualActor = null,
+                registerPushNotification = null/*,
                 catchmentArea = schedulingInfo.catchmentArea!!,
                 patientDexCarePatient = patient,
-                actorDexCarePatient = actor,
-                practiceId = getString(R.string.virtual_practice_id)
+
+                practiceId = getString(R.string.virtual_practice_id)*/
             )
             .subscribe({
                 // You can save this visitId for a later `resumeVirtualVisit`
                 // if something goes wrong.
-                val visitId = it.first
-                val virtualVisitIntent = it.second
+                val visitId = it.second
+                val virtualVisitIntent = it.third
 
                 (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
             }, {
@@ -382,7 +394,7 @@ class PaymentFragment : Fragment() {
                             .createCardTokenSynchronous(cardParams)
                         CreditCard(token!!.id)
                     }
-                    PaymentOption.COUPON_CODE -> CouponCode(viewModel.couponCode)
+                    PaymentOption.COUPON_CODE -> SelfPayment()//CouponCode(viewModel.couponCode)
                 }
             }
             else -> null

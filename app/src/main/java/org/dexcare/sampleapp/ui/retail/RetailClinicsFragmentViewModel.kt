@@ -6,18 +6,18 @@ import androidx.lifecycle.MutableLiveData
 import org.dexcare.BR
 import org.dexcare.DexCareSDK
 import org.dexcare.sampleapp.ui.common.viewmodel.BaseViewModel
-import org.dexcare.services.retail.models.Clinic
-import org.dexcare.services.retail.models.ClinicTimeSlot
+import org.dexcare.services.retail.models.RetailAppointmentTimeSlot
+import org.dexcare.services.retail.models.RetailDepartment
 import timber.log.Timber
 import java.util.concurrent.Semaphore
 
 class RetailClinicsFragmentViewModel : BaseViewModel() {
 
-    private val clinics = MutableLiveData<List<Clinic>>()
-    private val timeSlots = MutableLiveData<List<ClinicTimeSlot>>()
+    private val clinics = MutableLiveData<List<RetailDepartment>>()
+    private val timeSlots = MutableLiveData<List<RetailAppointmentTimeSlot>>()
     private val semaphore = Semaphore(1)
 
-    fun getClinics(brand: String): LiveData<List<Clinic>> {
+    fun getClinics(brand: String): LiveData<List<RetailDepartment>> {
         return clinics.also {
             loadClinics(brand)
         }
@@ -26,7 +26,7 @@ class RetailClinicsFragmentViewModel : BaseViewModel() {
     private fun loadClinics(brand: String) {
         loading = true
         DexCareSDK.retailService
-            .getClinics(brand)
+            .getRetailDepartments(brand)
             .subscribe({
                 clinics.value = it.sortedBy { it.departmentName }
                 loading = false
