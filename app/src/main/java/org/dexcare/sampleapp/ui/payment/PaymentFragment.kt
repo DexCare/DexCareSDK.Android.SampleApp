@@ -188,6 +188,25 @@ class PaymentFragment : Fragment() {
         }
     }
 
+    private fun createVirtualVisitDetails(stateLicensure: String): VirtualVisitDetails =
+        VirtualVisitDetails(
+            acceptedTerms = true, // patient has accepted terms of service
+            assignmentQualifiers = listOf(DefaultVirtualVisitAssignmentQualifiers.Adult.qualifier), // qualifications to assign visit to a provider
+            patientDeclaration = schedulingInfo.patientDeclaration, // is this visit being submitted by the patient or by a proxy
+            stateLicensure = stateLicensure, //"WA"  // state licensure required for provider to see patient
+            visitReason = schedulingInfo.reasonForVisit,
+            visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
+            practiceId = getString(R.string.virtual_practice_id),
+            assessmentToolUsed = "ada", // if patient has done preassessment, which tool was used
+            brand = "default",
+            interpreterLanguage = "interpreterLanguage", // optional language requested if interpreter services are available; ISO 639-3 Individual Language codes
+            userEmail = schedulingInfo.patientDemographics!!.email,
+            contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
+            preTriageTags = listOf("preTriageTag"), // list of scheduledDepartments
+            urgency = 0, // 0 for default urgency
+            initialStatus = DefaultVisitStatus.Requested.status // requested, waitoffline
+        )
+
     private fun bookVirtualVisit() {
         // Patient represents the person receiving care (not necessarily the app user)
         val patient = when (schedulingInfo.patientDeclaration) {
@@ -217,31 +236,11 @@ class PaymentFragment : Fragment() {
         DexCareSDK.virtualService
             .createVirtualVisit(
                 fragment = this,
-                patient = patient,//createRegisterPushNotification(),
-                virtualVisitDetails = VirtualVisitDetails(
-                    acceptedTerms = true,
-                    assignmentQualifiers = listOf(DefaultVirtualVisitAssignmentQualifiers.Adult.qualifier),
-                    patientDeclaration = schedulingInfo.patientDeclaration,
-                    stateLicensure = "WA",
-                    visitReason = schedulingInfo.reasonForVisit,
-                    visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
-                    practiceId = getString(R.string.virtual_practice_id),
-                    assessmentToolUsed = "assessmentToolUsed",
-                    brand = "brand",
-                    interpreterLanguage = "interpreterLanguage",
-                    userEmail = schedulingInfo.patientDemographics!!.email,
-                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
-                    preTriageTags = listOf("preTriageTag"),
-                    urgency = 1,
-                    initialStatus = DefaultVisitStatus.Requested.status
-                ),
+                patient = patient,
+                virtualVisitDetails = createVirtualVisitDetails(schedulingInfo.patientDemographics?.addresses?.firstOrNull()?.state.orEmpty()),
                 paymentMethod = payment,
-                virtualActor = null,
-                registerPushNotification = null/*,
-                catchmentArea = schedulingInfo.catchmentArea!!,
-                patientDexCarePatient = patient,
-
-                practiceId = getString(R.string.virtual_practice_id)*/
+                virtualActor = null, // individual acting as a Patient proxy
+                registerPushNotification = null
             )
             .subscribe({
                 // You can save this visitId for a later `resumeVirtualVisit`
