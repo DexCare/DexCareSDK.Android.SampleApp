@@ -23,6 +23,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled true
+        }
     }
 
     android {
@@ -62,7 +65,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     //DexCare SDK
-    implementation "org.dexcare:dexcare:7.2.1"
+    implementation "org.dexcare:dexcare:7.2.3"
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
     implementation "com.auth0.android:lock:3.2.0"
