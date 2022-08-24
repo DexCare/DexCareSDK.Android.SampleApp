@@ -13,6 +13,7 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
 import com.stripe.android.Stripe
 import org.dexcare.DexCareSDK
+import org.dexcare.VisitStatus.*
 import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.PaymentFragmentBinding
@@ -24,12 +25,16 @@ import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.services.models.*
 import org.dexcare.services.provider.models.ProviderVisitInformation
 import org.dexcare.services.retail.models.RetailVisitInformation
-import org.dexcare.services.virtualvisit.models.RegisterPushNotification
-import org.dexcare.services.virtualvisit.models.VirtualVisitInformation
+import org.dexcare.services.virtualvisit.models.*
+import org.json.JSONObject
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import retrofit2.HttpException
+import retrofit2.adapter.rxjava3.Result.response
 import timber.log.Timber
 import java.text.NumberFormat
+import java.util.*
+
 
 class PaymentFragment : Fragment() {
 
@@ -187,6 +192,25 @@ class PaymentFragment : Fragment() {
         }
     }
 
+    private fun createVirtualVisitDetails(stateLicensure: String): VirtualVisitDetails =
+        VirtualVisitDetails(
+            acceptedTerms = true, // patient has accepted terms of service
+            assignmentQualifiers = null, // qualifications to assign visit to a provider - DefaultVirtualVisitAssignmentQualifiers.Adult.qualifier
+            patientDeclaration = schedulingInfo.patientDeclaration, // is this visit being submitted by the patient or by a proxy
+            stateLicensure = stateLicensure, //"WA"  // state licensure required for provider to see patient
+            visitReason = schedulingInfo.reasonForVisit,
+            visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
+            practiceId = getString(R.string.virtual_practice_id),
+            assessmentToolUsed = "ada", // if patient has done preassessment, which tool was used
+            brand = "default",
+            interpreterLanguage = Locale.getDefault().toLanguageTag(), // optional language requested if interpreter services are available; ISO 639-3 Individual Language codes
+            userEmail = schedulingInfo.patientDemographics!!.email,
+            contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
+            preTriageTags = listOf("preTriageTag"), // list of scheduledDepartments
+            urgency = 0, // 0 for default urgency
+            initialStatus = DefaultVisitStatus.Requested.status // requested, waitoffline
+        )
+
     private fun bookVirtualVisit() {
         // Patient represents the person receiving care (not necessarily the app user)
         val patient = when (schedulingInfo.patientDeclaration) {
@@ -214,33 +238,31 @@ class PaymentFragment : Fragment() {
         viewModel.loading = true
 
         DexCareSDK.virtualService
-            .startVirtualVisit(
-                this,
-                null,//createRegisterPushNotification(),
-                payment,
-                VirtualVisitInformation(
-                    visitReason = schedulingInfo.reasonForVisit,
-                    patientDeclaration = schedulingInfo.patientDeclaration,
-                    userEmail = schedulingInfo.patientDemographics!!.email,
-                    contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
-                    practiceRegionId = schedulingInfo.virtualPracticeRegion!!.practiceRegionId,
-                    actorRelationshipToPatient = relationshipToPatient
-                ),
-                catchmentArea = schedulingInfo.catchmentArea!!,
-                patientDexCarePatient = patient,
-                actorDexCarePatient = actor,
-                practiceId = getString(R.string.virtual_practice_id)
+            .createVirtualVisitWithPatientActor(
+                fragment = this,
+                patient = patient,
+                virtualVisitDetails = createVirtualVisitDetails(schedulingInfo.patientDemographics?.addresses?.firstOrNull()?.state.orEmpty()),
+                paymentMethod = payment,
+                virtualActor = null, // individual acting as a Patient proxy
+                registerPushNotification = null
             )
             .subscribe({
                 // You can save this visitId for a later `resumeVirtualVisit`
                 // if something goes wrong.
-                val visitId = it.first
-                val virtualVisitIntent = it.second
+                val visitId = it.second
+                val virtualVisitIntent = it.third
 
                 (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
             }, {
                 viewModel.errorLiveData.value = it
-                Timber.e(it)
+                if(it is HttpException){
+                    it.response()?.let { resp ->
+                        Timber.d("----> :" + resp.errorBody()?.string())
+                    }/*
+                    val jObjError = JSONObject(it.response()?.errorBody()?.string())
+                    Timber.e(jObjError.getJSONObject("error").getString("message"))*/
+                } else
+                    Timber.e(it)
             }).onDisposed = {
             viewModel.loading = false
         }
@@ -382,7 +404,7 @@ class PaymentFragment : Fragment() {
                             .createCardTokenSynchronous(cardParams)
                         CreditCard(token!!.id)
                     }
-                    PaymentOption.COUPON_CODE -> CouponCode(viewModel.couponCode)
+                    PaymentOption.COUPON_CODE -> SelfPayment()//CouponCode(viewModel.couponCode)
                 }
             }
             else -> null

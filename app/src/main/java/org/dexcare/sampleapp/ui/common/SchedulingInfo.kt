@@ -7,7 +7,7 @@ import org.dexcare.services.models.RelationshipToPatient
 import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.PatientDemographics
 import org.dexcare.services.provider.models.Provider
-import org.dexcare.services.retail.models.Clinic
+import org.dexcare.services.retail.models.RetailDepartment
 import org.dexcare.services.retail.models.TimeSlot
 import org.dexcare.services.virtualvisit.models.CatchmentArea
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
@@ -15,7 +15,7 @@ import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 // This should be replaced by something better in your app
 class SchedulingInfo {
     var virtualPracticeRegion: VirtualPracticeRegion? = null
-    var clinic: Clinic? = null
+    var clinic: RetailDepartment? = null
     var provider: Provider? = null
     var timeSlot: TimeSlot? = null
     var reasonForVisit: String = ""

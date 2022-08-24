@@ -60,11 +60,11 @@ class DemographicsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+        viewModel.errorLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 showMaterialDialog(message = it.javaClass.simpleName)
             }
-        })
+        }
 
         demographicsService.getDemographics()?.demographicsLinks?.firstOrNull()?.let {
             viewModel.appUserDemographics.setFromExistingDemographics(it)

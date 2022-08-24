@@ -36,14 +36,14 @@ class RetailClinicsFragment : Fragment() {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+        viewModel.errorLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 showMaterialDialog(message = it.javaClass.simpleName)
             }
-        })
+        }
 
         viewModel.getClinics(getString(R.string.brand))
-            .observe(viewLifecycleOwner, { clinicList ->
+            .observe(viewLifecycleOwner) { clinicList ->
 
                 (binding.recyclerClinics.adapter as? RetailClinicAdapter)?.items =
                     clinicList.map { clinic ->
@@ -51,19 +51,19 @@ class RetailClinicsFragment : Fragment() {
                     }.toMutableList()
 
                 fetchTimeSlots()
-            })
+            }
     }
 
     private fun fetchTimeSlots() {
         viewModel.getTimeSlots()
-            .observe(viewLifecycleOwner, { timeSlotList ->
+            .observe(viewLifecycleOwner) { timeSlotList ->
                 (binding.recyclerClinics.adapter as? RetailClinicAdapter)?.items?.map { viewModel ->
                     timeSlotList.map { clinicTimeSlot ->
                         if (viewModel.clinic?.departmentID == clinicTimeSlot.departmentId) {
-                            viewModel.clinicTimeSlot = clinicTimeSlot
+                            viewModel.retailAppointmentTimeSlot = clinicTimeSlot
                         }
                     }
                 }
-            })
+            }
     }
 }
