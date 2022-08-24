@@ -66,10 +66,14 @@ dependencies {
 
     //DexCare SDK
 <<<<<<< HEAD
+<<<<<<< HEAD
     implementation "org.dexcare:dexcare:7.2.3"
 =======
     implementation "org.dexcare:dexcare:8.0.0"
 >>>>>>> 313bf08 (v8 migration starter codebase)
+=======
+    implementation "org.dexcare:dexcare:8.1.0"
+>>>>>>> 9f388c9 (added latest Dexcare SDK updates)
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
     implementation "com.auth0.android:lock:3.2.0"
