@@ -1,27 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="auth0_domain"> </string>
-    <string name="auth0_client_id"> </string>
-    <string name="brand"> </string>
-    <string name="dexcare_domain"> </string>
-    <string name="dexcare_api_key"> </string>
-    <string name="dexcare_fhirorch_url"> </string>
-    <string name="dexcare_virtualvisit_url"> </string>
-
-    <!-- Used for Push Notifications.  Needs to be in the format: [stage|prod].FCM.[brand].HealthConnect -->
-    <string name="fcm_app_id"> </string>
-
-    <!-- TODO: Set up Firebase and Google API key -->
-    <string name="GOOGLE_API_KEY">API_KEY_GOES_HERE</string>
-
+    <string name="auth0_domain">dev-frosh.us.auth0.com</string>
+    <string name="auth0_client_id">JdS4VLO9kD94TwjJlvmbIP8OqEUCda9L</string>
+    <string name="brand">providence</string>
+    <string name="tenant">prov</string>
+    <string name="dexcare_domain">org.psjh.providence.patients</string>
+    <string name="dexcare_api_key">android-2c1aa611-94f3-4681-a410-f556c50e59e2</string>
+    <string name="dexcare_fhirorch_url">https://api.frosh.dex.care</string>
+    <string name="dexcare_virtualvisit_url">https://ecvapi.frosh.dex.care</string>
+    <!-- Note: Push notifications require some additional setup on the backend.
+    DexCare will require a FCM server key from your Firebase instance in order to send push notifications
+    See: https://developers.dexcarehealth.com/virtualvisit/#push-notifications -->
+    <string name="fcm_app_id">stage.FCM.prov.HealthConnect</string>
     <!-- This will vary per-environment, but can be hardcoded for each Virtual Practice you want to support -->
-    <!-- This value is for the Acme Environment only -->
-    <string name="virtual_practice_id">038afb0c-f4fc-44fc-816a-9bde7acc9d86</string>
-
-    <!-- The NPIs used for Provider scheduling need to be retrieved from a source outside DexCare.
-    Ideally your health system would have a database of all of its Providers and could retrieve NPIs from that.
-    This value is defined here for a minimal sample of the SDK's ProviderService. -->
-    <string name="hardcoded_national_provider_id"> </string>
-
-    <string name="stripe_publishable_key"> </string>
+    <string name="virtual_practice_id">6996d161-cd16-4556-9577-f942c3f80c80</string>
+    <string name="GOOGLE_API_KEY">PLACE_GOOGLE_API_KEY_HERE</string>
+    <string name="hardcoded_national_provider_id">1245662048</string>
+    <string name="stripe_publishable_key">pk_test_51IJ6CMDXbwgL2NmjGTeK47RlBoKwl7FGCQMyWYfQozUNQ268ZVzvh2QyI512nM9szwgEC9EtqSCR1M8moDr57C7I00modJisFd</string>
 </resources>

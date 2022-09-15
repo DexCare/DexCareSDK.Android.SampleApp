@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = "1.6.10"
+    ext.kotlin_version = "1.7.10"
     ext.androidxNavigationVersion = '2.4.1'
     repositories {
         google()
@@ -25,10 +25,10 @@ allprojects {
         // required for rxpermissions (DexCare SDK dependency)
         maven { url "https://jitpack.io" }
 
-        // mavenLocal()
+         mavenLocal()
 
         // required for DexCare SDK
-        maven {
+        /*maven {
             credentials {
                 // You need to be authenticated in order to access the DexCare SDK binaries.
                 // Even though they are public, GitHub still requires authentication.
@@ -38,12 +38,8 @@ allprojects {
             }
 
             url "https://maven.pkg.github.com/DexCare/DexCareSDK-Android/"
-        }
+        }*/
     }
-}
-
-ext {
-    koinVersion = '2.2.0'
 }
 
 task clean(type: Delete) {

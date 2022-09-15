@@ -22,7 +22,7 @@ class SchedulingInfo {
     var patientDemographics: PatientDemographics? = null
     var paymentMethod: PaymentMethod? = null
     var catchmentArea: CatchmentArea? = null
-    var patientDeclaration: PatientDeclaration = PatientDeclaration.Self
+    var patientDeclaration: PatientDeclaration = PatientDeclaration.Other
     var dependentPatient: DexCarePatient? = null
     var actorRelationshipToPatient: RelationshipToPatient? = null
     var selectedPaymentOption: PaymentOption = PaymentOption.INSURANCE

@@ -73,6 +73,9 @@ class PaymentFragment : Fragment() {
                 binding.layoutCouponCodeInput.root.visibility = View.GONE
                 binding.layoutCreditCardInput.root.visibility = View.GONE
             }
+            SchedulingFlow.Unknown -> {
+             // do nothing
+            }
         }
 
         viewModel.errorLiveData.observe(viewLifecycleOwner, {
@@ -202,13 +205,14 @@ class PaymentFragment : Fragment() {
             visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
             practiceId = getString(R.string.virtual_practice_id),
             assessmentToolUsed = "ada", // if patient has done preassessment, which tool was used
-            brand = "default",
+            brand = getString(R.string.brand),
             interpreterLanguage = Locale.getDefault().toLanguageTag(), // optional language requested if interpreter services are available; ISO 639-3 Individual Language codes
             userEmail = schedulingInfo.patientDemographics!!.email,
             contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
             preTriageTags = listOf("preTriageTag"), // list of scheduledDepartments
             urgency = 0, // 0 for default urgency
-            initialStatus = DefaultVisitStatus.Requested.status // requested, waitoffline
+            initialStatus = DefaultVisitStatus.Requested.status,// requested, waitoffline,
+            actorRelationshipToPatient = RelationshipToPatient.Brother, // Refer to RelationshipToPatient for the full list
         )
 
     private fun bookVirtualVisit() {
@@ -220,7 +224,7 @@ class PaymentFragment : Fragment() {
 
         // Actor represents the app user booking for someone else
         val actor = when (schedulingInfo.patientDeclaration) {
-            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!
+            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!.copy(relationshipToPatient = RelationshipToPatient.Brother)
             else -> null
         }
 
@@ -243,7 +247,7 @@ class PaymentFragment : Fragment() {
                 patient = patient,
                 virtualVisitDetails = createVirtualVisitDetails(schedulingInfo.patientDemographics?.addresses?.firstOrNull()?.state.orEmpty()),
                 paymentMethod = payment,
-                virtualActor = null, // individual acting as a Patient proxy
+                virtualActor = actor, // individual acting as a Patient proxy
                 registerPushNotification = null
             )
             .subscribe({
