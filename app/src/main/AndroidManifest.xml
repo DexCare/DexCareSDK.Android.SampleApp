@@ -3,9 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.dexcare.sampleapp">
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" tools:node="remove"/>
-    <uses-permission android:name="android.permission.BLUETOOTH" tools:node="remove"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove"/>
+    <uses-permission
+        android:name="android.permission.ACCESS_WIFI_STATE"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"
+        tools:node="remove" />
 
     <application
         android:name=".MainApplication"
@@ -19,21 +22,30 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="th.frosh.dex.care"
+                    android:pathPrefix="/visit" />
 
+            </intent-filter>
+
+        </activity>
         <activity
             android:name="com.auth0.android.lock.LockActivity"
             android:label="Classic Lock"
             android:launchMode="singleTask"
-            tools:replace="android:theme"
             android:screenOrientation="portrait"
-            android:theme="@style/MyLock.Theme.Customized" />
+            android:theme="@style/MyLock.Theme.Customized"
+            tools:replace="android:theme" />
     </application>
 
 </manifest>

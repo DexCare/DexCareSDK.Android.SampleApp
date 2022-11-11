@@ -1,6 +1,8 @@
 package org.dexcare.sampleapp.ui.payment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
 import com.stripe.android.Stripe
+import kotlinx.coroutines.*
 import org.dexcare.DexCareSDK
 import org.dexcare.VisitStatus.*
 import org.dexcare.sampleapp.MainActivity
@@ -26,11 +29,9 @@ import org.dexcare.services.models.*
 import org.dexcare.services.provider.models.ProviderVisitInformation
 import org.dexcare.services.retail.models.RetailVisitInformation
 import org.dexcare.services.virtualvisit.models.*
-import org.json.JSONObject
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import retrofit2.HttpException
-import retrofit2.adapter.rxjava3.Result.response
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.*
@@ -168,7 +169,9 @@ class PaymentFragment : Fragment() {
                     bookRetailVisit()
                 }
                 SchedulingFlow.Virtual -> {
-                    bookVirtualVisit()
+
+                   bookVirtualVisit()
+
                 }
                 else -> {
                     Toast.makeText(requireContext(), "Unknown flow", Toast.LENGTH_LONG).show()
@@ -224,7 +227,7 @@ class PaymentFragment : Fragment() {
 
         // Actor represents the app user booking for someone else
         val actor = when (schedulingInfo.patientDeclaration) {
-            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!.copy(relationshipToPatient = RelationshipToPatient.Brother)
+            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!.copy(relationshipToPatient = RelationshipToPatient.Brother, )
             else -> null
         }
 
@@ -257,6 +260,70 @@ class PaymentFragment : Fragment() {
                 val virtualVisitIntent = it.third
 
                 (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
+
+                Timber.d("------->   handler starting")
+                Handler(Looper.getMainLooper()).postDelayed(
+                    {
+                        Timber.d("------->   visit resuming $visitId")
+                        resumeVirtualVisit(visitId)
+                    },
+                    30_000 // value in milliseconds
+                )
+
+            }, {
+                viewModel.errorLiveData.value = it
+                if(it is HttpException){
+                    it.response()?.let { resp ->
+                        Timber.d("----> :" + resp.errorBody()?.string())
+                    }/*
+                    val jObjError = JSONObject(it.response()?.errorBody()?.string())
+                    Timber.e(jObjError.getJSONObject("error").getString("message"))*/
+                } else
+                    Timber.e(it)
+            }).onDisposed = {
+            viewModel.loading = false
+        }
+    }
+
+
+    private fun resumeVirtualVisit(visitId: String) {
+        val patient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.dependentPatient!!
+            else -> get<DemographicsService>().getDemographics()!!
+        }
+
+        // Actor represents the app user booking for someone else
+        val actor = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!.copy(relationshipToPatient = RelationshipToPatient.Brother)
+            else -> null
+        }
+
+        val relationshipToPatient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.actorRelationshipToPatient!!
+            else -> null
+        }
+
+        val payment = createPaymentMethod()
+        if (payment == null) {
+            showMaterialDialog(message = "Invalid payment information")
+            return
+        }
+
+        viewModel.loading = true
+
+        DexCareSDK.virtualService.resumeVirtualVisit(visitId, this,null, patient)
+
+
+            /*.createVirtualVisitWithPatientActor(
+                fragment = this,
+                patient = patient,
+                virtualVisitDetails = createVirtualVisitDetails(schedulingInfo.patientDemographics?.addresses?.firstOrNull()?.state.orEmpty()),
+                paymentMethod = payment,
+                virtualActor = actor, // individual acting as a Patient proxy
+                registerPushNotification = null
+            )*/
+            .subscribe({
+                (requireActivity() as MainActivity).activityResultLauncher.launch(it)
             }, {
                 viewModel.errorLiveData.value = it
                 if(it is HttpException){
@@ -310,7 +377,9 @@ class PaymentFragment : Fragment() {
                     patientDeclaration = schedulingInfo.patientDeclaration,
                     userEmail = schedulingInfo.patientDemographics!!.email,
                     contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
-                    actorRelationshipToPatient = relationshipToPatient
+                    actorRelationshipToPatient = relationshipToPatient,
+                    listOf(),
+                    false
                 ),
                 timeSlot = schedulingInfo.timeSlot!!,
                 ehrSystemName = ehrSystemName,
@@ -398,7 +467,8 @@ class PaymentFragment : Fragment() {
                         if (selectedInsurancePayer == null) return null
                         InsuranceManualSelf(
                             viewModel.insuranceMemberId,
-                            selectedInsurancePayer!!.payerId
+                            selectedInsurancePayer!!.payerId,
+                            null
                         )
                     }
                     PaymentOption.CREDIT_CARD -> {

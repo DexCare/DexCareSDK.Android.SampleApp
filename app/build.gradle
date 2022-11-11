@@ -49,6 +49,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.material:material:1.4.0'
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
@@ -65,7 +66,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     //DexCare SDK
-    implementation "org.dexcare:dexcare:8.2.0-abs1"
+    implementation "org.dexcare:dexcare:8.2.1-abs-5"
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
     implementation "com.auth0.android:lock:3.2.0"
