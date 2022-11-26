@@ -25,10 +25,8 @@ allprojects {
         // required for rxpermissions (DexCare SDK dependency)
         maven { url "https://jitpack.io" }
 
-        mavenLocal()
-
         // required for DexCare SDK
-        /*maven {
+        maven {
             credentials {
                 // You need to be authenticated in order to access the DexCare SDK binaries.
                 // Even though they are public, GitHub still requires authentication.
@@ -38,7 +36,7 @@ allprojects {
             }
 
             url "https://maven.pkg.github.com/DexCare/DexCareSDK-Android/"
-        }*/
+        }
     }
 }
 
