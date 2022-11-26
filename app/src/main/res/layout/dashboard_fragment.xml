@@ -9,21 +9,14 @@
         android:background="#E8EEF1"
         android:padding="@dimen/spacing_medium"
         tools:context=".ui.dashboard.DashboardFragment">
-    <WebView
-        android:id="@+id/webview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:visibility="gone"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E8EEF1"
         android:padding="@dimen/spacing_medium"
         tools:context=".ui.dashboard.DashboardFragment">
-
-
 
         <Button
             style="@style/SampleAppButton"
