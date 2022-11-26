@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="auth0_domain"> </string>
-    <string name="auth0_client_id"> </string>
-    <string name="brand"> </string>
-    <string name="dexcare_domain"> </string>
-    <string name="dexcare_api_key"> </string>
-    <string name="dexcare_fhirorch_url"> </string>
-    <string name="dexcare_virtualvisit_url"> </string>
-
-    <!-- Used for Push Notifications.  Needs to be in the format: [stage|prod].FCM.[brand].HealthConnect -->
-    <string name="fcm_app_id"> </string>
-
-    <!-- TODO: Set up Firebase and Google API key -->
-    <string name="GOOGLE_API_KEY">API_KEY_GOES_HERE</string>
-
+    <string name="auth0_domain" />
+    <string name="auth0_client_id" />
+    <string name="brand" />
+    <string name="dexcare_domain" />
+    <string name="dexcare_api_key" />
+    <string name="dexcare_fhirorch_url" />
+    <string name="dexcare_virtualvisit_url" />
+    <!-- Note: Push notifications require some additional setup on the backend.
+    DexCare will require a FCM server key from your Firebase instance in order to send push notifications
+    See: https://developers.dexcarehealth.com/virtualvisit/#push-notifications -->
+    <string name="fcm_app_id" />
     <!-- This will vary per-environment, but can be hardcoded for each Virtual Practice you want to support -->
-    <!-- This value is for the Acme Environment only -->
-    <string name="virtual_practice_id">038afb0c-f4fc-44fc-816a-9bde7acc9d86</string>
-
-    <!-- The NPIs used for Provider scheduling need to be retrieved from a source outside DexCare.
-    Ideally your health system would have a database of all of its Providers and could retrieve NPIs from that.
-    This value is defined here for a minimal sample of the SDK's ProviderService. -->
-    <string name="hardcoded_national_provider_id"> </string>
-
-    <string name="stripe_publishable_key"> </string>
+    <string name="virtual_practice_id" />
+    <string name="GOOGLE_API_KEY" />
+    <string name="hardcoded_national_provider_id" />
+    <string name="stripe_publishable_key" />
 </resources>

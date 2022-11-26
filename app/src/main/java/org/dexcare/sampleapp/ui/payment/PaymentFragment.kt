@@ -13,7 +13,6 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
 import com.stripe.android.Stripe
 import org.dexcare.DexCareSDK
-import org.dexcare.VisitStatus.*
 import org.dexcare.sampleapp.MainActivity
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.PaymentFragmentBinding
@@ -25,16 +24,15 @@ import org.dexcare.sampleapp.ui.common.SchedulingInfo
 import org.dexcare.services.models.*
 import org.dexcare.services.provider.models.ProviderVisitInformation
 import org.dexcare.services.retail.models.RetailVisitInformation
-import org.dexcare.services.virtualvisit.models.*
-import org.json.JSONObject
+import org.dexcare.services.virtualvisit.models.DefaultVirtualVisitTypes
+import org.dexcare.services.virtualvisit.models.DefaultVisitStatus
+import org.dexcare.services.virtualvisit.models.RegisterPushNotification
+import org.dexcare.services.virtualvisit.models.VirtualVisitDetails
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
-import retrofit2.HttpException
-import retrofit2.adapter.rxjava3.Result.response
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.*
-
 
 class PaymentFragment : Fragment() {
 
@@ -72,6 +70,9 @@ class PaymentFragment : Fragment() {
             SchedulingFlow.Virtual -> {
                 binding.layoutCouponCodeInput.root.visibility = View.GONE
                 binding.layoutCreditCardInput.root.visibility = View.GONE
+            }
+            SchedulingFlow.Unknown -> {
+                // do nothing
             }
         }
 
@@ -202,13 +203,15 @@ class PaymentFragment : Fragment() {
             visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
             practiceId = getString(R.string.virtual_practice_id),
             assessmentToolUsed = "ada", // if patient has done preassessment, which tool was used
-            brand = "default",
-            interpreterLanguage = Locale.getDefault().toLanguageTag(), // optional language requested if interpreter services are available; ISO 639-3 Individual Language codes
+            brand = getString(R.string.brand),
+            interpreterLanguage = Locale.getDefault()
+                .toLanguageTag(), // optional language requested if interpreter services are available; ISO 639-3 Individual Language codes
             userEmail = schedulingInfo.patientDemographics!!.email,
             contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
             preTriageTags = listOf("preTriageTag"), // list of scheduledDepartments
             urgency = 0, // 0 for default urgency
-            initialStatus = DefaultVisitStatus.Requested.status // requested, waitoffline
+            initialStatus = DefaultVisitStatus.Requested.status,// requested, waitoffline,
+            actorRelationshipToPatient = RelationshipToPatient.Brother, // Refer to RelationshipToPatient for the full list
         )
 
     private fun bookVirtualVisit() {
@@ -221,6 +224,7 @@ class PaymentFragment : Fragment() {
         // Actor represents the app user booking for someone else
         val actor = when (schedulingInfo.patientDeclaration) {
             PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!
+                .copy(relationshipToPatient = RelationshipToPatient.Brother)
             else -> null
         }
 
@@ -243,31 +247,59 @@ class PaymentFragment : Fragment() {
                 patient = patient,
                 virtualVisitDetails = createVirtualVisitDetails(schedulingInfo.patientDemographics?.addresses?.firstOrNull()?.state.orEmpty()),
                 paymentMethod = payment,
-                virtualActor = null, // individual acting as a Patient proxy
+                virtualActor = actor, // individual acting as a Patient proxy
                 registerPushNotification = null
             )
             .subscribe({
                 // You can save this visitId for a later `resumeVirtualVisit`
                 // if something goes wrong.
-                val visitId = it.second
                 val virtualVisitIntent = it.third
-
                 (requireActivity() as MainActivity).activityResultLauncher.launch(virtualVisitIntent)
             }, {
                 viewModel.errorLiveData.value = it
-                if(it is HttpException){
-                    it.response()?.let { resp ->
-                        Timber.d("----> :" + resp.errorBody()?.string())
-                    }/*
-                    val jObjError = JSONObject(it.response()?.errorBody()?.string())
-                    Timber.e(jObjError.getJSONObject("error").getString("message"))*/
-                } else
-                    Timber.e(it)
+                Timber.e(it)
             }).onDisposed = {
             viewModel.loading = false
         }
     }
 
+
+    private fun resumeVirtualVisit(visitId: String) {
+        val patient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.dependentPatient!!
+            else -> get<DemographicsService>().getDemographics()!!
+        }
+
+        // Actor represents the app user booking for someone else
+        val actor = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> get<DemographicsService>().getDemographics()!!
+                .copy(relationshipToPatient = RelationshipToPatient.Brother)
+            else -> null
+        }
+
+        val relationshipToPatient = when (schedulingInfo.patientDeclaration) {
+            PatientDeclaration.Other -> schedulingInfo.actorRelationshipToPatient!!
+            else -> null
+        }
+
+        val payment = createPaymentMethod()
+        if (payment == null) {
+            showMaterialDialog(message = "Invalid payment information")
+            return
+        }
+
+        viewModel.loading = true
+
+        DexCareSDK.virtualService.resumeVirtualVisit(visitId, this, null, patient)
+            .subscribe({
+                (requireActivity() as MainActivity).activityResultLauncher.launch(it)
+            }, {
+                viewModel.errorLiveData.value = it
+                Timber.e(it)
+            }).onDisposed = {
+            viewModel.loading = false
+        }
+    }
 
     private fun bookProviderVisit() {
         // Patient represents the person receiving care (not necessarily the app user)
@@ -306,7 +338,9 @@ class PaymentFragment : Fragment() {
                     patientDeclaration = schedulingInfo.patientDeclaration,
                     userEmail = schedulingInfo.patientDemographics!!.email,
                     contactPhoneNumber = schedulingInfo.patientDemographics!!.homePhone!!,
-                    actorRelationshipToPatient = relationshipToPatient
+                    actorRelationshipToPatient = relationshipToPatient,
+                    listOf(),
+                    false
                 ),
                 timeSlot = schedulingInfo.timeSlot!!,
                 ehrSystemName = ehrSystemName,
@@ -394,14 +428,16 @@ class PaymentFragment : Fragment() {
                         if (selectedInsurancePayer == null) return null
                         InsuranceManualSelf(
                             viewModel.insuranceMemberId,
-                            selectedInsurancePayer!!.payerId
+                            selectedInsurancePayer!!.payerId,
+                            null
                         )
                     }
                     PaymentOption.CREDIT_CARD -> {
                         val cardParams = binding.layoutCreditCardInput.cardInputWidget.cardParams
                             ?: return null
-                        val token = Stripe(requireContext(), getString(R.string.stripe_publishable_key))
-                            .createCardTokenSynchronous(cardParams)
+                        val token =
+                            Stripe(requireContext(), getString(R.string.stripe_publishable_key))
+                                .createCardTokenSynchronous(cardParams)
                         CreditCard(token!!.id)
                     }
                     PaymentOption.COUPON_CODE -> SelfPayment()//CouponCode(viewModel.couponCode)

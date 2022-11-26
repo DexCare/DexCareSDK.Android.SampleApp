@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import org.dexcare.sampleapp.databinding.DashboardFragmentBinding
 
 class DashboardFragment : Fragment() {
 
-    private val viewModel: DashboardViewModel by viewModels()
     private lateinit var binding: DashboardFragmentBinding
 
     override fun onCreateView(
@@ -37,5 +35,4 @@ class DashboardFragment : Fragment() {
             findNavController().navigate(DashboardFragmentDirections.toVirtualRegionFragment())
         }
     }
-
 }
