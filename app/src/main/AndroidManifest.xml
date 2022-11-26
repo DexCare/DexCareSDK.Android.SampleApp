@@ -26,19 +26,9 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
 
         </activity>
-        <activity
-            android:name="com.auth0.android.lock.LockActivity"
-            android:label="Classic Lock"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyLock.Theme.Customized"
-            tools:replace="android:theme" />
     </application>
-
 </manifest>
