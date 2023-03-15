@@ -32,4 +32,6 @@
     <string name="insurance">Insurance</string>
     <string name="credit_card">Credit Card</string>
     <string name="coupon_code">Coupon Code</string>
+
+    <string name="message_configs_required">Required values in config.xml are missing. Make sure the values are properly set, otherwise the app will not work.</string>
 </resources>
