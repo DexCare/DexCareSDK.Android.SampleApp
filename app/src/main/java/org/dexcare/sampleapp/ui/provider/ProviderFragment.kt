@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import java.time.format.DateTimeFormatter
 import org.dexcare.sampleapp.R
 import org.dexcare.sampleapp.databinding.ProviderFragmentBinding
 import org.dexcare.sampleapp.ext.showMaterialDialog
@@ -14,8 +15,6 @@ import org.dexcare.sampleapp.ui.provider.adapter.ProviderTimeSlotAdapter
 import org.dexcare.sampleapp.ui.provider.adapter.ProviderTimeSlotViewModel
 import org.dexcare.services.provider.models.Provider
 import org.koin.android.ext.android.get
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class ProviderFragment : Fragment() {
 
@@ -43,23 +42,22 @@ class ProviderFragment : Fragment() {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+        viewModel.errorLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 showMaterialDialog(message = it.javaClass.simpleName)
             }
-        })
+        }
 
         viewModel.getProvider(getString(R.string.hardcoded_national_provider_id))
-            .observe(viewLifecycleOwner, { provider ->
+            .observe(viewLifecycleOwner) { provider ->
                 viewModel.providerName = provider.name
-
                 fetchTimeSlots(provider)
-            })
+            }
     }
 
     private fun fetchTimeSlots(provider: Provider) {
         viewModel.getProviderTimeSlots()
-            .observe(viewLifecycleOwner, { providerTimeSlot ->
+            .observe(viewLifecycleOwner) { providerTimeSlot ->
                 val nextDayWithTimeSlots = providerTimeSlot.scheduleDays.firstOrNull {
                     it.timeSlots.isNotEmpty()
                 }
@@ -79,6 +77,6 @@ class ProviderFragment : Fragment() {
                             timeSlot, provider
                         )
                     }.toMutableList()
-            })
+            }
     }
 }
