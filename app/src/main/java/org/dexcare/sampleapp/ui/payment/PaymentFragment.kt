@@ -76,17 +76,17 @@ class PaymentFragment : Fragment() {
             }
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+        viewModel.errorLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 showMaterialDialog(message = it.javaClass.simpleName)
             }
-        })
+        }
 
         viewModel.getInsuranceProviders(getString(R.string.brand))
-            .observe(viewLifecycleOwner, { insuranceProviders ->
+            .observe(viewLifecycleOwner) { insuranceProviders ->
                 this.insuranceProviders.clear()
                 this.insuranceProviders.addAll(insuranceProviders)
-            })
+            }
 
         binding.tabLayoutPayment.addOnTabSelectedListener(object :
             TabLayout.OnTabSelectedListener {
@@ -116,17 +116,17 @@ class PaymentFragment : Fragment() {
                     }
 
                     else -> {
-                        throw Exception("Unsupported tab")
+                        error("Unsupported tab")
                     }
                 }
             }
 
             override fun onTabUnselected(p0: TabLayout.Tab?) {
-
+                //no op
             }
 
             override fun onTabReselected(p0: TabLayout.Tab?) {
-
+                //no op
             }
         })
 

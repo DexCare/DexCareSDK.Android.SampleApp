@@ -36,17 +36,18 @@ class VirtualRegionFragment : Fragment() {
             layoutManager = GridLayoutManager(requireContext(), 2)
         }
 
-        viewModel.getVirtualPractice(getString(R.string.virtual_practice_id)).observe(viewLifecycleOwner, { virtualPractice ->
-            (binding.recyclerRegions.adapter as? VirtualRegionAdapter)?.items =
-                virtualPractice.practiceRegions.map { region ->
-                    VirtualPracticeRegionViewModel(region)
-                }.toMutableList()
-        })
+        viewModel.getVirtualPractice(getString(R.string.virtual_practice_id))
+            .observe(viewLifecycleOwner) { virtualPractice ->
+                (binding.recyclerRegions.adapter as? VirtualRegionAdapter)?.items =
+                    virtualPractice.practiceRegions.map { region ->
+                        VirtualPracticeRegionViewModel(region)
+                    }.toMutableList()
+            }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner, {
+        viewModel.errorLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 showMaterialDialog(message = it.message)
             }
-        })
+        }
     }
 }

@@ -20,7 +20,7 @@ class VirtualRegionAdapter(
         inflater: LayoutInflater,
         parent: ViewGroup,
         attachToRoot: Boolean
-    ): ViewDataBinding? {
+    ): ViewDataBinding {
         return RecycleritemRegionBinding.inflate(inflater).also { binding ->
             binding.btnRegion.setOnClickListener {
                 schedulingInfo.virtualPracticeRegion = binding.viewModel?.region

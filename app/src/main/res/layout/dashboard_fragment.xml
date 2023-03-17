@@ -4,56 +4,74 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E8EEF1"
         android:padding="@dimen/spacing_medium"
         tools:context=".ui.dashboard.DashboardFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#E8EEF1"
-        android:padding="@dimen/spacing_medium"
-        tools:context=".ui.dashboard.DashboardFragment">
-
-        <Button
-            style="@style/SampleAppButton"
-            android:id="@+id/btnProvider"
+        <LinearLayout
+            android:id="@+id/buttonsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/btnProvider"
+                style="@style/SampleAppButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_standard"
+                android:padding="@dimen/spacing_large"
+                android:text="@string/provider"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnRetail"
+                style="@style/SampleAppButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_standard"
+                android:padding="@dimen/spacing_large"
+                android:text="@string/retail"
+                app:layout_constraintLeft_toLeftOf="@+id/btnProvider"
+                app:layout_constraintRight_toRightOf="@+id/btnProvider"
+                app:layout_constraintTop_toBottomOf="@id/btnProvider" />
+
+            <Button
+                android:id="@+id/btnVirtual"
+                style="@style/SampleAppButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_standard"
+                android:padding="@dimen/spacing_large"
+                android:text="@string/virtual"
+                app:layout_constraintLeft_toLeftOf="@+id/btnProvider"
+                app:layout_constraintRight_toRightOf="@+id/btnProvider"
+                app:layout_constraintTop_toBottomOf="@id/btnRetail" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/spacing_medium"
+            android:text="@string/message_configs_required"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="@dimen/spacing_standard"
-            android:padding="@dimen/spacing_large"
-            android:text="@string/provider"/>
+            tools:visibility="visible" />
 
-        <Button
-            style="@style/SampleAppButton"
-            android:id="@+id/btnRetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="@+id/btnProvider"
-            app:layout_constraintRight_toRightOf="@+id/btnProvider"
-            app:layout_constraintTop_toBottomOf="@id/btnProvider"
-            android:layout_marginTop="@dimen/spacing_standard"
-            android:padding="@dimen/spacing_large"
-            android:text="@string/retail"/>
-
-        <Button
-            style="@style/SampleAppButton"
-            android:id="@+id/btnVirtual"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_standard"
-            android:padding="@dimen/spacing_large"
-            android:text="@string/virtual"
-            app:layout_constraintLeft_toLeftOf="@+id/btnProvider"
-            app:layout_constraintRight_toRightOf="@+id/btnProvider"
-            app:layout_constraintTop_toBottomOf="@id/btnRetail" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

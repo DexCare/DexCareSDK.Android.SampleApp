@@ -1,16 +1,18 @@
 package org.dexcare.sampleapp
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.webkit.WebView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.lock.*
+import com.auth0.android.lock.AuthenticationCallback
+import com.auth0.android.lock.InitialScreen
+import com.auth0.android.lock.Lock
+import com.auth0.android.lock.LockCallback
+import com.auth0.android.lock.UsernameStyle
 import com.auth0.android.result.Credentials
 import org.dexcare.DexCareSDK
 import org.dexcare.Environment
@@ -62,6 +64,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun launchAuth0LockWidget() {
+        if (!areConfigValuesSetUp(this)) {
+            return
+        }
         val auth0 = Auth0(
             getString(R.string.auth0_client_id),
             getString(R.string.auth0_domain)
