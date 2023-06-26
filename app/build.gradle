@@ -18,10 +18,20 @@ android {
         manifestPlaceholders = [auth0Domain: "@string/auth0_domain", auth0Scheme: "https"]
     }
 
+    signingConfigs {
+        release {
+            keyAlias "releasekey"
+            keyPassword "Android123"
+            storeFile file("../releasekey")
+            storePassword "Android123"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -84,4 +94,5 @@ dependencies {
 
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
     implementation "com.stripe:stripe-android:19.0.0"
+
 }
