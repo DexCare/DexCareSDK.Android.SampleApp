@@ -74,7 +74,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
     //DexCare SDK
-    implementation "org.dexcare:dexcare:8.2.1"
+    implementation "org.dexcare:dexcare:8.4.0"
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
     implementation "com.auth0.android:lock:3.2.0"
