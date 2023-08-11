@@ -207,6 +207,11 @@ class MainActivity : AppCompatActivity() {
                         // The initialization result from the YouTubePlayer API is passed back
                         error.youTubeError
                     }
+
+                    is VirtualVisitError.WaitingRoomMediaError -> {
+                        //Error callback for waiting room media playback.
+                    }
+
                     VirtualVisitError.PatientJoinedElsewhere -> {
                         // No additional info is passed back
                     }
