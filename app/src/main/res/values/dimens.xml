@@ -2,4 +2,5 @@
 <resources>
     <dimen name="horizontal_margin">@dimen/spacing_large</dimen>
     <dimen name="top_input_margin">@dimen/spacing_medium</dimen>
+    <dimen name="material_dialog_corner_radius">8dp</dimen>
 </resources>

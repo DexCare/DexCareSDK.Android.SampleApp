@@ -5,10 +5,11 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
-    compileSdkVersion 33
+    namespace "org.dexcare.sampleapp"
+    compileSdk 33
 
     defaultConfig {
-        applicationId "org.dexcare.sampleapp.sample"
+        applicationId "org.dexcare.sampleapp"
         minSdkVersion 24
         targetSdkVersion 33
         versionCode 1
@@ -37,17 +38,14 @@ android {
 
     android {
         compileOptions {
-            // Flag to enable support for the new language APIs
-            coreLibraryDesugaringEnabled = true
-
-            sourceCompatibility JavaVersion.VERSION_11
-            targetCompatibility JavaVersion.VERSION_11
+            sourceCompatibility JavaVersion.VERSION_17
+            targetCompatibility JavaVersion.VERSION_17
         }
     }
 
     kotlinOptions {
         freeCompilerArgs = ['-Xjvm-default=compatibility', '-Xopt-in=kotlin.RequiresOptIn']
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
