@@ -1,6 +1,10 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -18,6 +22,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        manifestPlaceholders["auth0Domain"] = "@string/auth0_domain"
+        manifestPlaceholders["auth0Scheme"] = "https"
     }
 
     buildTypes {
@@ -30,6 +37,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -60,6 +68,18 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-compose:2.6.0")
+
+    // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
+    implementation("com.auth0.android:lock:3.2.2")
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    //DexCare SDK
+    implementation("org.dexcare:dexcare:8.5.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -67,4 +87,10 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
