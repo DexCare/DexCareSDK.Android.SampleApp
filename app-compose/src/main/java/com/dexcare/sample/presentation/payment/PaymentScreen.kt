@@ -1,4 +1,4 @@
-package com.dexcare.sample.provider
+package com.dexcare.sample.presentation.payment
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,13 +9,12 @@ import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SolidButton
 
 @Composable
-fun ProviderScreen(onBackPressed: () -> Unit, navContinue: () -> Unit) {
+fun PaymentScreen() {
     ActionBarScreen(
-        title = "Provider",
-        onBackPressed = onBackPressed
+        title = "Payment",
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            SolidButton(text = "Select Provider", onClick = navContinue)
+            SolidButton(text = "Submit", onClick = { })
         }
     }
 }

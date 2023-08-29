@@ -1,4 +1,4 @@
-package com.dexcare.sample
+package com.dexcare.sample.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,20 +11,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.dexcare.sample.areConfigValuesSetUp
 import com.dexcare.sample.auth.AuthProvider
-import com.dexcare.sample.dashboard.DashboardScreen
-import com.dexcare.sample.demographics.DemographicsScreen
-import com.dexcare.sample.payment.PaymentScreen
-import com.dexcare.sample.provider.ProviderScreen
-import com.dexcare.sample.reasonforvisit.ReasonForVisitScreen
+import com.dexcare.sample.presentation.dashboard.DashboardScreen
+import com.dexcare.sample.presentation.demographics.DemographicsScreen
+import com.dexcare.sample.presentation.payment.PaymentScreen
+import com.dexcare.sample.presentation.provider.ProviderScreen
+import com.dexcare.sample.presentation.provider.ProviderViewModel
+import com.dexcare.sample.presentation.provider.timeslot.ProviderTimeSlotScreen
+import com.dexcare.sample.presentation.provider.timeslot.ProviderTimeSlotViewModel
+import com.dexcare.sample.presentation.reasonforvisit.ReasonForVisitScreen
+import com.dexcare.sample.presentation.reasonforvisit.ReasonForVisitViewModel
 import com.dexcare.sample.ui.components.FullScreen
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -100,44 +107,71 @@ fun MainNavigation() {
 }
 
 fun NavGraphBuilder.providerNavigation(navController: NavController) {
-    navigation(startDestination = "provider", route = "providerFlow") {
-        composable("provider") {
+    navigation(startDestination = "providerFlow/provider", route = "providerFlow") {
+        composable("providerFlow/provider") {
+            val providerViewModel: ProviderViewModel = hiltViewModel()
             ProviderScreen(
+                providerViewModel,
                 onBackPressed = {
                     navController.popBackStack()
                 }, navContinue = {
-                    navController.navigate("demographics")
+                    navController.navigate("providerFlow/providerSlot")
                 }
             )
         }
 
-        composable("demographics") {
-            DemographicsScreen(
-                navContinue = {
-                    navController.navigate("reason")
+
+        composable("providerFlow/providerSlot") {
+            val timeSlotViewModel: ProviderTimeSlotViewModel = hiltViewModel()
+            ProviderTimeSlotScreen(
+                viewModel = timeSlotViewModel,
+                onBackPressed = { navController.popBackStack() },
+                onContinue = {
+                    navController.navigate("providerFlow/reason")
                 }
             )
         }
-        composable("reason") {
+
+        composable("providerFlow/reason") {
+            val viewModel = hiltViewModel<ReasonForVisitViewModel>()
             ReasonForVisitScreen(
+                viewModel = viewModel,
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onContinue = {
+                    Timber.d("providerNavigation Navigate to demographics from reason for visit")
+                    navController.navigate("providerFlow/demographics")
                 }
             )
         }
 
-        composable("payment") {
+        composable("providerFlow/demographics") {
+            DemographicsScreen(
+                hiltViewModel(),
+                navContinue = {
+                    navController.navigate("providerFlow/payment")
+                }
+            )
+        }
+
+        composable("providerFlow/payment") {
             PaymentScreen()
         }
     }
 }
 
 fun NavGraphBuilder.virtualNavigation(navController: NavController) {
-    navigation(startDestination = "reason", route = "virtualFlow") {
-        composable("reason") {
+    navigation(startDestination = "virtualFlow/reason", route = "virtualFlow") {
+        composable("virtualFlow/reason") {
+            val viewModel = hiltViewModel<ReasonForVisitViewModel>()
             ReasonForVisitScreen(
+                viewModel = viewModel,
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onContinue = {
+                    Timber.d("virtualNavigation Navigate to demographics from reason for visit")
                 }
             )
         }
@@ -145,11 +179,24 @@ fun NavGraphBuilder.virtualNavigation(navController: NavController) {
 }
 
 fun NavGraphBuilder.retailNavigation(navController: NavController) {
-    navigation(startDestination = "reason", route = "retailFlow") {
-        composable("reason") {
+    navigation(startDestination = "retailFlow/demographics", route = "retailFlow") {
+        composable("retailFlow/demographics") {
+            DemographicsScreen(
+                hiltViewModel(),
+                navContinue = {
+                    navController.navigate("retailFlow/reason")
+                }
+            )
+        }
+        composable("retailFlow/reason") {
+            val viewModel = hiltViewModel<ReasonForVisitViewModel>()
             ReasonForVisitScreen(
+                viewModel = viewModel,
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onContinue = {
+                    Timber.d("retailNavigation Navigate to demographics from reason for visit")
                 }
             )
         }

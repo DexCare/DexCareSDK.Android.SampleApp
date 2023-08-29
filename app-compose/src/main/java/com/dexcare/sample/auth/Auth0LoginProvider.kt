@@ -11,7 +11,6 @@ import com.auth0.android.result.Credentials
 import dagger.hilt.android.qualifiers.ActivityContext
 import org.dexcare.sampleapp.android.R
 import timber.log.Timber
-import java.time.ZoneId
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -41,7 +40,6 @@ class Auth0LoginProvider @Inject constructor(@ActivityContext private val contex
                                 accessToken = accessToken,
                                 refreshToken = refreshToken,
                                 expiresAt = credentials.expiresAt.toInstant()
-                                    .atZone(ZoneId.systemDefault()).toLocalDateTime()
                             )
                         )
                     }

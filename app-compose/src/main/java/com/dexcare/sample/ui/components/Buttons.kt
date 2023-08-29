@@ -3,6 +3,7 @@ package com.dexcare.sample.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -21,7 +22,7 @@ fun SolidButton(
     onClick: () -> Unit
 ) {
     Button(
-        modifier = modifier,
+        modifier = modifier.sizeIn(Dimens.accessibleSize),
         enabled = isEnabled,
         onClick = onClick
     ) {
@@ -38,7 +39,7 @@ fun SecondaryButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.sizeIn(Dimens.accessibleSize),
         enabled = isEnabled
     ) {
         Text(text = text)

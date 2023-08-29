@@ -96,7 +96,7 @@ fun Actionbar(
             Text(
                 modifier = Modifier.semantics { heading() },
                 text = title,
-                style = textStyle ?: MaterialTheme.typography.headlineSmall,
+                style = textStyle ?: MaterialTheme.typography.bodyLarge,
                 color = appColors.onPrimary
             )
         },

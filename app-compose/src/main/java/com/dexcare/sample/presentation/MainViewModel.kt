@@ -1,4 +1,4 @@
-package com.dexcare.sample
+package com.dexcare.sample.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,6 +45,8 @@ class MainViewModel @Inject constructor(private val sessionManager: SessionManag
                     }
                 }
             }
+        } else {
+            _state.update { it.copy(loginComplete = true) }
         }
     }
 

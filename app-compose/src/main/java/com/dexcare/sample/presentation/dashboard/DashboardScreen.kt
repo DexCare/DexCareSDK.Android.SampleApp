@@ -1,4 +1,4 @@
-package com.dexcare.sample.dashboard
+package com.dexcare.sample.presentation.dashboard
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
