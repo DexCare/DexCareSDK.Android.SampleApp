@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.dexcare.sample.data.VisitType
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.theme.Dimens
@@ -16,6 +17,30 @@ import com.dexcare.sample.ui.theme.PreviewUi
 
 @Composable
 fun DashboardScreen(
+    viewModel: DashboardViewModel,
+    navLaunchRetail: () -> Unit,
+    navLaunchVirtual: () -> Unit,
+    navLaunchProvider: () -> Unit,
+) {
+    DashboardContent(
+        navLaunchRetail = {
+            viewModel.onVisitType(VisitType.Retail)
+            navLaunchRetail()
+        },
+        navLaunchVirtual = {
+            viewModel.onVisitType(VisitType.Virtual)
+            navLaunchVirtual()
+        },
+        navLaunchProvider = {
+            viewModel.onVisitType(VisitType.Provider)
+            navLaunchProvider()
+        }
+    )
+}
+
+
+@Composable
+fun DashboardContent(
     navLaunchRetail: () -> Unit,
     navLaunchVirtual: () -> Unit,
     navLaunchProvider: () -> Unit,
@@ -61,11 +86,10 @@ fun DashboardScreen(
     }
 }
 
-
 @Preview
 @Composable
 private fun PreviewDashboard() {
     PreviewUi {
-        DashboardScreen({}, {}, {})
+        DashboardContent({}, {}, {})
     }
 }

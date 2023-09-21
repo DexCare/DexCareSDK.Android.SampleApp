@@ -1,38 +1,38 @@
 package com.dexcare.sample.presentation.demographics
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.InputOptions
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TextInput
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.dexcare.sample.ui.theme.PreviewUi
+import org.dexcare.sampleapp.android.R
+import org.dexcare.services.models.PatientDeclaration
+import org.dexcare.services.patient.models.Gender
+import java.time.LocalDate
 
 @Composable
 fun DemographicsScreen(viewModel: DemographicsViewModel, navContinue: () -> Unit) {
@@ -40,23 +40,30 @@ fun DemographicsScreen(viewModel: DemographicsViewModel, navContinue: () -> Unit
         title = "Demographics",
     ) {
         val uiState = viewModel.uiState.collectAsState().value
+        val context = LocalContext.current
+        viewModel.setBrandName(context.getString(R.string.brand))
         DemographicsContent(
             uiState = uiState,
             onSubmit = {
-                viewModel.onSubmit(it)
+                viewModel.onSubmit(it, null)
             },
             onNavContinue = {
                 viewModel.onNavigationComplete()
                 navContinue()
+            },
+            onSelectTab = {
+                viewModel.onTabSelected(it)
             }
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DemographicsContent(
     uiState: DemographicsViewModel.UiState,
     onSubmit: (input: DemographicsInput) -> Unit,
+    onSelectTab: (PatientDeclaration) -> Unit,
     onNavContinue: () -> Unit,
 ) {
     if (uiState.inputComplete) {
@@ -64,148 +71,95 @@ fun DemographicsContent(
             onNavContinue()
         }
     }
-    Column(
+    Box(
         Modifier
             .padding(Dimens.Spacing.large)
     ) {
-        Text(
-            text = "Who is this visit for?",
-            modifier = Modifier.padding(vertical = Dimens.Spacing.small),
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        val selectedPosition = rememberSaveable { mutableStateOf(0) }
-
-        Tabs(
-            0,
-            onSelfPatientSelect = {
-                selectedPosition.value = 0
-            },
-            onOtherPatientSelect = {
-                selectedPosition.value = 1
-            }
-        )
-
-        if (selectedPosition.value == 0) {
-            MySelfTab(uiState.patientDemographicsInput, onSubmit)
-        } else {
-            SomeoneElseTab()
+        if (uiState.inProgress) {
+            ProgressScreen()
         }
-    }
-}
 
-
-@Composable
-fun Tabs(
-    selectedTabPosition: Int,
-    onSelfPatientSelect: () -> Unit,
-    onOtherPatientSelect: () -> Unit,
-) {
-    val colors = LocalColorScheme.current
-
-    TabRow(
-        selectedTabIndex = selectedTabPosition,
-        indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
-                Modifier.tabIndicatorOffset(tabPositions[selectedTabPosition]),
-                height = 2.dp,
-                color = colors.primaryContainer
+        Column {
+            Text(
+                text = "Who is this visit for?",
+                modifier = Modifier.padding(vertical = Dimens.Spacing.small),
+                style = MaterialTheme.typography.bodyMedium
             )
-        },
-        divider = {
-            Divider(modifier = Modifier.shadow(4.dp), color = colors.primaryContainer)
+
+//            val selectedPosition = rememberSaveable { mutableStateOf(uiState.patientDeclaration) }
+
+            Tabs(
+                0,
+                onSelfPatientSelect = {
+                    onSelectTab(PatientDeclaration.Self)
+//                    selectedPosition.value = 0
+                },
+                onOtherPatientSelect = {
+                    onSelectTab(PatientDeclaration.Other)
+//                    selectedPosition.value = 1
+                }
+            )
+
+            if (uiState.patientDeclaration == PatientDeclaration.Self) {
+                MySelfTab(uiState.patientDemographicsInput, onSubmit)
+            } else {
+                SomeoneElseTab(uiState.patientDemographicsInput, uiState.actorDemographicsInput)
+            }
         }
-    ) {
-        val isSelfPatient = selectedTabPosition == 0
-        val isPatientSomeoneElse = selectedTabPosition == 1
-        Tab(
-            modifier = Modifier.background(
-                color = if (isSelfPatient) {
-                    colors.primary
-                } else {
-                    Color.White
-                }
-            ),
-            selected = isSelfPatient,
-            onClick = { onSelfPatientSelect() },
-            text = {
-                TabTitle(
-                    "My Self",
-                )
-            },
-            selectedContentColor = Color.White,
-            unselectedContentColor = colors.tertiary
-        )
-
-        Tab(
-            modifier = Modifier.background(
-                color = if (isPatientSomeoneElse) {
-                    colors.primary
-                } else {
-                    Color.White
-                }
-            ),
-            selected = isPatientSomeoneElse,
-            onClick = { onOtherPatientSelect() },
-            text = {
-                TabTitle(
-                    "Someone else",
-                )
-            },
-            selectedContentColor = Color.White,
-            unselectedContentColor = colors.tertiary
-        )
-
-
     }
 }
 
 @Composable
-fun TabTitle(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.bodySmall,
-    )
+fun ProgressScreen() {
+    Box(Modifier.fillMaxSize()) {
+        CircularProgressIndicator(Modifier.align(Alignment.Center))
+    }
 }
 
+
+@ExperimentalMaterial3Api
 @Composable
-fun MySelfTab(currentInput: DemographicsInput, onSubmit: (DemographicsInput) -> Unit) {
+fun MySelfTab(
+    currentInput: DemographicsInput,
+    onSubmit: (DemographicsInput) -> Unit
+) {
     Column {
-        val firstName = rememberSaveable {
+        var firstName = remember {
             mutableStateOf(currentInput.firstName.input.orEmpty())
         }
+
         val lastName = rememberSaveable {
             mutableStateOf(currentInput.lastName.input.orEmpty())
         }
         val email = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.email.input.orEmpty())
         }
         val dateOfBirth = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.dateOfBirth.input.toString())
         }
         val gender = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.gender.input?.name.orEmpty())
         }
         val last4Ssn = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.last4Ssn.input.orEmpty())
         }
         val phoneNumber = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.phone.input.orEmpty())
         }
         val address = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.streetAddress.input.orEmpty())
         }
         val address2 = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.addressLine2.input.orEmpty())
         }
         val city = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.city.input.orEmpty())
         }
         val state = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.state.input.orEmpty())
         }
         val zipCode = rememberSaveable {
-            mutableStateOf("")
+            mutableStateOf(currentInput.zipCode.input.orEmpty())
         }
         Column(
             Modifier
@@ -213,11 +167,18 @@ fun MySelfTab(currentInput: DemographicsInput, onSubmit: (DemographicsInput) -> 
                 .verticalScroll(rememberScrollState())
         ) {
 
+            Text(text = currentInput.firstName.input.orEmpty())
+            Text(text = currentInput.lastName.input.orEmpty())
+            Text(text = currentInput.email.input.orEmpty())
+
             TextInput(
-                input = firstName,
+                input = currentInput.firstName.input.orEmpty(),
                 hint = "First Name",
                 error = currentInput.firstName.error,
                 keyboardOptions = InputOptions.name,
+                onValueChanged = {
+//                    firstName  = it
+                }
             )
 
             TextInput(
@@ -229,24 +190,29 @@ fun MySelfTab(currentInput: DemographicsInput, onSubmit: (DemographicsInput) -> 
             TextInput(
                 input = email,
                 hint = "Email",
+                error = currentInput.email.error,
                 keyboardOptions = InputOptions.email
             )
             TextInput(
                 input = dateOfBirth,
+                error = currentInput.dateOfBirth.error,
                 hint = "Date of Birth",
             )
             TextInput(
                 input = gender,
+                error = currentInput.gender.error,
                 hint = "Gender"
             )
             TextInput(
                 input = last4Ssn,
                 hint = "Last 4 SSN",
+                error = currentInput.last4Ssn.error,
                 keyboardOptions = InputOptions.ssn
             )
             TextInput(
                 input = phoneNumber,
                 hint = "Phone Number",
+                error = currentInput.phone.error,
                 keyboardOptions = InputOptions.phoneNumber,
             )
 
@@ -254,16 +220,19 @@ fun MySelfTab(currentInput: DemographicsInput, onSubmit: (DemographicsInput) -> 
             TextInput(
                 input = address,
                 hint = "Address",
+                error = currentInput.streetAddress.error,
                 keyboardOptions = InputOptions.address
             )
             TextInput(
                 input = address2,
                 hint = "Address  Line 2 (Optional)",
+                error = currentInput.addressLine2.error,
                 keyboardOptions = InputOptions.address,
             )
             TextInput(
                 input = city,
                 hint = "City",
+                error = currentInput.city.error,
                 keyboardOptions = InputOptions.address
             )
 
@@ -275,6 +244,7 @@ fun MySelfTab(currentInput: DemographicsInput, onSubmit: (DemographicsInput) -> 
                     modifier = Modifier.weight(1f),
                     input = state,
                     hint = "Sate",
+                    error = currentInput.state.error,
                     keyboardOptions = InputOptions.address,
                     coverMaxWidth = false
                 )
@@ -282,6 +252,7 @@ fun MySelfTab(currentInput: DemographicsInput, onSubmit: (DemographicsInput) -> 
                     modifier = Modifier.weight(1f),
                     input = zipCode,
                     hint = "Zip Code",
+                    error = currentInput.zipCode.error,
                     keyboardOptions = InputOptions.zipCode,
                     coverMaxWidth = false
                 )
@@ -290,15 +261,25 @@ fun MySelfTab(currentInput: DemographicsInput, onSubmit: (DemographicsInput) -> 
 
         SolidButton(text = "Next", modifier = Modifier.fillMaxWidth()) {
             val input = DemographicsInput.initialize()
-                .withFirstName(firstName.value)
-                .withLastName(lastName.value)
+                .withFirstName(firstName.value.trim())
+                .withLastName(lastName.value.trim())
+                .withEmail(email.value.trim())
+                .withPhone(phoneNumber.value.trim())
+                .withDateOfBirth(LocalDate.now().minusDays(10))//todo
+                .withLast4Ssn(last4Ssn.value.trim())
+                .withGender(Gender.Unknown)
+                .withStreetAddress(address.value.trim())
+                .withAddressLine2(address2.value.trim())
+                .withCity(city.value.trim())
+                .withState(state.value.trim())
+                .withZipCode(zipCode.value.trim())
             onSubmit(input)
         }
     }
 }
 
 @Composable
-fun SomeoneElseTab() {
+fun SomeoneElseTab(patientInput: DemographicsInput, actorInput: DemographicsInput) {
 
 }
 
@@ -310,7 +291,8 @@ fun PreviewDemographicsContent() {
         DemographicsContent(
             uiState,
             onSubmit = {},
-            onNavContinue = {}
+            onNavContinue = {},
+            onSelectTab = {},
         )
     }
 }

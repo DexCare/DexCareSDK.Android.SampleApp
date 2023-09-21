@@ -10,6 +10,10 @@ data class FormField<T : Any>(
         return this.copy(error = error)
     }
 
+    fun resetWith(input: T?): FormField<T> {
+        return this.copy(input = input, error = null)
+    }
+
     companion object {
         fun <T : Any> with(value: T, validator: InputValidator<T>): FormField<T> {
             return FormField(

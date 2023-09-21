@@ -1,13 +1,18 @@
 package com.dexcare.sample.presentation.demographics
 
+import androidx.compose.runtime.Stable
+import org.dexcare.services.patient.models.Gender
+import java.time.LocalDate
+
+@Stable
 data class DemographicsInput(
     val firstName: FormField<String>,
     val lastName: FormField<String>,
     val email: FormField<String>,
     val phone: FormField<String>,
     val last4Ssn: FormField<String>,
-    val gender: FormField<String>,
-    val dateOfBirth: FormField<String>,
+    val gender: FormField<Gender>,
+    val dateOfBirth: FormField<LocalDate>,
     val streetAddress: FormField<String>,
     val addressLine2: FormField<String>,
     val city: FormField<String>,
@@ -25,41 +30,81 @@ data class DemographicsInput(
             firstName = this.firstName.validate(),
             lastName = this.lastName.validate(),
             email = this.email.validate(),
-            phone = this.email.validate(),
-            last4Ssn = this.email.validate(),
-            gender = this.email.validate(),
-            dateOfBirth = this.email.validate(),
-            streetAddress = this.email.validate(),
-            addressLine2 = this.email.validate(),
-            city = this.email.validate(),
-            state = this.email.validate(),
-            zipCode = this.email.validate(),
+            phone = this.phone.validate(),
+            last4Ssn = this.last4Ssn.validate(),
+            gender = this.gender.validate(),
+            dateOfBirth = this.dateOfBirth.validate(),
+            streetAddress = this.streetAddress.validate(),
+            addressLine2 = this.addressLine2.validate(),
+            city = this.city.validate(),
+            state = this.state.validate(),
+            zipCode = this.zipCode.validate(),
         )
     }
 
-    fun withFirstName(firstName: String): DemographicsInput {
-        return copy(firstName = FormField(firstName, null, Validators.NameValidator))
+    fun withFirstName(input: String): DemographicsInput {
+        return copy(firstName = this.firstName.resetWith(input))
     }
 
-    fun withLastName(lastName: String): DemographicsInput {
-        return copy(lastName = FormField(lastName, null, Validators.NameValidator))
+    fun withLastName(input: String): DemographicsInput {
+        return copy(lastName = this.lastName.resetWith(input))
+    }
+
+    fun withEmail(input: String): DemographicsInput {
+        return copy(email = this.email.resetWith(input))
+    }
+
+    fun withPhone(input: String): DemographicsInput {
+        return copy(phone = this.phone.resetWith(input))
+    }
+
+    fun withLast4Ssn(input: String): DemographicsInput {
+        return copy(last4Ssn = this.last4Ssn.resetWith(input))
+    }
+
+    fun withDateOfBirth(input: LocalDate): DemographicsInput {
+        return copy(dateOfBirth = this.dateOfBirth.resetWith(input))
+    }
+
+    fun withGender(input: Gender): DemographicsInput {
+        return copy(gender = this.gender.resetWith(input))
+    }
+
+    fun withStreetAddress(input: String): DemographicsInput {
+        return copy(streetAddress = this.streetAddress.resetWith(input))
+    }
+
+    fun withAddressLine2(input: String): DemographicsInput {
+        return copy(addressLine2 = this.addressLine2.resetWith(input))
+    }
+
+    fun withCity(input: String): DemographicsInput {
+        return copy(city = this.city.resetWith(input))
+    }
+
+    fun withState(input: String): DemographicsInput {
+        return copy(state = this.state.resetWith(input))
+    }
+
+    fun withZipCode(input: String): DemographicsInput {
+        return copy(zipCode = this.zipCode.resetWith(input))
     }
 
     companion object {
         fun initialize(): DemographicsInput {
             return DemographicsInput(
-                firstName = FormField.with(Validators.NameValidator),
-                lastName = FormField.with(Validators.NameValidator),
-                email = FormField.with(Validators.EmailValidator),
+                firstName = FormField.with(Validators.Name),
+                lastName = FormField.with(Validators.Name),
+                email = FormField.with(Validators.Email),
                 last4Ssn = FormField.with(Validators.None),
-                phone = FormField.with(Validators.None),
-                dateOfBirth = FormField.with(Validators.None),
-                gender = FormField.with(Validators.None),
-                streetAddress = FormField.with(Validators.None),
+                phone = FormField.with(Validators.Phone),
+                dateOfBirth = FormField.with(Validators.DateOfBirth),
+                gender = FormField.with(Validators.Gender),
+                streetAddress = FormField.with(Validators.Address),
                 addressLine2 = FormField.with(Validators.None),
                 city = FormField.with(Validators.None),
                 state = FormField.with(Validators.None),
-                zipCode = FormField.with(Validators.None),
+                zipCode = FormField.with(Validators.ZipCode),
             )
         }
     }

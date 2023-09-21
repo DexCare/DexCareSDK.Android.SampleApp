@@ -1,16 +1,18 @@
 package com.dexcare.sample.presentation
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -21,8 +23,11 @@ import androidx.navigation.navigation
 import com.dexcare.sample.areConfigValuesSetUp
 import com.dexcare.sample.auth.AuthProvider
 import com.dexcare.sample.presentation.dashboard.DashboardScreen
+import com.dexcare.sample.presentation.dashboard.DashboardViewModel
 import com.dexcare.sample.presentation.demographics.DemographicsScreen
 import com.dexcare.sample.presentation.payment.PaymentScreen
+import com.dexcare.sample.presentation.practiceregion.PracticeRegionScreen
+import com.dexcare.sample.presentation.practiceregion.PracticeRegionViewModel
 import com.dexcare.sample.presentation.provider.ProviderScreen
 import com.dexcare.sample.presentation.provider.ProviderViewModel
 import com.dexcare.sample.presentation.provider.timeslot.ProviderTimeSlotScreen
@@ -35,7 +40,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var authProvider: AuthProvider
@@ -49,7 +54,11 @@ class MainActivity : ComponentActivity() {
                 LoginError(message = "Required values in config.xml are missing. Make sure the values are properly set, otherwise the app will not work.")
             }
         } else {
-            setContent { MainContent(viewModel) }
+            setContent {
+                CompositionLocalProvider(LocalActivity provides this) {
+                    MainContent(viewModel)
+                }
+            }
         }
     }
 
@@ -57,6 +66,14 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         viewModel.onResume(authProvider)
     }
+}
+
+val LocalActivity = staticCompositionLocalOf<FragmentActivity> {
+    noLocalProvidedFor()
+}
+
+private fun noLocalProvidedFor(): Nothing {
+    error("noLocalProvidedFor LocalActivity")
 }
 
 @Composable
@@ -86,7 +103,9 @@ fun MainNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "dashboard") {
         composable("dashboard") {
+            val viewModel = hiltViewModel<DashboardViewModel>()
             DashboardScreen(
+                viewModel,
                 navLaunchRetail = {
                     navController.navigate("retailFlow")
                 },
@@ -156,13 +175,27 @@ fun NavGraphBuilder.providerNavigation(navController: NavController) {
         }
 
         composable("providerFlow/payment") {
-            PaymentScreen()
+            PaymentScreen(hiltViewModel(),
+                onBackPressed = { navController.popBackStack() })
         }
     }
 }
 
 fun NavGraphBuilder.virtualNavigation(navController: NavController) {
-    navigation(startDestination = "virtualFlow/reason", route = "virtualFlow") {
+    navigation(startDestination = "virtualFlow/practiceRegions", route = "virtualFlow") {
+
+        composable("virtualFlow/practiceRegions") {
+            val viewModel = hiltViewModel<PracticeRegionViewModel>()
+            PracticeRegionScreen(
+                viewModel = viewModel,
+                onBackPressed = {
+                    navController.popBackStack()
+                }, onContinue = {
+                    navController.navigate("virtualFlow/reason")
+                }
+            )
+        }
+
         composable("virtualFlow/reason") {
             val viewModel = hiltViewModel<ReasonForVisitViewModel>()
             ReasonForVisitScreen(
@@ -171,15 +204,32 @@ fun NavGraphBuilder.virtualNavigation(navController: NavController) {
                     navController.popBackStack()
                 },
                 onContinue = {
+                    navController.navigate("virtualFlow/demographics")
                     Timber.d("virtualNavigation Navigate to demographics from reason for visit")
                 }
+            )
+        }
+
+        composable("virtualFlow/demographics") {
+            DemographicsScreen(
+                hiltViewModel(),
+                navContinue = {
+                    navController.navigate("virtualFlow/payments")
+                }
+            )
+        }
+
+        composable("virtualFlow/payments") {
+            PaymentScreen(
+                hiltViewModel(),
+                onBackPressed = { navController.popBackStack() }
             )
         }
     }
 }
 
 fun NavGraphBuilder.retailNavigation(navController: NavController) {
-    navigation(startDestination = "retailFlow/demographics", route = "retailFlow") {
+    navigation(startDestination = "retailFlow/payments", route = "retailFlow") {
         composable("retailFlow/demographics") {
             DemographicsScreen(
                 hiltViewModel(),
@@ -196,9 +246,14 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
                     navController.popBackStack()
                 },
                 onContinue = {
-                    Timber.d("retailNavigation Navigate to demographics from reason for visit")
+                    navController.navigate("retailFlow/payments")
                 }
             )
+        }
+
+        composable("retailFlow/payments") {
+            PaymentScreen(hiltViewModel(),
+                onBackPressed = { navController.popBackStack() })
         }
     }
 }

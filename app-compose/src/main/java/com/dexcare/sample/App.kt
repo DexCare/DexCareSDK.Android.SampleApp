@@ -2,6 +2,7 @@ package com.dexcare.sample
 
 import android.app.Application
 import android.content.Context
+import com.stripe.android.PaymentConfiguration
 import dagger.hilt.android.HiltAndroidApp
 import org.dexcare.DexCareSDK
 import org.dexcare.Environment
@@ -22,6 +23,8 @@ class App : Application() {
                 override val virtualVisitUrl: String = getString(R.string.dexcare_virtualvisit_url)
             }
         )
+
+        PaymentConfiguration.init(this,getString(R.string.stripe_publishable_key))
 
     }
 }
