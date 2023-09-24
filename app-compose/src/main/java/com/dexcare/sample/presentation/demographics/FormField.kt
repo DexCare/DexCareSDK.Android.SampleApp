@@ -1,5 +1,8 @@
 package com.dexcare.sample.presentation.demographics
 
+import androidx.compose.runtime.Stable
+
+@Stable
 data class FormField<T : Any>(
     val input: T?,
     val error: String? = null,
@@ -12,6 +15,10 @@ data class FormField<T : Any>(
 
     fun resetWith(input: T?): FormField<T> {
         return this.copy(input = input, error = null)
+    }
+
+    override fun toString(): String {
+        return input.toString()
     }
 
     companion object {

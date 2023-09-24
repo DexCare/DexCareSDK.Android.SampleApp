@@ -154,7 +154,9 @@ object Validators {
     object Gender : InputValidator<org.dexcare.services.patient.models.Gender> {
         override fun validate(input: org.dexcare.services.patient.models.Gender?): String? {
             Timber.d("validating gender:$input")
-            val error = if (input == null) {
+            val error = if (input == null ||
+                input == org.dexcare.services.patient.models.Gender.Unknown
+            ) {
                 ValidationError.Required
             } else {
                 null

@@ -1,6 +1,7 @@
 package com.dexcare.sample.ui.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,10 +17,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
@@ -29,74 +26,14 @@ import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalColorScheme
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TextInput(
-    input: String,
-    modifier: Modifier = Modifier,
-    coverMaxWidth: Boolean = true,
-    hint: String? = null,
-    error: String? = null,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    onValueChanged: (String) -> Unit,
-) {
-    val colors = LocalColorScheme.current
-
-    var inputState by remember {
-        mutableStateOf(input)
-    }
-    Column(
-        modifier
-            .fillMaxWidth()
-            .padding(vertical = Dimens.Spacing.medium)
-    ) {
-        OutlinedTextField(
-            value = inputState,
-            onValueChange = {
-                inputState = it
-                onValueChanged(it)
-            },
-            colors = if (error != null) {
-                TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = colors.error,
-                    errorBorderColor = colors.error
-                )
-            } else {
-                TextFieldDefaults.outlinedTextFieldColors()
-            },
-            placeholder = {
-                if (hint != null) {
-                    Text(text = hint, style = MaterialTheme.typography.bodyMedium)
-                }
-            },
-            modifier = Modifier.applyWhen(coverMaxWidth) {
-                fillMaxWidth()
-            },
-            maxLines = 1,
-            textStyle = MaterialTheme.typography.bodyMedium,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-        )
-        if (error != null) {
-            Text(
-                text = error,
-                color = colors.error,
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
-    }
-}
-
-
+@Suppress("LongParameterList")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextInput(
     input: MutableState<String>,
     modifier: Modifier = Modifier,
-    coverMaxWidth: Boolean = true,
-    hint: String? = null,
+    fillMaxWidth: Boolean = true,
+    label: String,
     error: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -120,12 +57,10 @@ fun TextInput(
             } else {
                 TextFieldDefaults.outlinedTextFieldColors()
             },
-            placeholder = {
-                if (hint != null) {
-                    Text(text = hint, style = MaterialTheme.typography.bodyMedium)
-                }
+            label = {
+                Text(text = label, style = MaterialTheme.typography.bodyMedium)
             },
-            modifier = Modifier.applyWhen(coverMaxWidth) {
+            modifier = Modifier.applyWhen(fillMaxWidth) {
                 fillMaxWidth()
             },
             maxLines = 1,
@@ -133,6 +68,59 @@ fun TextInput(
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
         )
+        if (error != null) {
+            Text(
+                text = error,
+                color = colors.error,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ClickableTextInput(
+    input: String,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    error: String? = null,
+    onClick: () -> Unit,
+) {
+    val colors = LocalColorScheme.current
+    Column(
+        modifier
+            .fillMaxWidth()
+            .padding(vertical = Dimens.Spacing.medium)
+    ) {
+        OutlinedTextField(
+            value = input,
+            enabled = false,
+            onValueChange = {
+            },
+            colors = if (error != null) {
+                TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = colors.error,
+                    errorBorderColor = colors.error
+                )
+            } else {
+                TextFieldDefaults.outlinedTextFieldColors(
+                    disabledBorderColor = colors.outline,
+                    disabledTextColor = colors.onSurface,
+                    disabledLabelColor = colors.onSurface
+                )
+            },
+            label = {
+                Text(text = label.orEmpty(), style = MaterialTheme.typography.bodyMedium)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
+            maxLines = 1,
+            textStyle = MaterialTheme.typography.bodyMedium,
+        )
+
         if (error != null) {
             Text(
                 text = error,

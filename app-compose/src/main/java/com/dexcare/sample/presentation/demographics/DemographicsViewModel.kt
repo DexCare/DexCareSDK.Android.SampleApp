@@ -1,5 +1,6 @@
 package com.dexcare.sample.presentation.demographics
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.data.PatientRepository
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dexcare.DexCareSDK
 import org.dexcare.services.models.PatientDeclaration
+import org.dexcare.services.patient.models.Address
 import org.dexcare.services.patient.models.Gender
 import org.dexcare.services.patient.models.HumanName
 import org.dexcare.services.patient.models.PatientDemographics
@@ -23,8 +25,7 @@ import javax.inject.Inject
 class DemographicsViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
     private val schedulingDataStore: SchedulingDataStore,
-) :
-    ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _state
@@ -47,15 +48,19 @@ class DemographicsViewModel @Inject constructor(
     }
 
     fun onSubmit(patientInput: DemographicsInput, actorInput: DemographicsInput?) {
+        Timber.d("patientInput:$patientInput")
         val validatedInput = patientInput.validate()
-        if (validatedInput.isValid()) {
-            setPatient()
-        }
+        val isValid = validatedInput.isValid()
+
         _state.update {
             it.copy(
                 patientDemographicsInput = validatedInput,
-                inputComplete = validatedInput.isValid()
+                inputComplete = isValid
             )
+        }
+
+        if (isValid) {
+            setPatient()
         }
     }
 
@@ -99,6 +104,26 @@ class DemographicsViewModel @Inject constructor(
     fun onTabSelected(patientDeclaration: PatientDeclaration) {
         _state.update { it.copy(patientDeclaration = patientDeclaration) }
         schedulingDataStore.setPatientDeclaration(patientDeclaration)
+    }
+
+    fun onSelectGender(gender: Gender) {
+        _state.update {
+            it.copy(
+                patientDemographicsInput = it.patientDemographicsInput.withGender(
+                    gender
+                )
+            )
+        }
+    }
+
+    fun onSelectBirthDate(date: LocalDate) {
+        _state.update {
+            it.copy(
+                patientDemographicsInput = it.patientDemographicsInput.withDateOfBirth(
+                    date
+                )
+            )
+        }
     }
 
     private fun setPatient() {
@@ -163,15 +188,24 @@ class DemographicsViewModel @Inject constructor(
     }
 
     private fun DemographicsInput.mapInputToPatient() = PatientDemographics(
-        addresses = emptyList(),
-        birthdate = LocalDate.now(),
+        addresses = listOf(
+            Address(
+                line1 = streetAddress.input.orEmpty(),
+                line2 = addressLine2.input.orEmpty(),
+                city = city.input.orEmpty(),
+                state = state.input.orEmpty(),
+                postalCode = zipCode.input.orEmpty()
+            )
+        ),
+        birthdate = dateOfBirth.input ?: LocalDate.now(),
         email = email.input.orEmpty(),
-        gender = Gender.Unknown,
+        gender = gender.input ?: Gender.Unknown,
         name = HumanName(lastName.input.orEmpty(), firstName.input.orEmpty()),
         last4SSN = last4Ssn.input.orEmpty(),
         homePhone = phone.input.orEmpty(),
     )
 
+    @Stable
     data class UiState(
         /**
          * Person receiving the care.

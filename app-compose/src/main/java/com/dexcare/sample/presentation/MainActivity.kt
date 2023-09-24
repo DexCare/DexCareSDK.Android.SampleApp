@@ -182,7 +182,7 @@ fun NavGraphBuilder.providerNavigation(navController: NavController) {
 }
 
 fun NavGraphBuilder.virtualNavigation(navController: NavController) {
-    navigation(startDestination = "virtualFlow/practiceRegions", route = "virtualFlow") {
+    navigation(startDestination = "virtualFlow/demographics", route = "virtualFlow") {
 
         composable("virtualFlow/practiceRegions") {
             val viewModel = hiltViewModel<PracticeRegionViewModel>()

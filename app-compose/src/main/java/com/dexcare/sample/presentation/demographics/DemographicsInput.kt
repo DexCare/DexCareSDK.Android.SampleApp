@@ -22,7 +22,17 @@ data class DemographicsInput(
 
     fun isValid(): Boolean {
         return firstName.error.isNullOrEmpty() &&
-                lastName.error.isNullOrEmpty()
+                lastName.error.isNullOrEmpty() &&
+                email.error.isNullOrEmpty() &&
+                phone.error.isNullOrEmpty() &&
+                last4Ssn.error.isNullOrEmpty() &&
+                gender.error.isNullOrEmpty() &&
+                dateOfBirth.error.isNullOrEmpty() &&
+                streetAddress.error.isNullOrEmpty() &&
+                addressLine2.error.isNullOrEmpty() &&
+                city.error.isNullOrEmpty() &&
+                state.error.isNullOrEmpty() &&
+                zipCode.error.isNullOrEmpty()
     }
 
     fun validate(): DemographicsInput {
@@ -62,7 +72,7 @@ data class DemographicsInput(
         return copy(last4Ssn = this.last4Ssn.resetWith(input))
     }
 
-    fun withDateOfBirth(input: LocalDate): DemographicsInput {
+    fun withDateOfBirth(input: LocalDate?): DemographicsInput {
         return copy(dateOfBirth = this.dateOfBirth.resetWith(input))
     }
 
@@ -90,13 +100,28 @@ data class DemographicsInput(
         return copy(zipCode = this.zipCode.resetWith(input))
     }
 
+    override fun toString(): String {
+        return "firstName=${firstName}, " +
+                "lastName=${lastName}, " +
+                "email=${email}, " +
+                "last4Ssn=${last4Ssn}, " +
+                "phone=${phone}, " +
+                "dateOfBirth=${dateOfBirth}, " +
+                "gender=${gender}, " +
+                "streetAddress=${streetAddress}, " +
+                "addressLine2=${addressLine2}, " +
+                "city=${city}, " +
+                "state=${state}, " +
+                "zipCode=${zipCode}"
+    }
+
     companion object {
         fun initialize(): DemographicsInput {
             return DemographicsInput(
                 firstName = FormField.with(Validators.Name),
                 lastName = FormField.with(Validators.Name),
                 email = FormField.with(Validators.Email),
-                last4Ssn = FormField.with(Validators.None),
+                last4Ssn = FormField.with(Validators.Ssn),
                 phone = FormField.with(Validators.Phone),
                 dateOfBirth = FormField.with(Validators.DateOfBirth),
                 gender = FormField.with(Validators.Gender),

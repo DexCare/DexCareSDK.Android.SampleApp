@@ -1,6 +1,7 @@
 package com.dexcare.sample.presentation.demographics
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -10,6 +11,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -34,7 +36,8 @@ fun Tabs(
         },
         divider = {
             Divider(modifier = Modifier.shadow(4.dp), color = colors.primaryContainer)
-        }
+        },
+        modifier = Modifier.clip(RoundedCornerShape(8.dp)),
     ) {
         val isSelfPatient = selectedTabPosition == 0
         val isPatientSomeoneElse = selectedTabPosition == 1
@@ -43,7 +46,7 @@ fun Tabs(
                 color = if (isSelfPatient) {
                     colors.primary
                 } else {
-                    Color.White
+                    colors.primary.copy(alpha = 0.5f)
                 }
             ),
             selected = isSelfPatient,
@@ -54,7 +57,7 @@ fun Tabs(
                 )
             },
             selectedContentColor = Color.White,
-            unselectedContentColor = colors.tertiary
+            unselectedContentColor = Color.White,
         )
 
         Tab(
@@ -62,7 +65,7 @@ fun Tabs(
                 color = if (isPatientSomeoneElse) {
                     colors.primary
                 } else {
-                    Color.White
+                    colors.primary.copy(alpha = 0.5f)
                 }
             ),
             selected = isPatientSomeoneElse,
@@ -73,7 +76,7 @@ fun Tabs(
                 )
             },
             selectedContentColor = Color.White,
-            unselectedContentColor = colors.tertiary
+            unselectedContentColor = Color.White
         )
 
     }
