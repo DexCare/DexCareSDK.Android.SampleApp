@@ -40,15 +40,14 @@ fun PaymentScreen(viewModel: PaymentViewModel, onBackPressed: () -> Unit) {
         val activity = LocalActivity.current
         PaymentContent(
             onSubmit = {
-                viewModel.onSubmit(activity)
+                viewModel.onSubmit(activity, it)
             }
         )
     }
 }
 
-
 @Composable
-fun PaymentContent(onSubmit: () -> Unit) {
+fun PaymentContent(onSubmit: (PaymentMethod) -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
@@ -65,7 +64,7 @@ fun PaymentContent(onSubmit: () -> Unit) {
             PaymentMethod.PaymentMethod.CreditCard -> {
                 CreditCardInput(
                     onCardSubmit = {
-                        onSubmit()
+                        onSubmit(it)
                     }
                 )
             }

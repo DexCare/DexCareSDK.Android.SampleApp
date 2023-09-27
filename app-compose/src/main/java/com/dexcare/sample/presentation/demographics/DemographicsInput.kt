@@ -1,7 +1,10 @@
 package com.dexcare.sample.presentation.demographics
 
 import androidx.compose.runtime.Stable
+import org.dexcare.services.patient.models.Address
 import org.dexcare.services.patient.models.Gender
+import org.dexcare.services.patient.models.HumanName
+import org.dexcare.services.patient.models.PatientDemographics
 import java.time.LocalDate
 
 @Stable
@@ -136,6 +139,22 @@ data class DemographicsInput(
 }
 
 
-
+fun DemographicsInput.mapToDemographics() = PatientDemographics(
+    addresses = listOf(
+        Address(
+            line1 = streetAddress.input.orEmpty(),
+            line2 = addressLine2.input.orEmpty(),
+            city = city.input.orEmpty(),
+            state = state.input.orEmpty(),
+            postalCode = zipCode.input.orEmpty()
+        )
+    ),
+    birthdate = dateOfBirth.input ?: LocalDate.now(),
+    email = email.input.orEmpty(),
+    gender = gender.input ?: Gender.Unknown,
+    name = HumanName(lastName.input.orEmpty(), firstName.input.orEmpty()),
+    last4SSN = last4Ssn.input.orEmpty(),
+    homePhone = phone.input.orEmpty(),
+)
 
 

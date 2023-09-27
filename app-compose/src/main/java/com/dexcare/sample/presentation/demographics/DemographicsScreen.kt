@@ -34,6 +34,7 @@ import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.ClickableTextInput
 import com.dexcare.sample.ui.components.DateInput
 import com.dexcare.sample.ui.components.InputOptions
+import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TextInput
 import com.dexcare.sample.ui.theme.Dimens
@@ -55,7 +56,7 @@ fun DemographicsScreen(viewModel: DemographicsViewModel, navContinue: () -> Unit
         viewModel.setBrandName(context.getString(R.string.brand))
         DemographicsContent(
             uiState = uiState,
-            onSubmit = {
+            onSubmitForSelf = {
                 viewModel.onSubmit(it, null)
             },
             onNavContinue = {
@@ -70,6 +71,12 @@ fun DemographicsScreen(viewModel: DemographicsViewModel, navContinue: () -> Unit
             },
             onSelectBirthDate = {
                 viewModel.onSelectBirthDate(it)
+            },
+            onSubmitForSomeoneElse = { patientInput, actorInput ->
+                viewModel.onSubmit(patientInput, actorInput)
+            },
+            onClearError = {
+                viewModel.setError(null)
             }
         )
     }
@@ -79,13 +86,15 @@ fun DemographicsScreen(viewModel: DemographicsViewModel, navContinue: () -> Unit
 @Composable
 fun DemographicsContent(
     uiState: DemographicsViewModel.UiState,
-    onSubmit: (input: DemographicsInput) -> Unit,
+    onSubmitForSelf: (input: DemographicsInput) -> Unit,
+    onSubmitForSomeoneElse: (patientInput: DemographicsInput, actorInput: DemographicsInput) -> Unit,
     onSelectTab: (PatientDeclaration) -> Unit,
     onSelectGender: (Gender) -> Unit,
     onSelectBirthDate: (LocalDate) -> Unit,
+    onClearError: () -> Unit,
     onNavContinue: () -> Unit,
 ) {
-    if (uiState.inputComplete) {
+    if (uiState.demographicsComplete) {
         LaunchedEffect(Unit) {
             onNavContinue()
         }
@@ -103,6 +112,10 @@ fun DemographicsContent(
         }
 
         val showBirthdayPicker = remember {
+            mutableStateOf(false)
+        }
+
+        val showErrorAlert = remember {
             mutableStateOf(false)
         }
 
@@ -124,6 +137,20 @@ fun DemographicsContent(
             )
         }
 
+        if (uiState.error != null) {
+            showErrorAlert.value = true
+            SimpleAlert(
+                title = "Error",
+                message = uiState.error.message.orEmpty(),
+                buttonText = "Ok",
+                enabledState = showErrorAlert,
+                actionAlertClosed = {
+                    onClearError()
+                }
+            )
+        }
+
+
         Column {
             Text(
                 text = "Who is this visit for?",
@@ -144,7 +171,7 @@ fun DemographicsContent(
             if (uiState.patientDeclaration == PatientDeclaration.Self) {
                 MySelfTab(
                     uiState.patientDemographicsInput,
-                    onSubmit = onSubmit,
+                    onSubmit = onSubmitForSelf,
                     onShowGenderOption = {
                         showGenderOption.value = true
                     },
@@ -153,7 +180,13 @@ fun DemographicsContent(
                     }
                 )
             } else {
-                SomeoneElseTab(uiState.patientDemographicsInput, uiState.actorDemographicsInput)
+                SomeoneElseTab(
+                    uiState.patientDemographicsInput,
+                    uiState.actorDemographicsInput,
+                    onSubmit = { patientInput, actorInput ->
+                        onSubmitForSomeoneElse(patientInput, actorInput)
+                    }
+                )
             }
         }
     }
@@ -304,7 +337,6 @@ fun MySelfTab(
                 }
             )
 
-
             ClickableTextInput(
                 input = currentInput.gender.input?.name.orEmpty(),
                 error = currentInput.gender.error,
@@ -390,8 +422,326 @@ fun MySelfTab(
 }
 
 @Composable
-fun SomeoneElseTab(patientInput: DemographicsInput, actorInput: DemographicsInput) {
+fun SomeoneElseTab(
+    patientInput: DemographicsInput,
+    actorInput: DemographicsInput,
+    onSubmit: (DemographicsInput, DemographicsInput) -> Unit,
+    onShowGenderOption: () -> Unit = {},
+    onShowBirthdayPicker: () -> Unit = {},
+) {
 
+    Column {
+
+        /// Patient input
+        val patientFirstName = remember(patientInput.firstName) {
+            mutableStateOf(patientInput.firstName.input.orEmpty())
+        }
+        val patientLastName = remember(patientInput.lastName) {
+            mutableStateOf(patientInput.lastName.input.orEmpty())
+        }
+        val patientEmail = remember(patientInput.email) {
+            mutableStateOf(patientInput.email.input.orEmpty())
+        }
+        val patientDateOfBirth = remember(patientInput.dateOfBirth) {
+            mutableStateOf(patientInput.dateOfBirth.input)
+        }
+
+        val patientLast4Ssn = remember(patientInput.last4Ssn) {
+            mutableStateOf(patientInput.last4Ssn.input.orEmpty())
+        }
+        val patientPhoneNumber = remember(patientInput.phone) {
+            mutableStateOf(patientInput.phone.input.orEmpty())
+        }
+
+        val patientAddress = remember(patientInput.streetAddress) {
+            mutableStateOf(patientInput.streetAddress.input.orEmpty())
+        }
+        val patientAddress2 = remember(patientInput.addressLine2) {
+            mutableStateOf(patientInput.addressLine2.input.orEmpty())
+        }
+        val patientCity = remember(patientInput.city) {
+            mutableStateOf(patientInput.city.input.orEmpty())
+        }
+        val patientState = remember(patientInput.state) {
+            mutableStateOf(patientInput.state.input.orEmpty())
+        }
+        val patientZipCode = remember(patientInput.zipCode) {
+            mutableStateOf(patientInput.zipCode.input.orEmpty())
+        }
+
+
+        /////// App user input
+        val actorFirstName = remember(actorInput.firstName) {
+            mutableStateOf(actorInput.firstName.input.orEmpty())
+        }
+        val actorLastName = remember(actorInput.lastName) {
+            mutableStateOf(actorInput.lastName.input.orEmpty())
+        }
+        val actorEmail = remember(actorInput.email) {
+            mutableStateOf(actorInput.email.input.orEmpty())
+        }
+        val actorDateOfBirth = remember(actorInput.dateOfBirth) {
+            mutableStateOf(actorInput.dateOfBirth.input)
+        }
+        val actorLast4Ssn = remember(actorInput.last4Ssn) {
+            mutableStateOf(actorInput.last4Ssn.input.orEmpty())
+        }
+        val actorPhoneNumber = remember(actorInput.phone) {
+            mutableStateOf(actorInput.phone.input.orEmpty())
+        }
+        val actorAddress = remember(actorInput.streetAddress) {
+            mutableStateOf(actorInput.streetAddress.input.orEmpty())
+        }
+        val actorAddress2 = remember(actorInput.addressLine2) {
+            mutableStateOf(actorInput.addressLine2.input.orEmpty())
+        }
+        val actorCity = remember(actorInput.city) {
+            mutableStateOf(actorInput.city.input.orEmpty())
+        }
+        val actorState = remember(actorInput.state) {
+            mutableStateOf(actorInput.state.input.orEmpty())
+        }
+        val actorZipCode = remember(actorInput.zipCode) {
+            mutableStateOf(actorInput.zipCode.input.orEmpty())
+        }
+        Column(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
+
+            Text(
+                text = "Patient's Information",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(vertical = Dimens.Spacing.small),
+            )
+
+            TextInput(
+                input = patientFirstName,
+                label = "Patient's First Name",
+                error = patientInput.firstName.error,
+                keyboardOptions = InputOptions.name,
+            )
+
+            TextInput(
+                input = patientLastName,
+                label = "Patient's Last Name",
+                error = patientInput.lastName.error,
+                keyboardOptions = InputOptions.name,
+            )
+            TextInput(
+                input = patientEmail,
+                label = "Patient's Email",
+                error = patientInput.email.error,
+                keyboardOptions = InputOptions.email
+            )
+
+            ClickableTextInput(
+                input = patientDateOfBirth.value?.toString().orEmpty(),
+                error = patientInput.dateOfBirth.error,
+                label = "Patient's Date of birth",
+                onClick = {
+                    onShowBirthdayPicker()
+                }
+            )
+
+
+            ClickableTextInput(
+                input = patientInput.gender.input?.name.orEmpty(),
+                error = patientInput.gender.error,
+                label = "Patient's Gender",
+                onClick = {
+                    Timber.d("Gender clicked")
+                    onShowGenderOption()
+                }
+            )
+            TextInput(
+                input = patientLast4Ssn,
+                label = "Patient's Last 4 SSN",
+                error = patientInput.last4Ssn.error,
+                keyboardOptions = InputOptions.ssn
+            )
+            TextInput(
+                input = patientPhoneNumber,
+                label = "Patient's Phone Number",
+                error = patientInput.phone.error,
+                keyboardOptions = InputOptions.phoneNumber,
+            )
+
+            TextInput(
+                input = patientAddress,
+                label = "Patient's Address",
+                error = patientInput.streetAddress.error,
+                keyboardOptions = InputOptions.address
+            )
+            TextInput(
+                input = patientAddress2,
+                label = "Patient's Address  Line 2 (Optional)",
+                error = patientInput.addressLine2.error,
+                keyboardOptions = InputOptions.address,
+            )
+            TextInput(
+                input = patientCity,
+                label = "Patient's City",
+                error = patientInput.city.error,
+                keyboardOptions = InputOptions.address
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+            ) {
+                TextInput(
+                    modifier = Modifier.weight(1f),
+                    input = patientState,
+                    label = "Patient's Sate",
+                    error = patientInput.state.error,
+                    keyboardOptions = InputOptions.address,
+                    fillMaxWidth = false
+                )
+                TextInput(
+                    modifier = Modifier.weight(1f),
+                    input = patientZipCode,
+                    label = "Patient's Zip Code",
+                    error = patientInput.zipCode.error,
+                    keyboardOptions = InputOptions.zipCode,
+                    fillMaxWidth = false
+                )
+            }
+
+            //Actor information
+            Text(
+                text = "Your Information",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(vertical = Dimens.Spacing.small),
+            )
+
+            TextInput(
+                input = actorFirstName,
+                label = "Your First Name",
+                error = actorInput.firstName.error,
+                keyboardOptions = InputOptions.name,
+            )
+
+            TextInput(
+                input = actorLastName,
+                label = "Your Last Name",
+                error = actorInput.lastName.error,
+                keyboardOptions = InputOptions.name,
+            )
+            TextInput(
+                input = actorEmail,
+                label = "Your Email",
+                error = actorInput.email.error,
+                keyboardOptions = InputOptions.email
+            )
+
+            ClickableTextInput(
+                input = actorDateOfBirth.value?.toString().orEmpty(),
+                error = actorInput.dateOfBirth.error,
+                label = "Your Date of birth",
+                onClick = {
+                    onShowBirthdayPicker()
+                }
+            )
+
+
+            ClickableTextInput(
+                input = actorInput.gender.input?.name.orEmpty(),
+                error = actorInput.gender.error,
+                label = "Your Gender",
+                onClick = {
+                    Timber.d("Gender clicked")
+                    onShowGenderOption()
+                }
+            )
+            TextInput(
+                input = actorLast4Ssn,
+                label = "Your Last 4 SSN",
+                error = actorInput.last4Ssn.error,
+                keyboardOptions = InputOptions.ssn
+            )
+            TextInput(
+                input = actorPhoneNumber,
+                label = "Your Phone Number",
+                error = actorInput.phone.error,
+                keyboardOptions = InputOptions.phoneNumber,
+            )
+
+            TextInput(
+                input = actorAddress,
+                label = "Your Address",
+                error = actorInput.streetAddress.error,
+                keyboardOptions = InputOptions.address
+            )
+            TextInput(
+                input = actorAddress2,
+                label = "Your Address  Line 2 (Optional)",
+                error = actorInput.addressLine2.error,
+                keyboardOptions = InputOptions.address,
+            )
+            TextInput(
+                input = actorCity,
+                label = "Your City",
+                error = actorInput.city.error,
+                keyboardOptions = InputOptions.address
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+            ) {
+                TextInput(
+                    modifier = Modifier.weight(1f),
+                    input = actorState,
+                    label = "Your Sate",
+                    error = actorInput.state.error,
+                    keyboardOptions = InputOptions.address,
+                    fillMaxWidth = false
+                )
+                TextInput(
+                    modifier = Modifier.weight(1f),
+                    input = actorZipCode,
+                    label = "Your Zip Code",
+                    error = actorInput.zipCode.error,
+                    keyboardOptions = InputOptions.zipCode,
+                    fillMaxWidth = false
+                )
+            }
+        }
+
+        SolidButton(text = "Next", modifier = Modifier.fillMaxWidth()) {
+            val patientNewInput = DemographicsInput.initialize()
+                .withFirstName(patientFirstName.value.trim())
+                .withLastName(patientLastName.value.trim())
+                .withEmail(patientEmail.value.trim())
+                .withPhone(patientPhoneNumber.value.trim())
+                .withLast4Ssn(patientLast4Ssn.value.trim())
+                .withStreetAddress(patientAddress.value.trim())
+                .withAddressLine2(patientAddress2.value.trim())
+                .withCity(patientCity.value.trim())
+                .withState(patientState.value.trim())
+                .withZipCode(patientZipCode.value.trim())
+                .withGender(patientInput.gender.input ?: Gender.Unknown)
+                .withDateOfBirth(patientInput.dateOfBirth.input)
+
+            val actorNewInput = DemographicsInput.initialize()
+                .withFirstName(actorFirstName.value.trim())
+                .withLastName(actorLastName.value.trim())
+                .withEmail(actorEmail.value.trim())
+                .withPhone(actorPhoneNumber.value.trim())
+                .withLast4Ssn(actorLast4Ssn.value.trim())
+                .withStreetAddress(actorAddress.value.trim())
+                .withAddressLine2(actorAddress2.value.trim())
+                .withCity(actorCity.value.trim())
+                .withState(actorState.value.trim())
+                .withZipCode(actorZipCode.value.trim())
+                .withGender(actorInput.gender.input ?: Gender.Unknown)
+                .withDateOfBirth(actorInput.dateOfBirth.input)
+
+            onSubmit(patientNewInput, actorNewInput)
+        }
+    }
 }
 
 @Preview
@@ -404,15 +754,18 @@ fun PreviewDemographicsContent() {
                 .withLastName("Smith")
                 .withGender(Gender.Male)
                 .withDateOfBirth(LocalDate.now().minusYears(20))
-                .withEmail("help@dexcarehealth.com")
+                .withEmail("help@dexcarehealth.com"),
+            patientDeclaration = PatientDeclaration.Other
         )
         DemographicsContent(
             uiState,
-            onSubmit = {},
+            onSubmitForSelf = {},
             onNavContinue = {},
             onSelectTab = {},
             onSelectGender = {},
-            onSelectBirthDate = {}
+            onSelectBirthDate = {},
+            onSubmitForSomeoneElse = { _, _ -> },
+            onClearError = {}
         )
     }
 }

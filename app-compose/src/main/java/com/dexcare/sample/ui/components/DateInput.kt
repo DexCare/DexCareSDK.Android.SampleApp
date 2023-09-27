@@ -6,11 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
 import java.time.LocalDate
+import java.time.Month
 
 @Composable
 fun DateInput(
     isEnabled: MutableState<Boolean>,
-    defaultDate: LocalDate = LocalDate.now(),
+    defaultDate: LocalDate = LocalDate.of(1980, Month.JANUARY, 1),
     onDateSelected: (LocalDate) -> Unit
 ) {
     val context = LocalContext.current
