@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.presentation.provider.ProgressMessage
 import com.dexcare.sample.ui.components.ActionBarScreen
+import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TertiaryButton
 import com.dexcare.sample.ui.theme.Dimens
@@ -38,28 +39,38 @@ fun ProviderTimeSlotScreen(
     onBackPressed: () -> Unit,
     onContinue: () -> Unit
 ) {
-    ActionBarScreen(
-        title = "Time Slot",
-        onBackPressed = onBackPressed,
-    ) {
-        val uiState = viewModel.uiState.collectAsState().value
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            if (uiState.inProgress) {
-                ProgressMessage()
-            } else {
-                ProviderTimeSlotContent(
-                    uiState = uiState,
-                    onDaySelected = {
-                        viewModel.onDateSelected(it)
-                    },
-                    onTimeSlotSelected = {
-                        viewModel.onSlotSelected(it)
-                    },
-                    onNextClick = onContinue
-                )
+    val uiState = viewModel.uiState.collectAsState().value
+    if (uiState.error != null) {
+        InformationScreen(title = uiState.error.title, message = uiState.error.message) {
+            onBackPressed()
+        }
+    } else {
+        ActionBarScreen(
+            title = "Time Slot",
+            onBackPressed = onBackPressed,
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                if (uiState.inProgress) {
+                    ProgressMessage()
+                } else {
+                    ProviderTimeSlotContent(
+                        uiState = uiState,
+                        onDaySelected = {
+                            viewModel.onDateSelected(it)
+                        },
+                        onTimeSlotSelected = {
+                            viewModel.onSlotSelected(it)
+                        },
+                        onNextClick = {
+                            viewModel.onContinue()
+                            onContinue()
+                        }
+                    )
+                }
             }
         }
     }
+
 }
 
 @OptIn(ExperimentalLayoutApi::class)

@@ -1,11 +1,16 @@
 package com.dexcare.sample.data
 
+import com.dexcare.sample.common.displayMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.dexcare.DexCareSDK
+import org.dexcare.services.models.PaymentMethod
+import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.provider.models.Provider
 import org.dexcare.services.provider.models.ProviderTimeSlot
+import org.dexcare.services.provider.models.ProviderVisitInformation
 import org.dexcare.services.provider.models.ProviderVisitType
+import org.dexcare.services.retail.models.TimeSlot
 import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
@@ -15,7 +20,8 @@ import javax.inject.Singleton
 class ProviderRepository @Inject constructor() {
 
     private var provider: Provider? = null
-    private val providerTimeSlot = MutableStateFlow<ProviderTimeSlot?>(null)
+    private val providerTimeSlot =
+        MutableStateFlow<ResultState<ProviderTimeSlot>>(ResultState.UnInitialized)
 
     fun getProvider(nationalProviderId: String, onResult: (Result<Provider>) -> Unit) {
         DexCareSDK.providerService.getProvider(nationalProviderId)
@@ -32,7 +38,7 @@ class ProviderRepository @Inject constructor() {
     }
 
     fun onVisitTypeSelected(visitType: ProviderVisitType) {
-        providerTimeSlot.value = null
+        providerTimeSlot.value = ResultState.UnInitialized
         val ehrSystemName = provider?.departments?.firstOrNull()?.ehrSystemName
         DexCareSDK.providerService.getMaxLookaheadDays(
             visitType.shortName.orEmpty(),
@@ -47,7 +53,8 @@ class ProviderRepository @Inject constructor() {
                 )
             },
             onError = {
-                Timber.e(it)
+                providerTimeSlot.value =
+                    ResultState.Error(ErrorResult(message = it.displayMessage()))
             }
         )
     }
@@ -65,13 +72,41 @@ class ProviderRepository @Inject constructor() {
             endDate
         ).subscribe(
             onSuccess = { timeSlot ->
-                providerTimeSlot.value = timeSlot
+                providerTimeSlot.value = ResultState.Complete(timeSlot)
             },
             onError = {
-                providerTimeSlot.value = null
+                providerTimeSlot.value =
+                    ResultState.Error(ErrorResult(message = it.displayMessage()))
             }
         )
     }
 
-    fun observeTimeSlot(): StateFlow<ProviderTimeSlot?> = providerTimeSlot
+    fun observeTimeSlot(): StateFlow<ResultState<ProviderTimeSlot>> = providerTimeSlot
+
+    fun scheduleVisit(
+        paymentMethod: PaymentMethod,
+        providerVisitInformation: ProviderVisitInformation,
+        timeSlot: TimeSlot,
+        ehrSystemName: String,
+        patient: DexCarePatient,
+        actor: DexCarePatient?,
+        onComplete: (String?, ErrorResult?) -> Unit,
+    ) {
+        DexCareSDK.providerService.scheduleProviderVisit(
+            paymentMethod,
+            providerVisitInformation,
+            timeSlot,
+            ehrSystemName,
+            patient, actor
+        ).subscribe(onSuccess = {
+            onComplete(it, null)
+        }, onError = {
+            onComplete(
+                null,
+                ErrorResult(
+                    message = it.displayMessage()
+                )
+            )
+        })
+    }
 }

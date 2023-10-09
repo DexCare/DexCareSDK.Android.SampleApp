@@ -175,8 +175,13 @@ fun NavGraphBuilder.providerNavigation(navController: NavController) {
         }
 
         composable("providerFlow/payment") {
-            PaymentScreen(hiltViewModel(),
-                onBackPressed = { navController.popBackStack() })
+            PaymentScreen(
+                hiltViewModel(),
+                onBackPressed = { navController.popBackStack() },
+                onExit = {
+                    navController.popBackStack("providerFlow/provider", true)
+                }
+            )
         }
     }
 }
@@ -222,7 +227,10 @@ fun NavGraphBuilder.virtualNavigation(navController: NavController) {
         composable("virtualFlow/payments") {
             PaymentScreen(
                 hiltViewModel(),
-                onBackPressed = { navController.popBackStack() }
+                onBackPressed = { navController.popBackStack() },
+                onExit = {
+
+                }
             )
         }
     }
@@ -253,7 +261,11 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
 
         composable("retailFlow/payments") {
             PaymentScreen(hiltViewModel(),
-                onBackPressed = { navController.popBackStack() })
+                onBackPressed = { navController.popBackStack() },
+                onExit = {
+
+                }
+            )
         }
     }
 }

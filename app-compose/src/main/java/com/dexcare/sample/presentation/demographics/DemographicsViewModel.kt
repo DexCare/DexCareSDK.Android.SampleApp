@@ -224,7 +224,8 @@ class DemographicsViewModel @Inject constructor(
 
     private fun findOrCreatePatientsWithEhrSystemName(ehrSystemName: String) {
         if (_state.value.patientDeclaration == PatientDeclaration.Other) {
-            setUpDependentPatientLink(ehrSystemName) {
+            setUpDependentPatientLink(ehrSystemName) { patient ->
+                schedulingDataStore.setPatient(patient)
                 // The requirement for the Actor is that they have at least one demographic link.
                 // The EHR System of the Actor's demographic link does not matter for dependent visits,
                 // they just need to have a link.
@@ -234,7 +235,7 @@ class DemographicsViewModel @Inject constructor(
                 setUpAppUserDemographics(
                     ehrSystemName,
                     _state.value.actorDemographicsInput.mapToDemographics()
-                ) {
+                ) { _ ->
                     _state.update { it.copy(demographicsComplete = true) }
                 }
             }
@@ -242,7 +243,8 @@ class DemographicsViewModel @Inject constructor(
             setUpAppUserDemographics(
                 ehrSystemName,
                 _state.value.patientDemographicsInput.mapToDemographics()
-            ) {
+            ) { patient ->
+                schedulingDataStore.setPatient(patient)
                 _state.update { it.copy(demographicsComplete = true) }
             }
         }

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,24 +27,54 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.presentation.LocalActivity
+import com.dexcare.sample.presentation.provider.ProgressMessage
 import com.dexcare.sample.ui.components.ActionBarScreen
+import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.models.PaymentMethod
 
 @Composable
-fun PaymentScreen(viewModel: PaymentViewModel, onBackPressed: () -> Unit) {
+fun PaymentScreen(
+    viewModel: PaymentViewModel,
+    onBackPressed: () -> Unit,
+    onExit: () -> Unit
+) {
+    val uiState = viewModel.uiState.collectAsState().value
     ActionBarScreen(
         title = "Payment",
         onBackPressed = onBackPressed
     ) {
         val activity = LocalActivity.current
-        PaymentContent(
-            onSubmit = {
-                viewModel.onSubmit(activity, it)
+        if (uiState.error != null) {
+            InformationScreen(
+                title = uiState.error.title,
+                message = uiState.error.message,
+                showTopBar = false
+            ) {
+                onBackPressed()
             }
-        )
+        } else if (uiState.providerBookingComplete) {
+            InformationScreen(
+                title = "Booking complete",
+                message = "Your appointment has been set up.",
+                showTopBar = false
+            ) {
+                onExit()
+            }
+        } else {
+            Box {
+                PaymentContent(
+                    onSubmit = {
+                        viewModel.onSubmit(activity, it)
+                    }
+                )
+                if (uiState.loading) {
+                    ProgressMessage()
+                }
+            }
+        }
     }
 }
 
@@ -56,7 +88,7 @@ fun PaymentContent(onSubmit: (PaymentMethod) -> Unit) {
         val selectedMethod = remember {
             mutableStateOf(PaymentMethod.PaymentMethod.CreditCard)
         }
-        PaymentInput(onInputSelected = { method ->
+        PaymentOptionInput(onInputSelected = { method ->
             selectedMethod.value = method
         })
 
@@ -85,7 +117,7 @@ fun PaymentContent(onSubmit: (PaymentMethod) -> Unit) {
 }
 
 @Composable
-fun PaymentInput(onInputSelected: (PaymentMethod.PaymentMethod) -> Unit) {
+fun PaymentOptionInput(onInputSelected: (PaymentMethod.PaymentMethod) -> Unit) {
     Column {
         val colors = LocalColorScheme.current
         Text(text = "Select a payment method")

@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.dexcare.sample.ui.components.ActionBarScreen
+import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.theme.Dimens
 import org.dexcare.services.provider.models.ProviderVisitType
 
@@ -41,7 +42,8 @@ fun ProviderScreen(
             onSelectVisitType = {
                 viewModel.onVisitTypeSelected(it)
                 navContinue()
-            }
+            },
+            onGoBack = onBackPressed
         )
     }
 }
@@ -49,11 +51,19 @@ fun ProviderScreen(
 @Composable
 fun ProviderContent(
     uiState: ProviderViewModel.UiState,
-    onSelectVisitType: (ProviderVisitType) -> Unit
+    onSelectVisitType: (ProviderVisitType) -> Unit,
+    onGoBack: () -> Unit,
 ) {
     Column(Modifier.padding(Dimens.Spacing.large)) {
         if (uiState.errorMessage != null) {
             ErrorMessage(message = uiState.errorMessage)
+        } else if (!uiState.isProviderActive) {
+            InformationScreen(
+                title = "Provider is not open for scheduling.",
+                message = "Please try again later or select different provider.",
+                showTopBar = false,
+                onDismiss = onGoBack
+            )
         } else {
             uiState.provider?.let { provider ->
                 Card {
@@ -123,7 +133,7 @@ fun ErrorMessage(message: String) {
 @Composable
 fun ProgressMessage(message: String? = null) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator()
             Text(
                 text = message ?: "Loading",

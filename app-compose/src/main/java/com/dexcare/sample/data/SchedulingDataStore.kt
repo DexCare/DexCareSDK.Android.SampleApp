@@ -7,6 +7,7 @@ import org.dexcare.services.models.RelationshipToPatient
 import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.PatientDemographics
 import org.dexcare.services.provider.models.Provider
+import org.dexcare.services.provider.models.ProviderVisitInformation
 import org.dexcare.services.retail.models.RetailDepartment
 import org.dexcare.services.retail.models.TimeSlot
 import org.dexcare.services.virtualvisit.models.DefaultVirtualVisitTypes
@@ -96,6 +97,18 @@ class SchedulingDataStore @Inject constructor() {
             initialStatus = DefaultVisitStatus.Requested.status,
             // Refer to RelationshipToPatient for the full list
             actorRelationshipToPatient = scheduleRequest.relationshipToPatient,
+        )
+    }
+
+    fun providerInformation(): ProviderVisitInformation {
+        return ProviderVisitInformation(
+            visitReason = scheduleRequest.reasonForVisit!!,
+            patientDeclaration = scheduleRequest.patientDeclaration,
+            userEmail = scheduleRequest.appUserDemographics!!.email,
+            contactPhoneNumber = scheduleRequest.appUserDemographics!!.homePhone!!,
+            actorRelationshipToPatient = scheduleRequest.relationshipToPatient,
+            listOf(),
+            false
         )
     }
 }

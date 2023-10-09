@@ -2,7 +2,10 @@ package com.dexcare.sample.presentation.provider.timeslot
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.ProviderRepository
+import com.dexcare.sample.data.ResultState
+import com.dexcare.sample.data.SchedulingDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,8 +20,10 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class ProviderTimeSlotViewModel @Inject constructor(private val providerRepository: ProviderRepository) :
-    ViewModel() {
+class ProviderTimeSlotViewModel @Inject constructor(
+    private val providerRepository: ProviderRepository,
+    private val schedulingDataStore: SchedulingDataStore,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _state
@@ -27,8 +32,18 @@ class ProviderTimeSlotViewModel @Inject constructor(private val providerReposito
         _state.update { it.copy(inProgress = true) }
         viewModelScope.launch {
             providerRepository.observeTimeSlot().onEach { timeSlot ->
-                if (timeSlot != null) {
-                    setData(timeSlot)
+                when (timeSlot) {
+                    is ResultState.Complete -> {
+                        setData(timeSlot.data)
+                    }
+
+                    is ResultState.Error -> {
+                        _state.update { it.copy(error = timeSlot.errorResult) }
+                    }
+
+                    else -> {
+
+                    }
                 }
             }.launchIn(viewModelScope)
         }
@@ -67,6 +82,14 @@ class ProviderTimeSlotViewModel @Inject constructor(private val providerReposito
         _state.update { it.copy(selectedSlot = slot) }
     }
 
+    fun onContinue() {
+        val slotId = _state.value.selectedSlot?.slotId.orEmpty()
+        val selectedSlot = _state.value.scheduleDays.flatMap {
+            it.timeSlots
+        }.first { it.slotId == slotId }
+        schedulingDataStore.setTimeSlot(selectedSlot)
+    }
+
     data class UiState(
         val noSchedulesAvailable: Boolean = false,
         val errorMessage: String? = null,
@@ -79,6 +102,7 @@ class ProviderTimeSlotViewModel @Inject constructor(private val providerReposito
         val inProgress: Boolean = false,
         val start: LocalDate? = null,
         val end: LocalDate? = null,
+        val error: ErrorResult? = null,
     )
 
     data class TimeSlotUi(val slotId: String, val time: String)
