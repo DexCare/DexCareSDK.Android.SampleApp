@@ -48,7 +48,7 @@ fun ReasonForVisitContent(
 ) {
     Column(Modifier.padding(Dimens.Spacing.large)) {
         Text(
-            text = "Tell us your reason for visit today",
+            text = "Tell us your reason for visit",
             modifier = Modifier.padding(top = Dimens.Spacing.large)
         )
         val reason = remember {

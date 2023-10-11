@@ -34,6 +34,8 @@ import com.dexcare.sample.presentation.provider.timeslot.ProviderTimeSlotScreen
 import com.dexcare.sample.presentation.provider.timeslot.ProviderTimeSlotViewModel
 import com.dexcare.sample.presentation.reasonforvisit.ReasonForVisitScreen
 import com.dexcare.sample.presentation.reasonforvisit.ReasonForVisitViewModel
+import com.dexcare.sample.presentation.retailclinic.RetailClinicScreen
+import com.dexcare.sample.presentation.retailclinic.timeslot.RetailTimeSlotScreen
 import com.dexcare.sample.ui.components.FullScreen
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -237,11 +239,23 @@ fun NavGraphBuilder.virtualNavigation(navController: NavController) {
 }
 
 fun NavGraphBuilder.retailNavigation(navController: NavController) {
-    navigation(startDestination = "retailFlow/payments", route = "retailFlow") {
-        composable("retailFlow/demographics") {
-            DemographicsScreen(
+    navigation(startDestination = "retailFlow/clinics", route = "retailFlow") {
+        composable("retailFlow/clinics") {
+            RetailClinicScreen(
                 hiltViewModel(),
-                navContinue = {
+                onContinue = {
+                    navController.navigate("retailFlow/timeSlot")
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable("retailFlow/timeSlot") {
+            RetailTimeSlotScreen(
+                viewModel = hiltViewModel(),
+                onBackPressed = { navController.popBackStack() },
+                onContinue = {
                     navController.navigate("retailFlow/reason")
                 }
             )
@@ -255,6 +269,15 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
                 },
                 onContinue = {
                     navController.navigate("retailFlow/payments")
+                }
+            )
+        }
+
+        composable("retailFlow/demographics") {
+            DemographicsScreen(
+                hiltViewModel(),
+                navContinue = {
+                    navController.navigate("retailFlow/reason")
                 }
             )
         }

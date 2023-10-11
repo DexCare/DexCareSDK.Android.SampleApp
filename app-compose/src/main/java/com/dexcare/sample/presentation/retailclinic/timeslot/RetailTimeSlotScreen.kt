@@ -1,8 +1,6 @@
-package com.dexcare.sample.presentation.provider.timeslot
+package com.dexcare.sample.presentation.retailclinic.timeslot
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,21 +18,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.dexcare.sample.presentation.provider.ProgressMessage
+import com.dexcare.sample.presentation.provider.timeslot.InputComponent
+import com.dexcare.sample.presentation.provider.timeslot.NoSchedulesMessage
+import com.dexcare.sample.presentation.provider.timeslot.TimeSlotUi
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TertiaryButton
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
-import com.dexcare.sample.ui.theme.PreviewUi
 import java.time.LocalDate
 
 @Composable
-fun ProviderTimeSlotScreen(
-    viewModel: ProviderTimeSlotViewModel,
+fun RetailTimeSlotScreen(
+    viewModel: RetailTimeSlotViewModel,
     onBackPressed: () -> Unit,
     onContinue: () -> Unit
 ) {
@@ -50,10 +46,10 @@ fun ProviderTimeSlotScreen(
             onBackPressed = onBackPressed,
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                if (uiState.inProgress) {
+                if (uiState.isLoading) {
                     ProgressMessage()
                 } else {
-                    ProviderTimeSlotContent(
+                    RetailTimeSlotContent(
                         uiState = uiState,
                         onDaySelected = {
                             viewModel.onDateSelected(it)
@@ -70,13 +66,13 @@ fun ProviderTimeSlotScreen(
             }
         }
     }
-
 }
+
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ProviderTimeSlotContent(
-    uiState: ProviderTimeSlotViewModel.UiState,
+private fun RetailTimeSlotContent(
+    uiState: RetailTimeSlotViewModel.UiState,
     onDaySelected: (day: LocalDate) -> Unit,
     onTimeSlotSelected: (slot: TimeSlotUi) -> Unit,
     onNextClick: () -> Unit,
@@ -91,7 +87,7 @@ private fun ProviderTimeSlotContent(
                 .padding(Dimens.Spacing.large)
         ) {
             Text(
-                text = "Select one of schedules between ${uiState.start} and ${uiState.end}",
+                text = "Select one of schedules",
                 style = MaterialTheme.typography.bodyMedium,
             )
 
@@ -151,67 +147,5 @@ private fun ProviderTimeSlotContent(
                 onNextClick()
             }
         }
-    }
-}
-
-@Composable
-fun NoSchedulesMessage() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "There are no schedules available for selected visit type. Please select another visit type and try again.")
-    }
-}
-
-
-@Composable
-fun InputComponent(
-    value: String,
-    modifier: Modifier = Modifier,
-    isEnabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    val colors = LocalColorScheme.current
-    val color = if (isEnabled) {
-        colors.primary
-    } else {
-        colors.primary.copy(alpha = .5f)
-    }
-
-    Text(
-        text = value,
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                1.dp,
-                color = color,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .clickable {
-                if (isEnabled) {
-                    onClick()
-                }
-            }
-            .padding(Dimens.Spacing.medium),
-        style = MaterialTheme.typography.bodyMedium.copy(color = color),
-    )
-}
-
-@Preview
-@Composable
-fun PreviewProviderTimeSlotContent() {
-    val today = LocalDate.now()
-    val uiState = ProviderTimeSlotViewModel.UiState(
-        start = today,
-        end = today.plusMonths(3),
-        noSchedulesAvailable = false,
-        dateOptions = listOf(
-            today,
-            today.plusDays(1),
-            today.plusDays(2),
-            today.plusDays(3),
-            today.plusDays(4),
-        )
-    )
-    PreviewUi {
-        ProviderTimeSlotContent(uiState, {}, {}, {})
     }
 }

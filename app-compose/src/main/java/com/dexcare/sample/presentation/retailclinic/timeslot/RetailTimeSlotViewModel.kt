@@ -1,27 +1,26 @@
-package com.dexcare.sample.presentation.provider.timeslot
+package com.dexcare.sample.presentation.retailclinic.timeslot
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
-import com.dexcare.sample.data.ProviderRepository
-import com.dexcare.sample.data.ResultState
+import com.dexcare.sample.data.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
+import com.dexcare.sample.presentation.provider.timeslot.TimeSlotUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dexcare.services.provider.models.ProviderTimeSlot
+import org.dexcare.services.retail.models.RetailAppointmentTimeSlot
 import org.dexcare.services.retail.models.ScheduleDay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class ProviderTimeSlotViewModel @Inject constructor(
-    private val providerRepository: ProviderRepository,
+class RetailTimeSlotViewModel @Inject constructor(
+    private val retailClinicRepository: RetailClinicRepository,
     private val schedulingDataStore: SchedulingDataStore,
 ) : ViewModel() {
 
@@ -29,37 +28,37 @@ class ProviderTimeSlotViewModel @Inject constructor(
     val uiState: StateFlow<UiState> = _state
 
     init {
-        _state.update { it.copy(inProgress = true) }
         viewModelScope.launch {
-            providerRepository.observeTimeSlot().onEach { timeSlot ->
-                when (timeSlot) {
-                    is ResultState.Complete -> {
-                        setData(timeSlot.data)
+            val departmentName = schedulingDataStore.scheduleRequest.retailClinic?.departmentName
+            if (!departmentName.isNullOrEmpty()) {
+                retailClinicRepository.getTimeSlots(departmentName).subscribe({ retailTimeSlot ->
+                    setData(retailTimeSlot)
+                    _state.update {
+                        it.copy(
+                            scheduleDays = retailTimeSlot.scheduleDays,
+                            isLoading = false
+                        )
                     }
-
-                    is ResultState.Error -> {
-                        _state.update { it.copy(error = timeSlot.errorResult) }
-                    }
-
-                    else -> {
-
-                    }
+                }, { err ->
+                    _state.update { it.copy(isLoading = false, error = err.toError()) }
                 }
-            }.launchIn(viewModelScope)
+                )
+            }
+
         }
     }
 
-    private fun setData(timeSlot: ProviderTimeSlot) {
+    private fun setData(timeSlot: RetailAppointmentTimeSlot) {
         val filteredData = timeSlot.scheduleDays.filter { it.timeSlots.isNotEmpty() }
 
         _state.update { oldState ->
             oldState.copy(
-                providerTimeSlot = timeSlot,
-                start = timeSlot.startDate,
-                end = timeSlot.endDate,
+                retailTimeSlot = timeSlot,
+                start = timeSlot.startDate.toLocalDate(),
+                end = timeSlot.endDate.toLocalDate(),
                 scheduleDays = filteredData,
-                errorMessage = null,
-                inProgress = false,
+                error = null,
+                isLoading = false,
                 noSchedulesAvailable = filteredData.isEmpty(),
                 dateOptions = filteredData.map { it.localDate }
             )
@@ -91,18 +90,16 @@ class ProviderTimeSlotViewModel @Inject constructor(
     }
 
     data class UiState(
+        val isLoading: Boolean = false,
+        val retailTimeSlot: RetailAppointmentTimeSlot? = null,
         val noSchedulesAvailable: Boolean = false,
-        val errorMessage: String? = null,
-        val scheduleDays: List<ScheduleDay> = emptyList(),
-        val dateOptions: List<LocalDate> = emptyList(),
+        val error: ErrorResult? = null,
         val selectedDate: LocalDate? = null,
         val selectedSlot: TimeSlotUi? = null,
         val timeSlots: List<TimeSlotUi> = emptyList(),
-        val providerTimeSlot: ProviderTimeSlot? = null,
-        val inProgress: Boolean = false,
+        val dateOptions: List<LocalDate> = emptyList(),
+        val scheduleDays: List<ScheduleDay> = emptyList(),
         val start: LocalDate? = null,
         val end: LocalDate? = null,
-        val error: ErrorResult? = null,
     )
 }
-data class TimeSlotUi(val slotId: String, val time: String)
