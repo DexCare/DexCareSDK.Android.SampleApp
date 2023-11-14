@@ -3,7 +3,8 @@ package com.dexcare.sample.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.dexcare.sample.auth.SessionManager
-import com.dexcare.sample.common.DexCareConfigProvider
+import com.dexcare.sample.data.DexCareConfig
+import com.dexcare.sample.data.DexCareConfigImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,8 @@ class CommonModule {
     }
 
     @Provides
-    fun provideConfig(@ApplicationContext context: Context): DexCareConfigProvider {
-        return DexCareConfigProvider(context)
+    fun provideDexConfig(@ApplicationContext context: Context): DexCareConfig {
+        return DexCareConfigImpl(context)
     }
+
 }

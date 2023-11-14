@@ -1,7 +1,6 @@
 package com.dexcare.sample.presentation.provider
 
 import androidx.lifecycle.ViewModel
-import com.dexcare.sample.common.DexCareConfigProvider
 import com.dexcare.sample.data.ProviderRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ProviderViewModel @Inject constructor(
     private val providerRepository: ProviderRepository,
-    private val config: DexCareConfigProvider,
     private val schedulingDataStore: SchedulingDataStore,
 ) : ViewModel() {
 
@@ -29,7 +27,7 @@ class ProviderViewModel @Inject constructor(
 
     private fun fetchProvider() {
         _state.update { it.copy(inProgress = true) }
-        providerRepository.getProvider(config.getNationalProviderId(), onResult = { result ->
+        providerRepository.getProvider(onResult = { result ->
             result.onSuccess { provider ->
                 Timber.d("provider details:${provider}")
                 _state.update {

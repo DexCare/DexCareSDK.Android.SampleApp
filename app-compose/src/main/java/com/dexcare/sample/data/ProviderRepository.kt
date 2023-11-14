@@ -17,14 +17,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProviderRepository @Inject constructor() {
+class ProviderRepository @Inject constructor(private val dexCareConfig: DexCareConfig) {
 
     private var provider: Provider? = null
     private val providerTimeSlot =
         MutableStateFlow<ResultState<ProviderTimeSlot>>(ResultState.UnInitialized)
 
-    fun getProvider(nationalProviderId: String, onResult: (Result<Provider>) -> Unit) {
-        DexCareSDK.providerService.getProvider(nationalProviderId)
+    fun getProvider(onResult: (Result<Provider>) -> Unit) {
+        DexCareSDK.providerService.getProvider(dexCareConfig.getNationalProviderId())
             .subscribe(
                 onSuccess = { provider ->
                     this.provider = provider

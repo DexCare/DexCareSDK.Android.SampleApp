@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.presentation.LocalActivity
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.theme.Dimens
@@ -22,6 +23,7 @@ fun DashboardScreen(
     navLaunchVirtual: () -> Unit,
     navLaunchProvider: () -> Unit,
 ) {
+    val activity = LocalActivity.current
     DashboardContent(
         navLaunchRetail = {
             viewModel.onVisitType(VisitType.Retail)
@@ -34,6 +36,9 @@ fun DashboardScreen(
         navLaunchProvider = {
             viewModel.onVisitType(VisitType.Provider)
             navLaunchProvider()
+        },
+        onRejoinVirtualVisit = {
+            viewModel.onRejoinVisit(activity, "")
         }
     )
 }
@@ -44,6 +49,7 @@ fun DashboardContent(
     navLaunchRetail: () -> Unit,
     navLaunchVirtual: () -> Unit,
     navLaunchProvider: () -> Unit,
+    onRejoinVirtualVisit: () -> Unit,
 ) {
     ActionBarScreen(title = "DexCare Sample") {
         Column(
@@ -82,6 +88,15 @@ fun DashboardContent(
             ) {
                 navLaunchVirtual()
             }
+
+            SolidButton(
+                text = "Rejoin virtual visit",
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.Spacing.small)
+            ) {
+                onRejoinVirtualVisit()
+            }
         }
     }
 }
@@ -90,6 +105,6 @@ fun DashboardContent(
 @Composable
 private fun PreviewDashboard() {
     PreviewUi {
-        DashboardContent({}, {}, {})
+        DashboardContent({}, {}, {}, {})
     }
 }

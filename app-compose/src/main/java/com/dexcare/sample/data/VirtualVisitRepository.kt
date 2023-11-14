@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import org.dexcare.DexCareSDK
 import org.dexcare.services.models.PaymentMethod
+import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.Patient
 import org.dexcare.services.virtualvisit.models.VirtualPractice
 import org.dexcare.services.virtualvisit.models.VirtualVisitDetails
@@ -41,6 +42,24 @@ class VirtualVisitRepository @Inject constructor() {
                 onComplete(null, it)
             }
         )
+    }
+
+    fun rejoinVisit(
+        visitId: String,
+        activity: FragmentActivity,
+        dexCarePatient: DexCarePatient,
+        onComplete: (Intent?, Throwable?) -> Unit,
+    ) {
+        DexCareSDK.virtualService.resumeVirtualVisit(visitId, activity, null, dexCarePatient)
+            .subscribe(
+                onSuccess = {
+                    Timber.d("visit rejoined")
+                    onComplete(it, null)
+                }, onError = {
+                    Timber.e(it)
+                    onComplete(null, it)
+                }
+            )
     }
 
     fun getPracticeRegion(

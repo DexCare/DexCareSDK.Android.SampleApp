@@ -24,6 +24,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+//        mavenLocal()
 
         // required for rxpermissions (DexCare SDK dependency)
         maven { url "https://jitpack.io" }

@@ -35,6 +35,10 @@ import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.models.PaymentMethod
 
+/**
+ * Screen to collect different types of payment as supported by the system.
+ * See here: https://developers.dexcarehealth.com/mobilesdk/paymentmethod/
+ * */
 @Composable
 fun PaymentScreen(
     viewModel: PaymentViewModel,
@@ -42,36 +46,61 @@ fun PaymentScreen(
     onExit: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    ActionBarScreen(
-        title = "Payment",
-        onBackPressed = onBackPressed
-    ) {
-        val activity = LocalActivity.current
-        if (uiState.error != null) {
+    val showInsurancePayer = remember {
+        mutableStateOf(false)
+    }
+    when {
+        uiState.error != null -> {
             InformationScreen(
                 title = uiState.error.title,
                 message = uiState.error.message,
-                showTopBar = false
             ) {
                 onBackPressed()
             }
-        } else if (uiState.providerBookingComplete) {
+        }
+
+        uiState.providerBookingComplete -> {
             InformationScreen(
                 title = "Booking complete",
                 message = "Your appointment has been set up.",
-                showTopBar = false
             ) {
                 onExit()
             }
-        } else {
-            Box {
-                PaymentContent(
-                    onSubmit = {
-                        viewModel.onSubmit(activity, it)
+        }
+
+        showInsurancePayer.value -> {
+            InsurancePayerOptions(
+                payers = uiState.insurancePayers,
+                onSelectPayer = {
+                    viewModel.onSelectInsurancePayer(it)
+                }, onDismiss = {
+                    showInsurancePayer.value = false
+                }
+            )
+        }
+
+        else -> {
+            val activity = LocalActivity.current
+            ActionBarScreen(
+                title = "Payment",
+                onBackPressed = onBackPressed
+            ) {
+                Box {
+                    PaymentContent(
+                        uiState = uiState,
+                        onSubmit = {
+                            viewModel.onSubmit(activity, it)
+                        },
+                        onShowInsurancePayers = {
+                            showInsurancePayer.value = true
+                        },
+                        onPaymentTypeSelected = {
+                            viewModel.onPaymentTypeSelected(it)
+                        }
+                    )
+                    if (uiState.loading) {
+                        ProgressMessage()
                     }
-                )
-                if (uiState.loading) {
-                    ProgressMessage()
                 }
             }
         }
@@ -79,20 +108,26 @@ fun PaymentScreen(
 }
 
 @Composable
-fun PaymentContent(onSubmit: (PaymentMethod) -> Unit) {
+fun PaymentContent(
+    uiState: PaymentViewModel.UiState,
+    onShowInsurancePayers: () -> Unit,
+    onSubmit: (PaymentMethod) -> Unit,
+    onPaymentTypeSelected: (PaymentMethod.PaymentMethod) -> Unit,
+) {
     Column(
         Modifier
             .fillMaxSize()
             .padding(Dimens.Spacing.large)
     ) {
-        val selectedMethod = remember {
-            mutableStateOf(PaymentMethod.PaymentMethod.CreditCard)
-        }
-        PaymentOptionInput(onInputSelected = { method ->
-            selectedMethod.value = method
-        })
 
-        when (selectedMethod.value) {
+        PaymentOptionInput(
+            selectedMethod = uiState.selectedPaymentType,
+            onInputSelected = { method ->
+                onPaymentTypeSelected(method)
+            }
+        )
+
+        when (uiState.selectedPaymentType) {
             PaymentMethod.PaymentMethod.CreditCard -> {
                 CreditCardInput(
                     onCardSubmit = {
@@ -102,7 +137,14 @@ fun PaymentContent(onSubmit: (PaymentMethod) -> Unit) {
             }
 
             PaymentMethod.PaymentMethod.Insurance -> {
-
+                hideKeyBoard()
+                InsuranceInput(
+                    uiState = uiState,
+                    onShowPayerOption = onShowInsurancePayers,
+                    onPaymentSubmitted = {
+                        onSubmit(it)
+                    }
+                )
             }
 
             PaymentMethod.PaymentMethod.CouponCode -> {
@@ -117,17 +159,16 @@ fun PaymentContent(onSubmit: (PaymentMethod) -> Unit) {
 }
 
 @Composable
-fun PaymentOptionInput(onInputSelected: (PaymentMethod.PaymentMethod) -> Unit) {
+fun PaymentOptionInput(
+    selectedMethod: PaymentMethod.PaymentMethod,
+    onInputSelected: (PaymentMethod.PaymentMethod) -> Unit
+) {
     Column {
         val colors = LocalColorScheme.current
         Text(text = "Select a payment method")
 
         val showDropdown = remember {
             mutableStateOf(false)
-        }
-
-        val selectedMethod = remember {
-            mutableStateOf(PaymentMethod.PaymentMethod.CreditCard)
         }
 
         Row(Modifier
@@ -139,7 +180,7 @@ fun PaymentOptionInput(onInputSelected: (PaymentMethod.PaymentMethod) -> Unit) {
 
         ) {
 
-            val text = when (selectedMethod.value) {
+            val text = when (selectedMethod) {
                 PaymentMethod.PaymentMethod.CreditCard -> "Credit Card"
                 PaymentMethod.PaymentMethod.Insurance -> "Insurance"
                 PaymentMethod.PaymentMethod.CouponCode -> "Coupon Code"
@@ -161,25 +202,22 @@ fun PaymentOptionInput(onInputSelected: (PaymentMethod.PaymentMethod) -> Unit) {
             Column(Modifier.padding(start = Dimens.Spacing.medium.plus(Dimens.Spacing.small))) {
                 PaymentOption(
                     title = "Credit Card",
-                    isSelected = selectedMethod.value == PaymentMethod.PaymentMethod.CreditCard
+                    isSelected = selectedMethod == PaymentMethod.PaymentMethod.CreditCard
                 ) {
-                    selectedMethod.value = PaymentMethod.PaymentMethod.CreditCard
                     showDropdown.value = false
                     onInputSelected(PaymentMethod.PaymentMethod.CreditCard)
                 }
                 PaymentOption(
                     title = "Insurance",
-                    isSelected = selectedMethod.value == PaymentMethod.PaymentMethod.Insurance
+                    isSelected = selectedMethod == PaymentMethod.PaymentMethod.Insurance
                 ) {
-                    selectedMethod.value = PaymentMethod.PaymentMethod.Insurance
                     showDropdown.value = false
                     onInputSelected(PaymentMethod.PaymentMethod.Insurance)
                 }
                 PaymentOption(
                     title = "Coupon Code",
-                    isSelected = selectedMethod.value == PaymentMethod.PaymentMethod.CouponCode
+                    isSelected = selectedMethod == PaymentMethod.PaymentMethod.CouponCode
                 ) {
-                    selectedMethod.value = PaymentMethod.PaymentMethod.CouponCode
                     showDropdown.value = false
                     onInputSelected(PaymentMethod.PaymentMethod.CouponCode)
                 }
@@ -211,6 +249,11 @@ fun PaymentOption(title: String, isSelected: Boolean, onSelect: () -> Unit) {
 @Composable
 fun PreviewPaymentContent() {
     PreviewUi {
-        PaymentContent(onSubmit = {})
+        PaymentContent(
+            uiState = PaymentViewModel.UiState(),
+            onShowInsurancePayers = {},
+            onSubmit = {},
+            onPaymentTypeSelected = {},
+        )
     }
 }
