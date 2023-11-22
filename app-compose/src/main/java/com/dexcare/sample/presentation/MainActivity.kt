@@ -231,7 +231,7 @@ fun NavGraphBuilder.virtualNavigation(navController: NavController) {
                 hiltViewModel(),
                 onBackPressed = { navController.popBackStack() },
                 onExit = {
-
+                    navController.popBackStack("virtualFlow/practiceRegions", inclusive = true)
                 }
             )
         }
@@ -256,19 +256,7 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
                 viewModel = hiltViewModel(),
                 onBackPressed = { navController.popBackStack() },
                 onContinue = {
-                    navController.navigate("retailFlow/reason")
-                }
-            )
-        }
-        composable("retailFlow/reason") {
-            val viewModel = hiltViewModel<ReasonForVisitViewModel>()
-            ReasonForVisitScreen(
-                viewModel = viewModel,
-                onBackPressed = {
-                    navController.popBackStack()
-                },
-                onContinue = {
-                    navController.navigate("retailFlow/payments")
+                    navController.navigate("retailFlow/demographics")
                 }
             )
         }
@@ -282,11 +270,24 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
             )
         }
 
+        composable("retailFlow/reason") {
+            val viewModel = hiltViewModel<ReasonForVisitViewModel>()
+            ReasonForVisitScreen(
+                viewModel = viewModel,
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onContinue = {
+                    navController.navigate("retailFlow/payments")
+                }
+            )
+        }
+
         composable("retailFlow/payments") {
             PaymentScreen(hiltViewModel(),
                 onBackPressed = { navController.popBackStack() },
                 onExit = {
-
+                    navController.popBackStack("retailFlow/clinics", inclusive = true)
                 }
             )
         }

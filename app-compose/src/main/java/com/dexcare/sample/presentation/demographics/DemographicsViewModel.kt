@@ -35,8 +35,9 @@ class DemographicsViewModel @Inject constructor(
             patientRepository.findPatient(
                 onSuccess = { dexCarePatient ->
                     setInProgress(false)
-                    dexCarePatient.demographicsLinks.firstOrNull()?.let {
-                        setDemographicsFrom(it)
+                    dexCarePatient.demographicsLinks.firstOrNull()?.let { patient ->
+                        _state.update { it.copy(ehrSystemName = patient.getEhrSystemName()) }
+                        setDemographicsFrom(patient)
                     }
                 },
                 onError = {
@@ -89,39 +90,38 @@ class DemographicsViewModel @Inject constructor(
 
     private fun onContinueVirtualFlow() {
         setInProgress(true)
+        val ehrSystemName =
+            schedulingDataStore.scheduleRequest.virtualPracticeRegion?.departments?.firstOrNull()?.ehrSystemName.orEmpty()
         if (PatientDeclaration.Self == _state.value.patientDeclaration) {
-            findEhrSystem { ehrSystemName ->
-                setUpAppUserDemographics(
-                    ehrSystemName,
-                    _state.value.patientDemographicsInput.mapToDemographics()
-                ) { patient ->
-                    schedulingDataStore.setPatient(patient)
-                    _state.update { it.copy(demographicsComplete = true) }
-                }
+            setUpAppUserDemographics(
+                ehrSystemName,
+                _state.value.patientDemographicsInput.mapToDemographics()
+            ) { patient ->
+                schedulingDataStore.setPatient(patient)
+                _state.update { it.copy(demographicsComplete = true) }
             }
         } else {
-            findEhrSystem { ehrSystemName ->
-                setUpDependentPatientLink(ehrSystemName) { dexCarePatient ->
-                    schedulingDataStore.setPatient(dexCarePatient)
-                    // The requirement for the Actor is that they have at least one demographic link.
-                    // The EHR System of the Actor's demographic link does not matter for dependent visits,
-                    // they just need to have a link.
-                    // For simplicity in this sample app, we are always calling findOrCreatePatient
-                    // which will ensure a link exists.
-                    // If the Actor already has an existing link, calling findOrCreatePatient is not required.
-                    setUpAppUserDemographics(
-                        ehrSystemName,
-                        _state.value.actorDemographicsInput.mapToDemographics()
-                    ) { _ ->
-                        _state.update { it.copy(demographicsComplete = true) }
-                    }
+            setUpDependentPatientLink(ehrSystemName) { dexCarePatient ->
+                schedulingDataStore.setPatient(dexCarePatient)
+                // The requirement for the Actor is that they have at least one demographic link.
+                // The EHR System of the Actor's demographic link does not matter for dependent visits,
+                // they just need to have a link.
+                // For simplicity in this sample app, we are always calling findOrCreatePatient
+                // which will ensure a link exists.
+                // If the Actor already has an existing link, calling findOrCreatePatient is not required.
+                setUpAppUserDemographics(
+                    ehrSystemName,
+                    _state.value.actorDemographicsInput.mapToDemographics()
+                ) { _ ->
+                    _state.update { it.copy(demographicsComplete = true) }
                 }
             }
         }
     }
 
     private fun onContinueRetailFlow() {
-        val ehrSystemName = schedulingDataStore.scheduleRequest.retailClinic?.ehrSystemName
+        setInProgress(true)
+        val ehrSystemName = _state.value.ehrSystemName?:schedulingDataStore.scheduleRequest.retailClinic?.ehrSystemName
         if (ehrSystemName.isNullOrEmpty()) {
             Timber.e("Retail Clinic not defined for the visit.")
             return
@@ -202,26 +202,6 @@ class DemographicsViewModel @Inject constructor(
         _state.update { it.copy(error = error, inProgress = false) }
     }
 
-    // Needed only for Virtual. For Retail and Provider, ehrSystem  can be found out from other system.
-    // The patient is required to have a demographic link in the EHR system of the virtual department.
-    // EHR system can be determined with catchment area.
-    // The set demographics passed in to getCatchmentArea matters - it should always be the patient.
-    private fun findEhrSystem(onComplete: (ehrSystem: String) -> Unit) {
-        val patientDemographics = _state.value.patientDemographicsInput.mapToDemographics()
-        val address = patientDemographics.addresses.first()
-        patientRepository.findCatchmentArea(
-            visitState = schedulingDataStore.scheduleRequest.virtualPracticeRegion?.regionCode.orEmpty(),
-            residenceState = address.state,
-            residenceZipCode = address.postalCode,
-            brandName = _state.value.brandName,
-        ).subscribe(onSuccess = {
-            onComplete(it.ehrSystem)
-        }, onError = {
-            setError(it)
-            Timber.d(it)
-        })
-    }
-
     private fun findOrCreatePatientsWithEhrSystemName(ehrSystemName: String) {
         if (_state.value.patientDeclaration == PatientDeclaration.Other) {
             setUpDependentPatientLink(ehrSystemName) { patient ->
@@ -295,6 +275,7 @@ class DemographicsViewModel @Inject constructor(
         val brandName: String = "",
         val patientDeclaration: PatientDeclaration = PatientDeclaration.Self,
         val error: Throwable? = null,
+        val ehrSystemName: String? = null,
         val relationShipToPatient: RelationshipToPatient = RelationshipToPatient.LegalGuardian,//todo add input for someone else type
     )
 

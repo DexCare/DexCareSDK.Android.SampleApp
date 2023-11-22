@@ -4,7 +4,6 @@ import org.dexcare.DexCareSDK
 import org.dexcare.dal.DataObserver
 import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.PatientDemographics
-import org.dexcare.services.virtualvisit.models.CatchmentArea
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,20 +21,6 @@ class PatientRepository @Inject constructor() {
                 Timber.d("Error getting Patient")
                 onError()
             }
-        )
-    }
-
-    fun findCatchmentArea(
-        visitState: String,
-        residenceState: String,
-        residenceZipCode: String,
-        brandName: String,
-    ): DataObserver<CatchmentArea> {
-        return DexCareSDK.patientService.getCatchmentArea(
-            visitState,
-            residenceState,
-            residenceZipCode,
-            brandName
         )
     }
 

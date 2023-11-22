@@ -7,6 +7,7 @@ import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.PaymentRepository
 import com.dexcare.sample.data.ProviderRepository
+import com.dexcare.sample.data.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
@@ -26,6 +27,7 @@ class PaymentViewModel @Inject constructor(
     private val virtualVisitRepository: VirtualVisitRepository,
     private val providerRepository: ProviderRepository,
     private val paymentRepository: PaymentRepository,
+    private val retailClinicRepository: RetailClinicRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -51,11 +53,21 @@ class PaymentViewModel @Inject constructor(
     }
 
     fun onSubmit(activity: FragmentActivity, paymentMethod: PaymentMethod) {
-        Timber.d("scheduleDataStore.scheduleRequest:${scheduleDataStore.scheduleRequest}")
         setLoading(true)
         when (visitType) {
             VisitType.Retail -> {
-
+                retailClinicRepository.scheduleClinicVisit(
+                    paymentMethod = paymentMethod,
+                    visitInformation = scheduleDataStore.retailInformation(),
+                    timeSlot = scheduleDataStore.scheduleRequest.selectedTimeSlot!!,
+                    ehrSystemName = scheduleDataStore.scheduleRequest.retailClinic!!.ehrSystemName,
+                    patient = scheduleDataStore.scheduleRequest.patient!!,
+                    actor = null
+                ).subscribe({
+                    _state.update { it.copy(loading = false, retailBookingComplete = true) }
+                }, { error ->
+                    _state.update { it.copy(error = error.toError(), loading = false) }
+                })
             }
 
             VisitType.Virtual -> {

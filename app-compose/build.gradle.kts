@@ -80,8 +80,11 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     //DexCare SDK
-    implementation("org.dexcare:dexcare:8.5.0")
+    implementation("org.dexcare:dexcare:9.0.0")
     implementation("com.stripe:stripe-android:20.29.1")
+
+    debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
+    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

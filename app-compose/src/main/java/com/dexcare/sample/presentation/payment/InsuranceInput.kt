@@ -38,8 +38,8 @@ import com.dexcare.sample.ui.components.TextInput
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.dexcare.sample.ui.theme.PreviewUi
-import org.dexcare.services.models.InsuranceManualOther
-import org.dexcare.services.models.InsuranceManualSelf
+import org.dexcare.services.models.InsuranceOther
+import org.dexcare.services.models.InsuranceSelf
 import org.dexcare.services.models.InsurancePayer
 import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.patient.models.Gender
@@ -192,24 +192,22 @@ fun InsuranceInput(
                 .fillMaxWidth()
         ) {
             val insurance = if (isSelfInsurance.value) {
-                InsuranceManualSelf(
+                InsuranceSelf(
                     memberId = memberId.value,
-                    providerId = "",
                     insuranceGroupNumber = insuranceGroupNumber.value,
-                    payorId = uiState.selectedPayer?.payerId,
-                    payorName = uiState.selectedPayer?.name
+                    payorId = uiState.selectedPayer?.payerId.orEmpty(),
+                    payorName = uiState.selectedPayer?.name.orEmpty()
                 )
             } else {
-                InsuranceManualOther(
+                InsuranceOther(
                     firstName = subscriberFirstName.value,
                     lastName = subscriberLastName.value,
                     gender = subscriberGender.value,
                     dateOfBirth = subscriberDateOfBirth.value!!,
                     memberId = memberId.value,
-                    providerId = "",
                     insuranceGroupNumber = insuranceGroupNumber.value,
-                    payorId = uiState.selectedPayer?.payerId,
-                    payorName = uiState.selectedPayer?.name,
+                    payorId = uiState.selectedPayer?.payerId.orEmpty(),
+                    payorName = uiState.selectedPayer?.name.orEmpty(),
                     subscriberId = null
                 )
             }

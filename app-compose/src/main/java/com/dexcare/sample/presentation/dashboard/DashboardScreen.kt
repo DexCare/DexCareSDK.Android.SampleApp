@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.data.VisitType
 import com.dexcare.sample.presentation.LocalActivity
@@ -15,6 +16,7 @@ import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.PreviewUi
+import org.dexcare.sampleapp.android.R
 
 @Composable
 fun DashboardScreen(
@@ -51,7 +53,7 @@ fun DashboardContent(
     navLaunchProvider: () -> Unit,
     onRejoinVirtualVisit: () -> Unit,
 ) {
-    ActionBarScreen(title = "DexCare Sample") {
+    ActionBarScreen(title = stringResource(id = R.string.app_name)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(Dimens.Spacing.large)

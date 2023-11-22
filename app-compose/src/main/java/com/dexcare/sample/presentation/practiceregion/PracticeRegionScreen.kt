@@ -163,7 +163,8 @@ private fun PreviewPracticeRegionContent() {
                     priceInCents = 0,
                     active = true,
                     busy = false,
-                    busyMessage = "Providers are currently at capacity and closed"
+                    busyMessage = "Providers are currently at capacity and closed",
+                    departments = emptyList(),
                 ),
                 VirtualPracticeRegion(
                     practiceRegionId = "",
@@ -174,7 +175,8 @@ private fun PreviewPracticeRegionContent() {
                     priceInCents = 0,
                     active = true,
                     busy = true,
-                    busyMessage = "Providers are currently at capacity and closed"
+                    busyMessage = "Providers are currently at capacity and closed",
+                    departments = emptyList(),
                 )
             )
         )

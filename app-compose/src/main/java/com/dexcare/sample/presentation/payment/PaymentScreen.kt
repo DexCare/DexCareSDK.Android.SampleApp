@@ -59,7 +59,7 @@ fun PaymentScreen(
             }
         }
 
-        uiState.providerBookingComplete -> {
+        uiState.retailBookingComplete || uiState.providerBookingComplete -> {
             InformationScreen(
                 title = "Booking complete",
                 message = "Your appointment has been set up.",
