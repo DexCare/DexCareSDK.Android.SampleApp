@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth0_domain">TBD</string>
+    <string name="auth0_client_id">TBD</string>
+    <string name="brand">TBD</string>
+    <string name="dexcare_domain">TBD</string>
+    <string name="dexcare_api_key">TBD</string>
+    <string name="dexcare_fhirorch_url">TBD</string>
+    <string name="dexcare_virtualvisit_url">TBD</string>
+
+    <!-- Used for Push Notifications.  Needs to be in the format: [stage|prod].FCM.[brand].HealthConnect -->
+    <string name="fcm_app_id">TBD</string>
+
+    <!-- This will vary per-environment, but can be hardcoded for each Virtual Practice you want to support -->
+    <!-- This value is for the Acme Environment only -->
+    <string name="virtual_practice_id">TBD</string>
+
+    <!-- The NPIs used for Provider scheduling need to be retrieved from a source outside DexCare.
+    Ideally your health system would have a database of all of its Providers and could retrieve NPIs from that.
+    This value is defined here for a minimal sample of the SDK's ProviderService. -->
+    <string name="hardcoded_national_provider_id">TBD</string>
+
+    <string name="stripe_publishable_key">TBD</string>
+</resources>
