@@ -18,24 +18,18 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.applyWhen
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.dexcare.sample.ui.theme.PreviewUi
-import org.dexcare.sampleapp.android.R
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 
 @Composable
@@ -48,10 +42,7 @@ fun PracticeRegionScreen(
         title = "Regions",
         onBackPressed = onBackPressed
     ) {
-        val context = LocalContext.current
-        viewModel.setPracticeId(context.getString(R.string.virtual_practice_id))
         val uiState = viewModel.uiState.collectAsState().value
-        viewModel.observeLifecycle(lifecycle = LocalLifecycleOwner.current.lifecycle)
         PracticeRegionContent(
             uiState = uiState,
             onSelectRegion = {
@@ -59,17 +50,6 @@ fun PracticeRegionScreen(
                 onContinue()
             }
         )
-    }
-}
-
-
-@Composable
-fun <LO : LifecycleObserver> LO.observeLifecycle(lifecycle: Lifecycle) {
-    DisposableEffect(lifecycle) {
-        lifecycle.addObserver(this@observeLifecycle)
-        onDispose {
-            lifecycle.removeObserver(this@observeLifecycle)
-        }
     }
 }
 
