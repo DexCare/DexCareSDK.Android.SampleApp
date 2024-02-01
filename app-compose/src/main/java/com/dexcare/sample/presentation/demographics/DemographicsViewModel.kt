@@ -61,7 +61,7 @@ class DemographicsViewModel @Inject constructor(
 
             _state.update {
                 it.copy(
-                    selfPatientDemographicsInput = validatedPatientInput,
+                    otherPatientDemographicsInput = validatedPatientInput,
                     actorDemographicsInput = validatedActorInput,
                 )
             }
@@ -172,6 +172,7 @@ class DemographicsViewModel @Inject constructor(
         _state.update {
             it.copy(
                 selfPatientDemographicsInput = demographicsRecord,
+                actorDemographicsInput = demographicsRecord
             )
         }
     }
@@ -185,23 +186,51 @@ class DemographicsViewModel @Inject constructor(
         schedulingDataStore.setPatientDeclaration(patientDeclaration)
     }
 
-    fun onSelectGender(gender: Gender) {
+    fun onSelectGender(gender: Gender, isPatient: Boolean) {
         _state.update {
-            it.copy(
-                selfPatientDemographicsInput = it.selfPatientDemographicsInput.withGender(
-                    gender
+            if (it.patientDeclaration == PatientDeclaration.Self) {
+                it.copy(
+                    selfPatientDemographicsInput = it.selfPatientDemographicsInput.withGender(
+                        gender
+                    )
                 )
-            )
+            } else if (isPatient) {
+                it.copy(
+                    otherPatientDemographicsInput = it.otherPatientDemographicsInput.withGender(
+                        gender
+                    )
+                )
+            } else {
+                it.copy(
+                    actorDemographicsInput = it.actorDemographicsInput.withGender(
+                        gender
+                    )
+                )
+            }
         }
     }
 
-    fun onSelectBirthDate(date: LocalDate) {
+    fun onSelectBirthDate(date: LocalDate, isPatient: Boolean) {
         _state.update {
-            it.copy(
-                selfPatientDemographicsInput = it.selfPatientDemographicsInput.withDateOfBirth(
-                    date
+            if (it.patientDeclaration == PatientDeclaration.Self) {
+                it.copy(
+                    selfPatientDemographicsInput = it.selfPatientDemographicsInput.withDateOfBirth(
+                        date
+                    )
                 )
-            )
+            } else if (isPatient) {
+                it.copy(
+                    otherPatientDemographicsInput = it.otherPatientDemographicsInput.withDateOfBirth(
+                        date
+                    )
+                )
+            } else {
+                it.copy(
+                    actorDemographicsInput = it.actorDemographicsInput.withDateOfBirth(
+                        date
+                    )
+                )
+            }
         }
     }
 
@@ -210,6 +239,7 @@ class DemographicsViewModel @Inject constructor(
     }
 
     private fun findOrCreatePatientsWithEhrSystemName(ehrSystemName: String) {
+        setInProgress(true)
         if (_state.value.patientDeclaration == PatientDeclaration.Other) {
             setUpDependentPatientLink(ehrSystemName) { patient ->
                 schedulingDataStore.setPatient(patient)
@@ -240,7 +270,7 @@ class DemographicsViewModel @Inject constructor(
     private fun setUpDependentPatientLink(ehrSystem: String, onComplete: (DexCarePatient) -> Unit) {
         patientRepository.findOrCreateDependentPatient(
             ehrSystem,
-            _state.value.selfPatientDemographicsInput.mapToDemographics()
+            _state.value.otherPatientDemographicsInput.mapToDemographics()
         ).subscribe(onSuccess = {
             onComplete(it)
         }, onError = {
@@ -279,7 +309,7 @@ class DemographicsViewModel @Inject constructor(
          * Person receiving care when visit is being booked for someone else.
          *
          * */
-        val otherPatientDemographicsInput:DemographicsInput = DemographicsInput.initialize(),
+        val otherPatientDemographicsInput: DemographicsInput = DemographicsInput.initialize(),
 
         /**
          * App user booking the care for someone else.

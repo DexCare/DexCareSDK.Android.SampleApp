@@ -67,7 +67,7 @@ fun ReasonForVisitContent(
                 reason.value = it
             }
         )
-        Text(text = "Please provide details about your symptoms like cold, flu, or pink eye.")
+        Text(text = "Please provide details about your symptoms like cold, flu, or pink eye.\nWhat you write will be sent directly to the care provider.", style = MaterialTheme.typography.bodySmall)
 
         SolidButton(
             text = "Next",

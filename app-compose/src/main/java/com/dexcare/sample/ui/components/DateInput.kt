@@ -16,9 +16,13 @@ fun DateInput(
 ) {
     val context = LocalContext.current
     val dialog = DatePickerDialog(
-        context, { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            onDateSelected(LocalDate.of(selectedYear, selectedMonth, selectedDayOfMonth))
-        }, defaultDate.year, defaultDate.monthValue, defaultDate.dayOfMonth
+        context,
+        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            onDateSelected(LocalDate.of(selectedYear, selectedMonth + 1, selectedDayOfMonth))
+        },
+        defaultDate.year,
+        defaultDate.monthValue,
+        defaultDate.dayOfMonth
     )
 
     if (isEnabled.value) {
