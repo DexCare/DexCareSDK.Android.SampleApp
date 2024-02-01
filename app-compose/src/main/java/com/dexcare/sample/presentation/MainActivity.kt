@@ -172,7 +172,10 @@ fun NavGraphBuilder.providerNavigation(navController: NavController) {
                 hiltViewModel(),
                 navContinue = {
                     navController.navigate("providerFlow/payment")
-                }
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                },
             )
         }
 
@@ -222,7 +225,10 @@ fun NavGraphBuilder.virtualNavigation(navController: NavController) {
                 hiltViewModel(),
                 navContinue = {
                     navController.navigate("virtualFlow/payments")
-                }
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                },
             )
         }
 
@@ -266,7 +272,10 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
                 hiltViewModel(),
                 navContinue = {
                     navController.navigate("retailFlow/reason")
-                }
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                },
             )
         }
 

@@ -137,6 +137,7 @@ fun ClickableTextInput(
 fun LongTextInput(
     value: String,
     modifier: Modifier = Modifier,
+    hint: String? = null,
     error: String? = null,
     onValueChange: (String) -> Unit
 ) {
@@ -154,7 +155,10 @@ fun LongTextInput(
             modifier = modifier
                 .sizeIn(minHeight = 120.dp)
                 .border(width = 2.dp, color = colors.primary, RoundedCornerShape(size = 8.dp)),
-            textStyle = MaterialTheme.typography.bodySmall
+            textStyle = MaterialTheme.typography.bodyMedium,
+            placeholder = {
+                Text(text = hint.orEmpty())
+            }
         )
         if (error != null) {
             Text(

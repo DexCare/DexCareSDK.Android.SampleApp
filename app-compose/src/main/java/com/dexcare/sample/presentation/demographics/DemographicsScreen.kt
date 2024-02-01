@@ -47,9 +47,14 @@ import timber.log.Timber
 import java.time.LocalDate
 
 @Composable
-fun DemographicsScreen(viewModel: DemographicsViewModel, navContinue: () -> Unit) {
+fun DemographicsScreen(
+    viewModel: DemographicsViewModel,
+    navContinue: () -> Unit,
+    onBackPressed: () -> Unit
+) {
     ActionBarScreen(
         title = "Demographics",
+        onBackPressed = onBackPressed
     ) {
         val uiState = viewModel.uiState.collectAsState().value
         val context = LocalContext.current
@@ -122,7 +127,7 @@ fun DemographicsContent(
         if (showGenderOption.value) {
             GenderSelector(
                 enableDialog = showGenderOption,
-                selectedValue = uiState.patientDemographicsInput.gender.input ?: Gender.Unknown,
+                selectedValue = uiState.selfPatientDemographicsInput.gender.input ?: Gender.Unknown,
                 onSelectGender = onSelectGender
             )
         }
@@ -137,11 +142,11 @@ fun DemographicsContent(
             )
         }
 
-        if (uiState.error != null) {
+        if (uiState.errorMessage != null) {
             showErrorAlert.value = true
             SimpleAlert(
                 title = "Error",
-                message = uiState.error.message.orEmpty(),
+                message = uiState.errorMessage,
                 buttonText = "Ok",
                 enabledState = showErrorAlert,
                 actionAlertClosed = {
@@ -159,7 +164,7 @@ fun DemographicsContent(
             )
 
             Tabs(
-                if (uiState.patientDeclaration == PatientDeclaration.Self) 0 else 1,
+                selectedTabPosition = if (uiState.patientDeclaration == PatientDeclaration.Self) 0 else 1,
                 onSelfPatientSelect = {
                     onSelectTab(PatientDeclaration.Self)
                 },
@@ -170,7 +175,7 @@ fun DemographicsContent(
 
             if (uiState.patientDeclaration == PatientDeclaration.Self) {
                 MySelfTab(
-                    uiState.patientDemographicsInput,
+                    uiState.selfPatientDemographicsInput,
                     onSubmit = onSubmitForSelf,
                     onShowGenderOption = {
                         showGenderOption.value = true
@@ -181,7 +186,7 @@ fun DemographicsContent(
                 )
             } else {
                 SomeoneElseTab(
-                    uiState.patientDemographicsInput,
+                    uiState.selfPatientDemographicsInput,
                     uiState.actorDemographicsInput,
                     onSubmit = { patientInput, actorInput ->
                         onSubmitForSomeoneElse(patientInput, actorInput)
@@ -749,7 +754,7 @@ fun SomeoneElseTab(
 fun PreviewDemographicsContent() {
     PreviewUi {
         val uiState = DemographicsViewModel.UiState(
-            patientDemographicsInput = DemographicsInput.initialize()
+            selfPatientDemographicsInput = DemographicsInput.initialize()
                 .withFirstName("John")
                 .withLastName("Smith")
                 .withGender(Gender.Male)

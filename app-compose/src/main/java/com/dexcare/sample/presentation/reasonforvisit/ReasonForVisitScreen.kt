@@ -3,9 +3,9 @@ package com.dexcare.sample.presentation.reasonforvisit
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,23 +21,24 @@ import timber.log.Timber
 
 @Composable
 fun ReasonForVisitScreen(
-    viewModel: ReasonForVisitViewModel, onBackPressed: () -> Unit, onContinue: () -> Unit
+    viewModel: ReasonForVisitViewModel,
+    onBackPressed: () -> Unit,
+    onContinue: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsState().value
     ActionBarScreen(
         title = "Reason for visit", onBackPressed = onBackPressed
     ) {
-
-        if (uiState.isValidReason) {
-            LaunchedEffect(Unit) {
-                onContinue()
+        ReasonForVisitContent(
+            uiState = uiState,
+            onNext = {
+                Timber.d("onContinue")
+                val isValid = viewModel.onReasonInput(it)
+                if (isValid) {
+                    onContinue()
+                }
             }
-        }
-
-        ReasonForVisitContent(uiState = uiState, onNext = {
-            Timber.d("onContinue")
-            viewModel.onReasonInput(it)
-        })
+        )
     }
 }
 
@@ -48,8 +49,9 @@ fun ReasonForVisitContent(
 ) {
     Column(Modifier.padding(Dimens.Spacing.large)) {
         Text(
-            text = "Tell us your reason for visit",
-            modifier = Modifier.padding(top = Dimens.Spacing.large)
+            text = "How can we help?",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(top = Dimens.Spacing.medium)
         )
         val reason = remember {
             mutableStateOf(uiState.reason)
@@ -59,11 +61,13 @@ fun ReasonForVisitContent(
                 .padding(vertical = Dimens.Spacing.large)
                 .fillMaxWidth(),
             value = reason.value,
+            hint = "Reason for visit (required)",
             error = uiState.error,
             onValueChange = {
                 reason.value = it
             }
         )
+        Text(text = "Please provide details about your symptoms like cold, flu, or pink eye.")
 
         SolidButton(
             text = "Next",
