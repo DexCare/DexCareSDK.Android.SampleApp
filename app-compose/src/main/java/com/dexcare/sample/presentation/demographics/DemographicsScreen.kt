@@ -20,7 +20,7 @@ import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.DateInput
 import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.patient.models.Gender
 import java.time.LocalDate

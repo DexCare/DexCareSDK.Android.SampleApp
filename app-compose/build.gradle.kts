@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "org.dexcare.sampleapp.android"
+    namespace = "com.dexcare.acme.android"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "org.dexcare.sampleapp.android"
+        applicationId = "com.dexcare.acme.android"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

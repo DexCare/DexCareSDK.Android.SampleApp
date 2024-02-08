@@ -1,7 +1,7 @@
 package com.dexcare.sample.data
 
 import android.content.Context
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 
 interface DexCareConfig {
 

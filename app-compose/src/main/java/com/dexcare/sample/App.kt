@@ -2,11 +2,11 @@ package com.dexcare.sample
 
 import android.app.Application
 import android.content.Context
+import com.dexcare.acme.android.R
 import com.stripe.android.PaymentConfiguration
 import dagger.hilt.android.HiltAndroidApp
 import org.dexcare.DexCareSDK
 import org.dexcare.Environment
-import org.dexcare.sampleapp.android.R
 import timber.log.Timber
 
 @HiltAndroidApp

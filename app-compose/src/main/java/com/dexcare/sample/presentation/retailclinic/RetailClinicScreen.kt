@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.theme.Dimens
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 import org.dexcare.services.retail.models.RetailDepartment
 
 @Composable

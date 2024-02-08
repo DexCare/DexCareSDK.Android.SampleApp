@@ -16,7 +16,7 @@ import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.stripe.android.Stripe
 import com.stripe.android.view.CardInputWidget
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 import org.dexcare.services.models.CreditCard
 import timber.log.Timber
 

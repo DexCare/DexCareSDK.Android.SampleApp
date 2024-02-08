@@ -16,7 +16,7 @@ import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.PreviewUi
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 
 @Composable
 fun DashboardScreen(

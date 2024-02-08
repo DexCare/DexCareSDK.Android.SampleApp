@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -113,7 +113,7 @@ private fun PracticeRegionContent(
                             }
                         }
                         Image(
-                            painter = rememberVectorPainter(image = Icons.Default.KeyboardArrowRight),
+                            painter = rememberVectorPainter(image = Icons.AutoMirrored.Filled.KeyboardArrowRight),
                             contentDescription = null,
                             colorFilter = ColorFilter.tint(
                                 color = if (isEnabled) colors.onPrimary else Color.Unspecified
