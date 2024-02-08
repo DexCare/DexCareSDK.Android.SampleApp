@@ -3,6 +3,7 @@ package com.dexcare.sample.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
@@ -13,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -83,6 +86,7 @@ fun DexCareSampleTheme(
 
 @Composable
 fun PreviewUi(
+    modifier: Modifier = Modifier,
     isDarkTheme: Boolean = false,
     ui: @Composable () -> Unit
 ) {
@@ -93,7 +97,9 @@ fun PreviewUi(
     }
     DexCareSampleTheme(isDarkTheme, isDarkTheme) {
         Surface(color = backgroundColor) {
-            ui()
+            Box(modifier = modifier, contentAlignment = Alignment.Center) {
+                ui()
+            }
         }
     }
 }
