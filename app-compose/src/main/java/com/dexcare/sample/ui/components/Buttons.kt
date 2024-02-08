@@ -52,7 +52,7 @@ fun TertiaryButton(text: String, modifier: Modifier = Modifier, onClick: () -> U
         onClick = onClick,
         modifier = modifier
     ) {
-        Text(text = text)
+        Text(text = text.uppercase())
     }
 }
 
