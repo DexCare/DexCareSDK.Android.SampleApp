@@ -32,7 +32,7 @@ fun DemographicsScreen(
     onBackPressed: () -> Unit
 ) {
     ActionBarScreen(
-        title = "Demographics",
+        title = "Patient information",
         onBackPressed = onBackPressed
     ) {
         val uiState = viewModel.uiState.collectAsState().value
@@ -133,7 +133,7 @@ fun DemographicsContent(
             Text(
                 text = "Who is this visit for?",
                 modifier = Modifier.padding(bottom = Dimens.Spacing.medium),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.titleMedium
             )
 
             Tabs(

@@ -1,22 +1,21 @@
 package com.dexcare.sample.presentation.dashboard
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.data.VisitType
 import com.dexcare.sample.presentation.LocalActivity
 import com.dexcare.sample.ui.components.ActionBarScreen
-import com.dexcare.sample.ui.components.SolidButton
+import com.dexcare.sample.ui.components.SelectionOption
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.PreviewUi
-import com.dexcare.acme.android.R
 
 @Composable
 fun DashboardScreen(
@@ -53,52 +52,50 @@ fun DashboardContent(
     navLaunchProvider: () -> Unit,
     onRejoinVirtualVisit: () -> Unit,
 ) {
-    ActionBarScreen(title = stringResource(id = R.string.app_name)) {
+    ActionBarScreen(title = "") {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(Dimens.Spacing.large)
+            modifier = Modifier
+                .padding(Dimens.Spacing.large)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = "Select one of the service options to start",
+                text = "Acme Health is here to help you. Please select one of the services to begin.",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = Dimens.Spacing.large)
             )
 
-            SolidButton(
-                text = "Provider",
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = Dimens.Spacing.small)
-            ) {
-                navLaunchProvider()
-            }
-
-            SolidButton(
-                text = "Retail",
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = Dimens.Spacing.small)
-            ) {
-                navLaunchRetail()
-            }
-
-            SolidButton(
-                text = "Virtual",
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = Dimens.Spacing.small)
+            SelectionOption(
+                title = "Virtual Visit",
+                description = "Schedule an online visit with one of our providers. We are here to help 24/7."
             ) {
                 navLaunchVirtual()
             }
 
-            SolidButton(
-                text = "Rejoin virtual visit",
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = Dimens.Spacing.small)
+            SelectionOption(
+                Modifier.padding(top = Dimens.Spacing.large),
+                title = "Provider Booking",
+                description = "Make an appointment with your provider. Select the date and time that works for you."
+            ) {
+                navLaunchProvider()
+            }
+
+            SelectionOption(
+                Modifier.padding(top = Dimens.Spacing.large),
+                title = "Retail Visit",
+                description = "Schedule an appointment at one of the physical locations. Select the date and time that works for you."
+            ) {
+                navLaunchRetail()
+            }
+
+            SelectionOption(
+                Modifier.padding(top = Dimens.Spacing.large),
+                title = "Rejoin the virtual Visit",
+                description = "Join back to the virtual visit you have scheduled. You can't rejoin a visit if it has already ended or has been canceled."
             ) {
                 onRejoinVirtualVisit()
             }
+
         }
     }
 }

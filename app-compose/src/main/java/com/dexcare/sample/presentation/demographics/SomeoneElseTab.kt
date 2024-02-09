@@ -1,11 +1,13 @@
 package com.dexcare.sample.presentation.demographics
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.ui.components.ClickableTextInput
 import com.dexcare.sample.ui.components.InputOptions
@@ -114,203 +117,232 @@ fun SomeoneElseTab(
                 .verticalScroll(rememberScrollState())
         ) {
 
-            Text(
-                text = "Patient's Information",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = Dimens.Spacing.small),
-            )
-
-            TextInput(
-                input = patientFirstName,
-                label = "Patient's First Name",
-                error = patientInput.firstName.error,
-                keyboardOptions = InputOptions.name,
-            )
-
-            TextInput(
-                input = patientLastName,
-                label = "Patient's Last Name",
-                error = patientInput.lastName.error,
-                keyboardOptions = InputOptions.name,
-            )
-            TextInput(
-                input = patientEmail,
-                label = "Patient's Email",
-                error = patientInput.email.error,
-                keyboardOptions = InputOptions.email
-            )
-
-            ClickableTextInput(
-                input = patientDateOfBirth.value?.toString().orEmpty(),
-                error = patientInput.dateOfBirth.error,
-                label = "Patient's Date of birth",
-                onClick = {
-                    onShowBirthdayPicker(true)
-                }
-            )
-
-
-            ClickableTextInput(
-                input = patientInput.gender.input?.name.orEmpty(),
-                error = patientInput.gender.error,
-                label = "Patient's Gender",
-                onClick = {
-                    Timber.d("Gender clicked")
-                    onShowGenderOption(true)
-                }
-            )
-            TextInput(
-                input = patientLast4Ssn,
-                label = "Patient's Last 4 SSN",
-                error = patientInput.last4Ssn.error,
-                keyboardOptions = InputOptions.ssn
-            )
-            TextInput(
-                input = patientPhoneNumber,
-                label = "Patient's Phone Number",
-                error = patientInput.phone.error,
-                keyboardOptions = InputOptions.phoneNumber,
-            )
-
-            TextInput(
-                input = patientAddress,
-                label = "Patient's Address",
-                error = patientInput.streetAddress.error,
-                keyboardOptions = InputOptions.address
-            )
-            TextInput(
-                input = patientAddress2,
-                label = "Patient's Address  Line 2 (Optional)",
-                error = patientInput.addressLine2.error,
-                keyboardOptions = InputOptions.address,
-            )
-            TextInput(
-                input = patientCity,
-                label = "Patient's City",
-                error = patientInput.city.error,
-                keyboardOptions = InputOptions.address
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.Spacing.small)
+                    .background(color = Color.White, RoundedCornerShape(Dimens.Spacing.medium))
+                    .padding(Dimens.Spacing.small)
             ) {
+                Text(
+                    text = "Patient Demographics",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
                 TextInput(
-                    modifier = Modifier.weight(1f),
-                    input = patientState,
-                    label = "Patient's Sate",
-                    error = patientInput.state.error,
-                    keyboardOptions = InputOptions.address,
-                    fillMaxWidth = false
+                    input = patientFirstName,
+                    label = "Patient's First Name",
+                    error = patientInput.firstName.error,
+                    keyboardOptions = InputOptions.name,
+                )
+
+                TextInput(
+                    input = patientLastName,
+                    label = "Patient's Last Name",
+                    error = patientInput.lastName.error,
+                    keyboardOptions = InputOptions.name,
                 )
                 TextInput(
-                    modifier = Modifier.weight(1f),
-                    input = patientZipCode,
-                    label = "Patient's Zip Code",
-                    error = patientInput.zipCode.error,
-                    keyboardOptions = InputOptions.zipCode,
-                    fillMaxWidth = false
+                    input = patientEmail,
+                    label = "Patient's Email",
+                    error = patientInput.email.error,
+                    keyboardOptions = InputOptions.email
+                )
+
+                ClickableTextInput(
+                    input = patientDateOfBirth.value?.toString().orEmpty(),
+                    error = patientInput.dateOfBirth.error,
+                    label = "Patient's Date of birth",
+                    onClick = {
+                        onShowBirthdayPicker(true)
+                    }
+                )
+
+                ClickableTextInput(
+                    input = patientInput.gender.input?.name.orEmpty(),
+                    error = patientInput.gender.error,
+                    label = "Patient's Gender",
+                    onClick = {
+                        Timber.d("Gender clicked")
+                        onShowGenderOption(true)
+                    }
+                )
+                TextInput(
+                    input = patientLast4Ssn,
+                    label = "Patient's Last 4 SSN",
+                    error = patientInput.last4Ssn.error,
+                    keyboardOptions = InputOptions.ssn
                 )
             }
 
-            //Actor information
-            Text(
-                text = "Your Information",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = Dimens.Spacing.small),
-            )
-
-            TextInput(
-                input = actorFirstName,
-                label = "Your First Name",
-                error = actorInput.firstName.error,
-                keyboardOptions = InputOptions.name,
-            )
-
-            TextInput(
-                input = actorLastName,
-                label = "Your Last Name",
-                error = actorInput.lastName.error,
-                keyboardOptions = InputOptions.name,
-            )
-            TextInput(
-                input = actorEmail,
-                label = "Your Email",
-                error = actorInput.email.error,
-                keyboardOptions = InputOptions.email
-            )
-
-            ClickableTextInput(
-                input = actorDateOfBirth.value?.toString().orEmpty(),
-                error = actorInput.dateOfBirth.error,
-                label = "Your Date of birth",
-                onClick = {
-                    onShowBirthdayPicker(false)
-                }
-            )
-
-
-            ClickableTextInput(
-                input = actorInput.gender.input?.name.orEmpty(),
-                error = actorInput.gender.error,
-                label = "Your Gender",
-                onClick = {
-                    Timber.d("Gender clicked")
-                    onShowGenderOption(false)
-                }
-            )
-            TextInput(
-                input = actorLast4Ssn,
-                label = "Your Last 4 SSN",
-                error = actorInput.last4Ssn.error,
-                keyboardOptions = InputOptions.ssn
-            )
-            TextInput(
-                input = actorPhoneNumber,
-                label = "Your Phone Number",
-                error = actorInput.phone.error,
-                keyboardOptions = InputOptions.phoneNumber,
-            )
-
-            TextInput(
-                input = actorAddress,
-                label = "Your Address",
-                error = actorInput.streetAddress.error,
-                keyboardOptions = InputOptions.address
-            )
-            TextInput(
-                input = actorAddress2,
-                label = "Your Address  Line 2 (Optional)",
-                error = actorInput.addressLine2.error,
-                keyboardOptions = InputOptions.address,
-            )
-            TextInput(
-                input = actorCity,
-                label = "Your City",
-                error = actorInput.city.error,
-                keyboardOptions = InputOptions.address
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.Spacing.small)
+                    .background(color = Color.White, RoundedCornerShape(Dimens.Spacing.medium))
+                    .padding(Dimens.Spacing.small)
             ) {
+                Text(
+                    text = "Patient Contact Information",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
                 TextInput(
-                    modifier = Modifier.weight(1f),
-                    input = actorState,
-                    label = "Your Sate",
-                    error = actorInput.state.error,
+                    input = patientPhoneNumber,
+                    label = "Patient's Phone Number",
+                    error = patientInput.phone.error,
+                    keyboardOptions = InputOptions.phoneNumber,
+                )
+
+                TextInput(
+                    input = patientAddress,
+                    label = "Patient's Address",
+                    error = patientInput.streetAddress.error,
+                    keyboardOptions = InputOptions.address
+                )
+                TextInput(
+                    input = patientAddress2,
+                    label = "Patient's Address  Line 2 (Optional)",
+                    error = patientInput.addressLine2.error,
                     keyboardOptions = InputOptions.address,
-                    fillMaxWidth = false
                 )
                 TextInput(
-                    modifier = Modifier.weight(1f),
-                    input = actorZipCode,
-                    label = "Your Zip Code",
-                    error = actorInput.zipCode.error,
-                    keyboardOptions = InputOptions.zipCode,
-                    fillMaxWidth = false
+                    input = patientCity,
+                    label = "Patient's City",
+                    error = patientInput.city.error,
+                    keyboardOptions = InputOptions.address
                 )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+                ) {
+                    TextInput(
+                        modifier = Modifier.weight(1f),
+                        input = patientState,
+                        label = "Patient's Sate",
+                        error = patientInput.state.error,
+                        keyboardOptions = InputOptions.address,
+                        fillMaxWidth = false
+                    )
+                    TextInput(
+                        modifier = Modifier.weight(1f),
+                        input = patientZipCode,
+                        label = "Patient's Zip Code",
+                        error = patientInput.zipCode.error,
+                        keyboardOptions = InputOptions.zipCode,
+                        fillMaxWidth = false
+                    )
+                }
+            }
+
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.Spacing.small)
+                    .background(color = Color.White, RoundedCornerShape(Dimens.Spacing.medium))
+                    .padding(Dimens.Spacing.small)
+            ) {
+                //Actor information
+                Text(
+                    text = "Your Contact Information",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                TextInput(
+                    input = actorFirstName,
+                    label = "Your First Name",
+                    error = actorInput.firstName.error,
+                    keyboardOptions = InputOptions.name,
+                )
+
+                TextInput(
+                    input = actorLastName,
+                    label = "Your Last Name",
+                    error = actorInput.lastName.error,
+                    keyboardOptions = InputOptions.name,
+                )
+                TextInput(
+                    input = actorEmail,
+                    label = "Your Email",
+                    error = actorInput.email.error,
+                    keyboardOptions = InputOptions.email
+                )
+
+                ClickableTextInput(
+                    input = actorDateOfBirth.value?.toString().orEmpty(),
+                    error = actorInput.dateOfBirth.error,
+                    label = "Your Date of birth",
+                    onClick = {
+                        onShowBirthdayPicker(false)
+                    }
+                )
+
+
+                ClickableTextInput(
+                    input = actorInput.gender.input?.name.orEmpty(),
+                    error = actorInput.gender.error,
+                    label = "Your Gender",
+                    onClick = {
+                        Timber.d("Gender clicked")
+                        onShowGenderOption(false)
+                    }
+                )
+                TextInput(
+                    input = actorLast4Ssn,
+                    label = "Your Last 4 SSN",
+                    error = actorInput.last4Ssn.error,
+                    keyboardOptions = InputOptions.ssn
+                )
+                TextInput(
+                    input = actorPhoneNumber,
+                    label = "Your Phone Number",
+                    error = actorInput.phone.error,
+                    keyboardOptions = InputOptions.phoneNumber,
+                )
+
+                TextInput(
+                    input = actorAddress,
+                    label = "Your Address",
+                    error = actorInput.streetAddress.error,
+                    keyboardOptions = InputOptions.address
+                )
+                TextInput(
+                    input = actorAddress2,
+                    label = "Your Address  Line 2 (Optional)",
+                    error = actorInput.addressLine2.error,
+                    keyboardOptions = InputOptions.address,
+                )
+                TextInput(
+                    input = actorCity,
+                    label = "Your City",
+                    error = actorInput.city.error,
+                    keyboardOptions = InputOptions.address
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+                ) {
+                    TextInput(
+                        modifier = Modifier.weight(1f),
+                        input = actorState,
+                        label = "Your Sate",
+                        error = actorInput.state.error,
+                        keyboardOptions = InputOptions.address,
+                        fillMaxWidth = false
+                    )
+                    TextInput(
+                        modifier = Modifier.weight(1f),
+                        input = actorZipCode,
+                        label = "Your Zip Code",
+                        error = actorInput.zipCode.error,
+                        keyboardOptions = InputOptions.zipCode,
+                        fillMaxWidth = false
+                    )
+                }
             }
         }
 

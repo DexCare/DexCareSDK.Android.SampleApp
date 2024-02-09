@@ -46,7 +46,7 @@ fun Tabs(
                 color = if (isSelfPatient) {
                     colors.primary
                 } else {
-                    colors.primary.copy(alpha = 0.5f)
+                    colors.inversePrimary
                 }
             ),
             selected = isSelfPatient,
@@ -65,7 +65,7 @@ fun Tabs(
                 color = if (isPatientSomeoneElse) {
                     colors.primary
                 } else {
-                    colors.primary.copy(alpha = 0.5f)
+                    colors.inversePrimary
                 }
             ),
             selected = isPatientSomeoneElse,

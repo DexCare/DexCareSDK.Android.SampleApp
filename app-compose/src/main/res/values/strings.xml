@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Acme Health</string>
+
+    <string name="retail_visit">Retail visit</string>
+    <string name="virtual_visit">Virtual visit</string>
+
 </resources>

@@ -1,17 +1,23 @@
 package com.dexcare.sample.presentation.demographics
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.ui.components.ClickableTextInput
 import com.dexcare.sample.ui.components.InputOptions
@@ -73,100 +79,142 @@ fun MySelfTab(
                 .verticalScroll(rememberScrollState())
         ) {
 
-            TextInput(
-                input = firstName,
-                label = "First Name",
-                error = currentInput.firstName.error,
-                keyboardOptions = InputOptions.name,
-            )
-
-            TextInput(
-                input = lastName,
-                label = "Last Name",
-                error = currentInput.lastName.error,
-                keyboardOptions = InputOptions.name,
-            )
-            TextInput(
-                input = email,
-                label = "Email",
-                error = currentInput.email.error,
-                keyboardOptions = InputOptions.email
-            )
-
-            ClickableTextInput(
-                input = dateOfBirth.value?.toString().orEmpty(),
-                error = currentInput.dateOfBirth.error,
-                label = "Date of birth",
-                onClick = {
-                    onShowBirthdayPicker()
-                }
-            )
-
-            ClickableTextInput(
-                input = currentInput.gender.input?.name.orEmpty(),
-                error = currentInput.gender.error,
-                label = "Gender",
-                onClick = {
-                    Timber.d("Gender clicked")
-                    onShowGenderOption()
-                }
-            )
-            TextInput(
-                input = last4Ssn,
-                label = "Last 4 SSN",
-                error = currentInput.last4Ssn.error,
-                keyboardOptions = InputOptions.ssn
-            )
-            TextInput(
-                input = phoneNumber,
-                label = "Phone Number",
-                error = currentInput.phone.error,
-                keyboardOptions = InputOptions.phoneNumber,
-            )
-
-            //Address
-            TextInput(
-                input = address,
-                label = "Address",
-                error = currentInput.streetAddress.error,
-                keyboardOptions = InputOptions.address
-            )
-            TextInput(
-                input = address2,
-                label = "Address  Line 2 (Optional)",
-                error = currentInput.addressLine2.error,
-                keyboardOptions = InputOptions.address,
-            )
-            TextInput(
-                input = city,
-                label = "City",
-                error = currentInput.city.error,
-                keyboardOptions = InputOptions.address
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.Spacing.xSmall)
+                    .background(color = Color.White, RoundedCornerShape(Dimens.Spacing.medium))
+                    .padding(Dimens.Spacing.small)
             ) {
+                Text(
+                    text = "Patient Demographics",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
                 TextInput(
-                    modifier = Modifier.weight(1f),
-                    input = state,
-                    label = "Sate",
-                    error = currentInput.state.error,
+                    input = firstName,
+                    label = "First Name",
+                    error = currentInput.firstName.error,
+                    keyboardOptions = InputOptions.name,
+                )
+
+                TextInput(
+                    input = lastName,
+                    label = "Last Name",
+                    error = currentInput.lastName.error,
+                    keyboardOptions = InputOptions.name,
+                )
+                TextInput(
+                    input = email,
+                    label = "Email",
+                    error = currentInput.email.error,
+                    keyboardOptions = InputOptions.email
+                )
+
+                ClickableTextInput(
+                    input = dateOfBirth.value?.toString().orEmpty(),
+                    error = currentInput.dateOfBirth.error,
+                    label = "Date of birth",
+                    onClick = {
+                        onShowBirthdayPicker()
+                    }
+                )
+
+                ClickableTextInput(
+                    input = currentInput.gender.input?.name.orEmpty(),
+                    error = currentInput.gender.error,
+                    label = "Gender",
+                    onClick = {
+                        Timber.d("Gender clicked")
+                        onShowGenderOption()
+                    }
+                )
+                TextInput(
+                    input = last4Ssn,
+                    label = "Last 4 SSN",
+                    error = currentInput.last4Ssn.error,
+                    keyboardOptions = InputOptions.ssn
+                )
+                Text(
+                    text = "We use your Social Security Number to create or match to a secured medical record.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.8f)
+                )
+            }
+
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.Spacing.small)
+                    .background(color = Color.White, RoundedCornerShape(Dimens.Spacing.medium))
+                    .padding(Dimens.Spacing.small)
+            ) {
+                Text(
+                    text = "Patient Contact Information",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                TextInput(
+                    input = phoneNumber,
+                    label = "Phone Number",
+                    error = currentInput.phone.error,
+                    keyboardOptions = InputOptions.phoneNumber,
+                )
+
+                //Address
+                TextInput(
+                    input = address,
+                    label = "Address",
+                    error = currentInput.streetAddress.error,
+                    keyboardOptions = InputOptions.address
+                )
+                TextInput(
+                    input = address2,
+                    label = "Address  Line 2 (Optional)",
+                    error = currentInput.addressLine2.error,
                     keyboardOptions = InputOptions.address,
-                    fillMaxWidth = false
                 )
                 TextInput(
-                    modifier = Modifier.weight(1f),
-                    input = zipCode,
-                    label = "Zip Code",
-                    error = currentInput.zipCode.error,
-                    keyboardOptions = InputOptions.zipCode,
-                    fillMaxWidth = false
+                    input = city,
+                    label = "City",
+                    error = currentInput.city.error,
+                    keyboardOptions = InputOptions.address
                 )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing.large)
+                ) {
+                    TextInput(
+                        modifier = Modifier.weight(1f),
+                        input = state,
+                        label = "Sate",
+                        error = currentInput.state.error,
+                        keyboardOptions = InputOptions.address,
+                        fillMaxWidth = false
+                    )
+                    TextInput(
+                        modifier = Modifier.weight(1f),
+                        input = zipCode,
+                        label = "Zip Code",
+                        error = currentInput.zipCode.error,
+                        keyboardOptions = InputOptions.zipCode,
+                        fillMaxWidth = false
+                    )
+                }
+
             }
         }
 
+        if (!currentInput.isValid()) {
+            Text(
+                text = "Make sure all the inputs are valid before continuing.",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = Dimens.Spacing.xSmall)
+            )
+        }
         SolidButton(text = "Next", modifier = Modifier.fillMaxWidth()) {
             val input = DemographicsInput.initialize()
                 .withFirstName(firstName.value.trim())
@@ -204,8 +252,8 @@ fun PreviewMySelfTab() {
             onSubmitForSelf = {},
             onNavContinue = {},
             onSelectTab = {},
-            onSelectGender = {_,_->},
-            onSelectBirthDate = {_,_->},
+            onSelectGender = { _, _ -> },
+            onSelectBirthDate = { _, _ -> },
             onSubmitForSomeoneElse = { _, _ -> },
             onClearError = {}
         )

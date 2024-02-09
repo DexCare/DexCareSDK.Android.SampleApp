@@ -24,7 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.dexcare.acme.android.R
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.applyWhen
 import com.dexcare.sample.ui.theme.Dimens
@@ -39,7 +41,7 @@ fun PracticeRegionScreen(
     onBackPressed: () -> Unit
 ) {
     ActionBarScreen(
-        title = "Regions",
+        title = "Practice Regions",
         onBackPressed = onBackPressed
     ) {
         val uiState = viewModel.uiState.collectAsState().value
