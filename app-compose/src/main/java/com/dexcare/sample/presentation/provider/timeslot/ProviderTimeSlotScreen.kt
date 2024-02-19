@@ -29,7 +29,7 @@ import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TertiaryButton
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import java.time.LocalDate
 
@@ -169,7 +169,7 @@ fun InputComponent(
     isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
     val color = if (isEnabled) {
         colors.primary
     } else {

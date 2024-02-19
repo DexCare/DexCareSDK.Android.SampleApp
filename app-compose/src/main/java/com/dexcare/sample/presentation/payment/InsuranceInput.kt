@@ -36,11 +36,11 @@ import com.dexcare.sample.ui.components.InputOptions
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TextInput
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.models.InsuranceOther
-import org.dexcare.services.models.InsuranceSelf
 import org.dexcare.services.models.InsurancePayer
+import org.dexcare.services.models.InsuranceSelf
 import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.patient.models.Gender
 import java.time.LocalDate
@@ -142,7 +142,7 @@ fun InsuranceInput(
             Text(
                 text = "There was error loading the list of insurance payers. Please try again later.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = LocalColorScheme.current.error
+                color = LocalAppColor.current.error
             )
         }
 

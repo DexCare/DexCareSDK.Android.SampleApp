@@ -30,21 +30,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalAppColor
-import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.dexcare.sample.ui.theme.PreviewUi
-
 
 @Composable
 fun ActionBarScreen(
-    title: String,
-    onBackPressed: () -> Unit,
-    content: @Composable () -> Unit
+    title: String, onBackPressed: () -> Unit, content: @Composable () -> Unit
 ) {
     Column {
         Actionbar(
-            title = title,
-            icon = Icons.Default.ArrowBack,
-            actionIconClick = onBackPressed
+            title = title, icon = Icons.Default.ArrowBack, actionIconClick = onBackPressed
         )
         FullScreen {
             content()
@@ -54,8 +48,7 @@ fun ActionBarScreen(
 
 @Composable
 fun ActionBarScreen(
-    title: String,
-    content: @Composable () -> Unit
+    title: String, content: @Composable () -> Unit
 ) {
     Column {
         Actionbar(
@@ -73,7 +66,7 @@ fun FullScreen(content: @Composable () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
-            .background(LocalColorScheme.current.background)
+            .background(LocalAppColor.current.background)
     ) {
         content()
     }
@@ -134,10 +127,7 @@ fun Actionbar(
 
 @Composable
 fun InformationScreen(
-    title: String,
-    message: String,
-    showTopBar: Boolean = true,
-    onDismiss: () -> Unit
+    title: String, message: String, showTopBar: Boolean = true, onDismiss: () -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
         BackHandler {
@@ -145,9 +135,7 @@ fun InformationScreen(
         }
         if (showTopBar) {
             Actionbar(
-                title = "",
-                icon = Icons.Default.Close,
-                actionIconClick = onDismiss
+                title = "", icon = Icons.Default.Close, actionIconClick = onDismiss
             )
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -178,21 +166,31 @@ fun InformationScreen(
 @Composable
 fun AcmeCircularProgress(modifier: Modifier = Modifier) {
     CircularProgressIndicator(
-        modifier,
-        color = LocalAppColor.current.primaryDark,
-        strokeWidth = 5.dp
+        modifier, color = LocalAppColor.current.primaryDark, strokeWidth = 5.dp
     )
 }
 
+@Composable
+fun FullScreenProgress() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        AcmeCircularProgress()
+    }
+}
 
 @Preview
 @Composable
 private fun PreviewSuccessScreen() {
     PreviewUi {
-        InformationScreen(
-            title = "Appointment Complete",
+        InformationScreen(title = "Appointment Complete",
             message = "Your appointment with Dr. ABC has been scheduled for Oct 4th at 2:00 PM.",
-            onDismiss = {}
-        )
+            onDismiss = {})
+    }
+}
+
+@Composable
+@Preview
+private fun PreviewFullScreenProgress() {
+    PreviewUi {
+        FullScreenProgress()
     }
 }

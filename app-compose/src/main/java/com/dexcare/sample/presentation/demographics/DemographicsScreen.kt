@@ -12,17 +12,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.dexcare.acme.android.R
-import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.DateInput
+import com.dexcare.sample.ui.components.FullScreenProgress
 import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.patient.models.Gender
+import timber.log.Timber
 import java.time.LocalDate
 
 @Composable
@@ -85,12 +85,9 @@ fun DemographicsContent(
     }
     Box(
         Modifier
+            .fillMaxSize()
             .padding(Dimens.Spacing.large)
     ) {
-        if (uiState.inProgress) {
-            ProgressScreen()
-        }
-
         val showGenderOption = remember { mutableStateOf(false) }
         val showBirthdayPicker = remember { mutableStateOf(false) }
         val showErrorAlert = remember { mutableStateOf(false) }
@@ -177,15 +174,10 @@ fun DemographicsContent(
                 )
             }
         }
+        if (uiState.inProgress) {
+            FullScreenProgress()
+        }
     }
 }
 
-@Composable
-fun ProgressScreen() {
-    Box(Modifier.fillMaxSize()) {
-        AcmeCircularProgress(
-            Modifier.align(Alignment.Center),
-        )
-    }
-}
 

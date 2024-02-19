@@ -31,7 +31,7 @@ import com.dexcare.sample.presentation.provider.ProgressMessage
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.models.PaymentMethod
 
@@ -164,7 +164,7 @@ fun PaymentOptionInput(
     onInputSelected: (PaymentMethod.PaymentMethod) -> Unit
 ) {
     Column {
-        val colors = LocalColorScheme.current
+        val colors = LocalAppColor.current
         Text(text = "Select a payment method")
 
         val showDropdown = remember {

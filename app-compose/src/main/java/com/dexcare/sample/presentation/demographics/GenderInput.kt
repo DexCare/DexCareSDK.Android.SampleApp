@@ -12,18 +12,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.patient.models.Gender
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GenderSelector(
     enableDialog: MutableState<Boolean>,
@@ -39,7 +37,7 @@ fun GenderSelector(
         LocalFocusManager.current.clearFocus()
         Column(
             Modifier
-                .background(LocalColorScheme.current.surface)
+                .background(LocalAppColor.current.surface)
                 .padding(Dimens.Spacing.large)
         ) {
             RadioOption(

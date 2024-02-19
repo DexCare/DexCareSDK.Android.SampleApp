@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-val LocalColorScheme = staticCompositionLocalOf { LightColorScheme }
 val LocalAppColor = staticCompositionLocalOf { AppLightColor }
 
 @Composable
@@ -41,7 +40,6 @@ fun DexCareSampleTheme(
         typography = Typography,
     ) {
         CompositionLocalProvider(
-            LocalColorScheme provides LightColorScheme,
             LocalAppColor provides colorScheme,
         ) {
             content()

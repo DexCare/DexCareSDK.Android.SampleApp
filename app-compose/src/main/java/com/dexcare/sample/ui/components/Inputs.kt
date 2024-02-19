@@ -26,7 +26,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalAppColor
-import com.dexcare.sample.ui.theme.LocalColorScheme
 
 @Suppress("LongParameterList")
 @Composable
@@ -39,7 +38,7 @@ fun TextInput(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
     Column(
         modifier
             .fillMaxWidth()
@@ -90,7 +89,7 @@ fun ClickableTextInput(
     error: String? = null,
     onClick: () -> Unit,
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
     Column(
         modifier
             .fillMaxWidth()
@@ -110,9 +109,9 @@ fun ClickableTextInput(
                 )
             } else {
                 OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = colors.onSurface,
-                    disabledBorderColor = colors.outline,
-                    disabledLabelColor = colors.onSurface,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                 )
             },
             label = {
