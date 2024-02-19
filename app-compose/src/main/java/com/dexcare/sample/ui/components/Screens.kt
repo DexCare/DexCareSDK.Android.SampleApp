@@ -27,6 +27,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.ui.theme.Dimens
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.dexcare.sample.ui.theme.PreviewUi
 
@@ -98,7 +99,7 @@ fun Actionbar(
     iconContentDescription: String? = null,
     actionIconClick: () -> Unit = {},
 ) {
-    val appColors = LocalColorScheme.current
+    val appColors = LocalAppColor.current
     TopAppBar(
         modifier = modifier,
         title = {
@@ -106,7 +107,7 @@ fun Actionbar(
                 modifier = Modifier.semantics { heading() },
                 text = title,
                 style = textStyle ?: MaterialTheme.typography.bodyLarge,
-                color = appColors.onPrimary
+                color = appColors.light
             )
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -120,7 +121,7 @@ fun Actionbar(
                     Icon(
                         imageVector = icon,
                         contentDescription = iconContentDescription,
-                        tint = appColors.onPrimary
+                        tint = appColors.light
                     )
                 }
             }

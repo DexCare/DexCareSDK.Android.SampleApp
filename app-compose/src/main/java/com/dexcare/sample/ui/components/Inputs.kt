@@ -25,10 +25,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.theme.Dimens
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.LocalColorScheme
 
 @Suppress("LongParameterList")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextInput(
     input: MutableState<String>,
@@ -145,7 +145,7 @@ fun LongTextInput(
     error: String? = null,
     onValueChange: (String) -> Unit
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
     Column {
         TextField(
             value = value,

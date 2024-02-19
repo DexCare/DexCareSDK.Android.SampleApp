@@ -23,6 +23,7 @@ import com.dexcare.sample.ui.components.InputOptions
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TextInput
 import com.dexcare.sample.ui.theme.Dimens
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.patient.models.Gender
@@ -37,6 +38,7 @@ fun SomeoneElseTab(
     onShowGenderOption: (isPatient: Boolean) -> Unit,
     onShowBirthdayPicker: (isPatient: Boolean) -> Unit,
 ) {
+    val appColor = LocalAppColor.current
     Column {
 
         /// Patient input
@@ -127,7 +129,7 @@ fun SomeoneElseTab(
                 Text(
                     text = "Patient Demographics",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = appColor.primary
                 )
 
                 TextInput(
@@ -186,7 +188,7 @@ fun SomeoneElseTab(
                 Text(
                     text = "Patient Contact Information",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = appColor.primary
                 )
 
                 TextInput(

@@ -24,13 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.dexcare.acme.android.R
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.applyWhen
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 
@@ -79,7 +77,7 @@ private fun PracticeRegionContent(
 
             uiState.practiceRegions.forEach { region ->
                 val isEnabled = !region.busy
-                val colors = LocalColorScheme.current
+                val colors = LocalAppColor.current
                 Card(
                     Modifier
                         .padding(vertical = Dimens.Spacing.small)
@@ -104,7 +102,7 @@ private fun PracticeRegionContent(
                         Column(Modifier.weight(1f)) {
                             Text(
                                 text = region.displayName,
-                                color = if (isEnabled) colors.onPrimary else Color.Unspecified,
+                                color = if (isEnabled) colors.light else Color.Unspecified,
                             )
 
                             if (region.busy) {
@@ -118,7 +116,7 @@ private fun PracticeRegionContent(
                             painter = rememberVectorPainter(image = Icons.AutoMirrored.Filled.KeyboardArrowRight),
                             contentDescription = null,
                             colorFilter = ColorFilter.tint(
-                                color = if (isEnabled) colors.onPrimary else Color.Unspecified
+                                color = if (isEnabled) colors.light else Color.Unspecified
                             ),
                         )
                     }

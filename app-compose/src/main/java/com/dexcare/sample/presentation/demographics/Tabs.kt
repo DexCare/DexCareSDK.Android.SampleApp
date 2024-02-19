@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 
 @Composable
 fun Tabs(
@@ -23,7 +23,7 @@ fun Tabs(
     onSelfPatientSelect: () -> Unit,
     onOtherPatientSelect: () -> Unit,
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
 
     TabRow(
         selectedTabIndex = selectedTabPosition,
@@ -31,11 +31,11 @@ fun Tabs(
             TabRowDefaults.Indicator(
                 Modifier.tabIndicatorOffset(tabPositions[selectedTabPosition]),
                 height = 2.dp,
-                color = colors.primaryContainer
+                color = colors.primary
             )
         },
         divider = {
-            Divider(modifier = Modifier.shadow(4.dp), color = colors.primaryContainer)
+            Divider(modifier = Modifier.shadow(4.dp), color = colors.primary)
         },
         modifier = Modifier.clip(RoundedCornerShape(8.dp)),
     ) {
@@ -44,9 +44,9 @@ fun Tabs(
         Tab(
             modifier = Modifier.background(
                 color = if (isSelfPatient) {
-                    colors.primary
+                    colors.primaryDark
                 } else {
-                    colors.inversePrimary
+                    colors.primary
                 }
             ),
             selected = isSelfPatient,
@@ -63,9 +63,9 @@ fun Tabs(
         Tab(
             modifier = Modifier.background(
                 color = if (isPatientSomeoneElse) {
-                    colors.primary
+                    colors.primaryDark
                 } else {
-                    colors.inversePrimary
+                    colors.primary
                 }
             ),
             selected = isPatientSomeoneElse,

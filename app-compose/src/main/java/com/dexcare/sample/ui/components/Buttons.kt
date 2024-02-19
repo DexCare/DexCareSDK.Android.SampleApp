@@ -1,17 +1,21 @@
 package com.dexcare.sample.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.theme.Dimens
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 
 @Composable
@@ -21,8 +25,12 @@ fun SolidButton(
     isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
+    val colors = LocalAppColor.current
     Button(
         modifier = modifier.sizeIn(Dimens.accessibleSize),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colors.primary
+        ),
         enabled = isEnabled,
         onClick = onClick
     ) {
@@ -37,10 +45,19 @@ fun SecondaryButton(
     isEnabled: Boolean = true,
     onClick: () -> Unit,
 ) {
+    val colors = LocalAppColor.current
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.sizeIn(Dimens.accessibleSize),
-        enabled = isEnabled
+        modifier = modifier
+            .sizeIn(Dimens.accessibleSize),
+        enabled = isEnabled,
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = colors.primary
+        ),
+        border = if (isEnabled) BorderStroke(
+            width = 1.dp,
+            color = colors.primary
+        ) else ButtonDefaults.outlinedButtonBorder
     ) {
         Text(text = text)
     }
@@ -48,9 +65,13 @@ fun SecondaryButton(
 
 @Composable
 fun TertiaryButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val colors = LocalAppColor.current
     TextButton(
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier,
+        colors = ButtonDefaults.textButtonColors(
+            contentColor = colors.primary
+        )
     ) {
         Text(text = text.uppercase())
     }
