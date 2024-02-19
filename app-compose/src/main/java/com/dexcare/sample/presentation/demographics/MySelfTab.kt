@@ -24,6 +24,7 @@ import com.dexcare.sample.ui.components.InputOptions
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.components.TextInput
 import com.dexcare.sample.ui.theme.Dimens
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.patient.models.Gender
@@ -89,7 +90,7 @@ fun MySelfTab(
                 Text(
                     text = "Patient Demographics",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = LocalAppColor.current.primary
                 )
 
                 TextInput(
@@ -153,7 +154,7 @@ fun MySelfTab(
                 Text(
                     text = "Patient Contact Information",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = LocalAppColor.current.primary
                 )
                 TextInput(
                     input = phoneNumber,
@@ -211,7 +212,7 @@ fun MySelfTab(
             Text(
                 text = "Make sure all the inputs are valid before continuing.",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.error,
+                color = LocalAppColor.current.error,
                 modifier = Modifier.padding(top = Dimens.Spacing.xSmall)
             )
         }

@@ -251,7 +251,7 @@ fun SomeoneElseTab(
                 Text(
                     text = "Your Contact Information",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = appColor.primary
                 )
                 TextInput(
                     input = actorFirstName,
