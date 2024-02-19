@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,11 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.dexcare.acme.android.R
+import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.DateInput
 import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.acme.android.R
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.patient.models.Gender
 import java.time.LocalDate
@@ -183,7 +183,9 @@ fun DemographicsContent(
 @Composable
 fun ProgressScreen() {
     Box(Modifier.fillMaxSize()) {
-        CircularProgressIndicator(Modifier.align(Alignment.Center))
+        AcmeCircularProgress(
+            Modifier.align(Alignment.Center),
+        )
     }
 }
 

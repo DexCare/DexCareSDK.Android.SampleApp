@@ -21,6 +21,7 @@ import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.acme.android.R
+import com.dexcare.sample.ui.components.AcmeCircularProgress
 import org.dexcare.services.retail.models.RetailDepartment
 
 @Composable
@@ -38,7 +39,7 @@ fun RetailClinicScreen(
         val uiState = viewModel.uiState.collectAsState().value
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             if (uiState.isLoading) {
-                CircularProgressIndicator()
+                AcmeCircularProgress()
             } else if (uiState.error != null) {
                 InformationScreen(
                     title = uiState.error.title,

@@ -7,7 +7,7 @@ sealed class ResultState<out T : Any> {
 
     abstract fun hasFinished(): Boolean
 
-    object UnInitialized : ResultState<Nothing>() {
+    data object UnInitialized : ResultState<Nothing>() {
         override fun hasFinished() = false
     }
 

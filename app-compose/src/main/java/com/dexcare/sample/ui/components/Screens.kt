@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.LocalColorScheme
@@ -171,6 +173,15 @@ fun InformationScreen(
             )
         }
     }
+}
+
+@Composable
+fun AcmeCircularProgress(modifier: Modifier = Modifier) {
+    CircularProgressIndicator(
+        modifier,
+        color = LocalAppColor.current.primaryDark,
+        strokeWidth = 5.dp
+    )
 }
 
 

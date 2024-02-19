@@ -268,13 +268,16 @@ class DemographicsViewModel @Inject constructor(
     }
 
     private fun setUpDependentPatientLink(ehrSystem: String, onComplete: (DexCarePatient) -> Unit) {
+        setInProgress(true)
         patientRepository.findOrCreateDependentPatient(
             ehrSystem,
             _state.value.otherPatientDemographicsInput.mapToDemographics()
         ).subscribe(onSuccess = {
             onComplete(it)
+            setInProgress(false)
         }, onError = {
             setError(it.message)
+            setInProgress(false)
             Timber.d(it)
         })
     }
@@ -293,6 +296,7 @@ class DemographicsViewModel @Inject constructor(
             setInProgress(false)
             onComplete(it)
         }, onError = {
+            setInProgress(false)
             setError(it.message)
             Timber.d(it)
         })

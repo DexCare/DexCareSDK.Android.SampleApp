@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
+import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.applyWhen
 import com.dexcare.sample.ui.theme.Dimens
@@ -60,7 +61,7 @@ private fun PracticeRegionContent(
 ) {
     Box(Modifier.fillMaxSize()) {
         if (uiState.inProgress) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
+            AcmeCircularProgress(Modifier.align(Alignment.Center))
         }
 
         Column(
