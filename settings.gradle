@@ -1,2 +1,37 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        // required for rxpermissions (DexCare SDK dependency)
+        maven { url "https://jitpack.io" }
+
+        // required for DexCare SDK
+        maven {
+            credentials {
+                /*
+                 You need to be authenticated in order to access the DexCare SDK binaries.
+                 Even though they are public, GitHub still requires authentication.
+                 Set up the environment variables below with your GitHub credentials.
+                 More Info: https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages
+                 */
+
+//                username System.getenv("DEXCARE_MAVEN_ACCOUNT") // GitHub email
+//                password System.getenv("DEXCARE_MAVEN_TOKEN") // GitHub access token
+            }
+
+            url "https://maven.pkg.github.com/DexCare/DexCareSDK-Android/"
+        }
+    }
+}
+
 rootProject.name = "DexCareSampleApp"
 include ':app-compose'
