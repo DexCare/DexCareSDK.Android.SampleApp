@@ -3,6 +3,7 @@ package com.dexcare.sample.presentation.demographics
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dexcare.sample.common.displayMessage
 import com.dexcare.sample.data.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VisitType
@@ -276,9 +277,9 @@ class DemographicsViewModel @Inject constructor(
             onComplete(it)
             setInProgress(false)
         }, onError = {
-            setError(it.message)
+            setError(it.displayMessage())
             setInProgress(false)
-            Timber.d(it)
+            Timber.e("error::$it")
         })
     }
 
@@ -297,8 +298,8 @@ class DemographicsViewModel @Inject constructor(
             onComplete(it)
         }, onError = {
             setInProgress(false)
-            setError(it.message)
-            Timber.d(it)
+            setError(it.displayMessage())
+            Timber.e("error::$it")
         })
     }
 

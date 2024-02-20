@@ -112,20 +112,6 @@ fun DemographicsContent(
             )
         }
 
-        if (uiState.errorMessage != null) {
-            showErrorAlert.value = true
-            SimpleAlert(
-                title = "Error",
-                message = uiState.errorMessage,
-                buttonText = "Ok",
-                enabledState = showErrorAlert,
-                actionAlertClosed = {
-                    onClearError()
-                }
-            )
-        }
-
-
         Column {
             Text(
                 text = "Who is this visit for?",
@@ -176,6 +162,19 @@ fun DemographicsContent(
         }
         if (uiState.inProgress) {
             FullScreenProgress()
+        }
+
+        if (uiState.errorMessage != null) {
+            showErrorAlert.value = true
+            SimpleAlert(
+                title = "Error",
+                message = uiState.errorMessage,
+                buttonText = "Ok",
+                enabledState = showErrorAlert,
+                actionAlertClosed = {
+                    onClearError()
+                }
+            )
         }
     }
 }
