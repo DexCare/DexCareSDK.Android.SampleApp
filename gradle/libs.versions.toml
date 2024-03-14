@@ -8,6 +8,8 @@ compose-bom = "2024.02.00"
 hilt = "2.50"
 chucker = "4.0.0"
 navigation = "2.7.7"
+appcompat = "1.6.1"
+material = "1.11.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -30,7 +32,7 @@ hilt-navigation = "androidx.hilt:hilt-navigation-compose:1.1.0"
 
 desugaring-jdk = "com.android.tools:desugar_jdk_libs:2.0.4"
 
-dexcare = "org.dexcare:dexcare:9.1.0-rc2"
+dexcare = "org.dexcare:dexcare:9.1.0"
 stripe = "com.stripe:stripe-android:20.29.1"
 
 chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
@@ -42,6 +44,8 @@ test-androidx-junit = "androidx.test.ext:junit:1.1.5"
 test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
 test-compose-ui = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 test-compose-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 
 [plugins]

@@ -24,8 +24,8 @@ dependencyResolutionManagement {
                  More Info: https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages
                  */
 
-//                username System.getenv("DEXCARE_MAVEN_ACCOUNT") // GitHub email
-//                password System.getenv("DEXCARE_MAVEN_TOKEN") // GitHub access token
+                username System.getenv("DEXCARE_MAVEN_ACCOUNT") // GitHub email
+                password System.getenv("DEXCARE_MAVEN_TOKEN") // GitHub access token
             }
 
             url "https://maven.pkg.github.com/DexCare/DexCareSDK-Android/"

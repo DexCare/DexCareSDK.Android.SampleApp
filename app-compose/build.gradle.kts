@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.androidx.compose.preview)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.navigation)
+    implementation(libs.appcompat)
+    implementation(libs.material)
     debugImplementation(libs.androidx.compose.tooling)
 
     // Using the Auth0 Lock widget for simplicity.  This could be replaced by a custom UI.
@@ -86,7 +88,7 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugaring.jdk)
 
-    implementation(libs.dexcare)
+    implementation(libs.dexcare)///
     implementation(libs.stripe)
 
     debugImplementation(libs.chucker.debug)
