@@ -1,7 +1,7 @@
 package com.dexcare.sample.data
 
 import android.content.Context
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.models.RelationshipToPatient
 import org.dexcare.services.patient.models.DexCarePatient

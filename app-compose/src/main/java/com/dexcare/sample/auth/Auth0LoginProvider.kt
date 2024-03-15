@@ -9,7 +9,7 @@ import com.auth0.android.lock.Lock
 import com.auth0.android.lock.UsernameStyle
 import com.auth0.android.result.Credentials
 import dagger.hilt.android.qualifiers.ActivityContext
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.resume

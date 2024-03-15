@@ -37,6 +37,7 @@ import com.dexcare.sample.presentation.reasonforvisit.ReasonForVisitViewModel
 import com.dexcare.sample.presentation.retailclinic.RetailClinicScreen
 import com.dexcare.sample.presentation.retailclinic.timeslot.RetailTimeSlotScreen
 import com.dexcare.sample.ui.components.FullScreen
+import com.dexcare.sample.ui.theme.DexCareSampleTheme
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -53,12 +54,16 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         if (!areConfigValuesSetUp(this)) {
             setContent {
-                LoginError(message = "Required values in config.xml are missing. Make sure the values are properly set, otherwise the app will not work.")
+                DexCareSampleTheme {
+                    LoginError(message = "Required values in config.xml are missing. Make sure the values are properly set, otherwise the app will not work.")
+                }
             }
         } else {
             setContent {
-                CompositionLocalProvider(LocalActivity provides this) {
-                    MainContent(viewModel)
+                DexCareSampleTheme {
+                    CompositionLocalProvider(LocalActivity provides this) {
+                        MainContent(viewModel)
+                    }
                 }
             }
         }
@@ -172,7 +177,10 @@ fun NavGraphBuilder.providerNavigation(navController: NavController) {
                 hiltViewModel(),
                 navContinue = {
                     navController.navigate("providerFlow/payment")
-                }
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                },
             )
         }
 
@@ -222,7 +230,10 @@ fun NavGraphBuilder.virtualNavigation(navController: NavController) {
                 hiltViewModel(),
                 navContinue = {
                     navController.navigate("virtualFlow/payments")
-                }
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                },
             )
         }
 
@@ -266,7 +277,10 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
                 hiltViewModel(),
                 navContinue = {
                     navController.navigate("retailFlow/reason")
-                }
+                },
+                onBackPressed = {
+                    navController.popBackStack()
+                },
             )
         }
 

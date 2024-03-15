@@ -3,6 +3,7 @@ package com.dexcare.sample.presentation.demographics
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dexcare.sample.common.displayMessage
 import com.dexcare.sample.data.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VisitType
@@ -61,7 +62,7 @@ class DemographicsViewModel @Inject constructor(
 
             _state.update {
                 it.copy(
-                    patientDemographicsInput = validatedPatientInput,
+                    otherPatientDemographicsInput = validatedPatientInput,
                     actorDemographicsInput = validatedActorInput,
                 )
             }
@@ -71,7 +72,7 @@ class DemographicsViewModel @Inject constructor(
 
             _state.update {
                 it.copy(
-                    patientDemographicsInput = validatedInput,
+                    selfPatientDemographicsInput = validatedInput,
                 )
             }
         }
@@ -80,7 +81,7 @@ class DemographicsViewModel @Inject constructor(
                 VisitType.Retail -> onContinueRetailFlow()
                 VisitType.Virtual -> onContinueVirtualFlow()
                 VisitType.Provider -> onContinueProviderFlow()
-                null -> {
+                else -> {
                     Timber.e("Visit Type not defined")
                 }
             }
@@ -95,7 +96,7 @@ class DemographicsViewModel @Inject constructor(
         if (PatientDeclaration.Self == _state.value.patientDeclaration) {
             setUpAppUserDemographics(
                 ehrSystemName,
-                _state.value.patientDemographicsInput.mapToDemographics()
+                _state.value.selfPatientDemographicsInput.mapToDemographics()
             ) { patient ->
                 schedulingDataStore.setPatient(patient)
                 _state.update { it.copy(demographicsComplete = true) }
@@ -121,8 +122,15 @@ class DemographicsViewModel @Inject constructor(
 
     private fun onContinueRetailFlow() {
         setInProgress(true)
-        val ehrSystemName = _state.value.ehrSystemName?:schedulingDataStore.scheduleRequest.retailClinic?.ehrSystemName
+        val ehrSystemName = _state.value.ehrSystemName
+            ?: schedulingDataStore.scheduleRequest.retailClinic?.ehrSystemName
         if (ehrSystemName.isNullOrEmpty()) {
+            _state.update {
+                it.copy(
+                    errorMessage = "Retail Clinic not defined for the visit.",
+                    inProgress = false
+                )
+            }
             Timber.e("Retail Clinic not defined for the visit.")
             return
         }
@@ -164,7 +172,8 @@ class DemographicsViewModel @Inject constructor(
 
         _state.update {
             it.copy(
-                patientDemographicsInput = demographicsRecord,
+                selfPatientDemographicsInput = demographicsRecord,
+                actorDemographicsInput = demographicsRecord
             )
         }
     }
@@ -178,31 +187,60 @@ class DemographicsViewModel @Inject constructor(
         schedulingDataStore.setPatientDeclaration(patientDeclaration)
     }
 
-    fun onSelectGender(gender: Gender) {
+    fun onSelectGender(gender: Gender, isPatient: Boolean) {
         _state.update {
-            it.copy(
-                patientDemographicsInput = it.patientDemographicsInput.withGender(
-                    gender
+            if (it.patientDeclaration == PatientDeclaration.Self) {
+                it.copy(
+                    selfPatientDemographicsInput = it.selfPatientDemographicsInput.withGender(
+                        gender
+                    )
                 )
-            )
+            } else if (isPatient) {
+                it.copy(
+                    otherPatientDemographicsInput = it.otherPatientDemographicsInput.withGender(
+                        gender
+                    )
+                )
+            } else {
+                it.copy(
+                    actorDemographicsInput = it.actorDemographicsInput.withGender(
+                        gender
+                    )
+                )
+            }
         }
     }
 
-    fun onSelectBirthDate(date: LocalDate) {
+    fun onSelectBirthDate(date: LocalDate, isPatient: Boolean) {
         _state.update {
-            it.copy(
-                patientDemographicsInput = it.patientDemographicsInput.withDateOfBirth(
-                    date
+            if (it.patientDeclaration == PatientDeclaration.Self) {
+                it.copy(
+                    selfPatientDemographicsInput = it.selfPatientDemographicsInput.withDateOfBirth(
+                        date
+                    )
                 )
-            )
+            } else if (isPatient) {
+                it.copy(
+                    otherPatientDemographicsInput = it.otherPatientDemographicsInput.withDateOfBirth(
+                        date
+                    )
+                )
+            } else {
+                it.copy(
+                    actorDemographicsInput = it.actorDemographicsInput.withDateOfBirth(
+                        date
+                    )
+                )
+            }
         }
     }
 
-    fun setError(error: Throwable?) {
-        _state.update { it.copy(error = error, inProgress = false) }
+    fun setError(error: String?) {
+        _state.update { it.copy(errorMessage = error, inProgress = false) }
     }
 
     private fun findOrCreatePatientsWithEhrSystemName(ehrSystemName: String) {
+        setInProgress(true)
         if (_state.value.patientDeclaration == PatientDeclaration.Other) {
             setUpDependentPatientLink(ehrSystemName) { patient ->
                 schedulingDataStore.setPatient(patient)
@@ -216,29 +254,32 @@ class DemographicsViewModel @Inject constructor(
                     ehrSystemName,
                     _state.value.actorDemographicsInput.mapToDemographics()
                 ) { _ ->
-                    _state.update { it.copy(demographicsComplete = true) }
+                    _state.update { it.copy(demographicsComplete = true, inProgress = false) }
                 }
             }
         } else {
             setUpAppUserDemographics(
                 ehrSystemName,
-                _state.value.patientDemographicsInput.mapToDemographics()
+                _state.value.selfPatientDemographicsInput.mapToDemographics()
             ) { patient ->
                 schedulingDataStore.setPatient(patient)
-                _state.update { it.copy(demographicsComplete = true) }
+                _state.update { it.copy(demographicsComplete = true, inProgress = false) }
             }
         }
     }
 
     private fun setUpDependentPatientLink(ehrSystem: String, onComplete: (DexCarePatient) -> Unit) {
+        setInProgress(true)
         patientRepository.findOrCreateDependentPatient(
             ehrSystem,
-            _state.value.patientDemographicsInput.mapToDemographics()
+            _state.value.otherPatientDemographicsInput.mapToDemographics()
         ).subscribe(onSuccess = {
             onComplete(it)
+            setInProgress(false)
         }, onError = {
-            setError(it)
-            Timber.d(it)
+            setError(it.displayMessage())
+            setInProgress(false)
+            Timber.e("error::$it")
         })
     }
 
@@ -247,15 +288,18 @@ class DemographicsViewModel @Inject constructor(
         demographics: PatientDemographics,
         onComplete: (DexCarePatient) -> Unit
     ) {
+        setInProgress(true)
         patientRepository.findOrCreateAppUserPatient(
             ehrSystem,
             demographics
         ).subscribe(onSuccess = {
             schedulingDataStore.setAppUserDemographics(demographics)
+            setInProgress(false)
             onComplete(it)
         }, onError = {
-            setError(it)
-            Timber.d(it)
+            setInProgress(false)
+            setError(it.displayMessage())
+            Timber.e("error::$it")
         })
     }
 
@@ -264,7 +308,13 @@ class DemographicsViewModel @Inject constructor(
         /**
          * Person receiving the care.
          * */
-        val patientDemographicsInput: DemographicsInput = DemographicsInput.initialize(),
+        val selfPatientDemographicsInput: DemographicsInput = DemographicsInput.initialize(),
+
+        /**
+         * Person receiving care when visit is being booked for someone else.
+         *
+         * */
+        val otherPatientDemographicsInput: DemographicsInput = DemographicsInput.initialize(),
 
         /**
          * App user booking the care for someone else.
@@ -274,7 +324,7 @@ class DemographicsViewModel @Inject constructor(
         val inProgress: Boolean = false,
         val brandName: String = "",
         val patientDeclaration: PatientDeclaration = PatientDeclaration.Self,
-        val error: Throwable? = null,
+        val errorMessage: String? = null,
         val ehrSystemName: String? = null,
         val relationShipToPatient: RelationshipToPatient = RelationshipToPatient.LegalGuardian,//todo add input for someone else type
     )

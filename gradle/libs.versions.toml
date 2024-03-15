@@ -1,0 +1,55 @@
+[versions]
+androidGradlePlugin = "8.2.2"
+kotlin = "1.9.22"
+activity-compose = "1.8.2"
+core-ktx = "1.12.0"
+lifecycle-runtime-ktx = "2.7.0"
+compose-bom = "2024.02.00"
+hilt = "2.50"
+chucker = "4.0.0"
+navigation = "2.7.7"
+appcompat = "1.6.1"
+material = "1.11.0"
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material = "androidx.compose.material3:material3:1.2.0" ##https://stackoverflow.com/a/77347462
+androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+
+auth0 = "com.auth0.android:lock:3.2.2"
+timber = "com.jakewharton.timber:timber:5.0.1"
+
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt-navigation = "androidx.hilt:hilt-navigation-compose:1.1.0"
+
+desugaring-jdk = "com.android.tools:desugar_jdk_libs:2.0.4"
+
+dexcare = "org.dexcare:dexcare:9.1.0"
+stripe = "com.stripe:stripe-android:20.29.1"
+
+chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
+chucker-release = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
+
+
+test-junit = "junit:junit:4.13.2"
+test-androidx-junit = "androidx.test.ext:junit:1.1.5"
+test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
+test-compose-ui = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+test-compose-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+navigation-safeArg = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

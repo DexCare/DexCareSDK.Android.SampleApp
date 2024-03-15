@@ -13,10 +13,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.dexcare.sample.ui.components.SolidButton
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
 import com.stripe.android.Stripe
 import com.stripe.android.view.CardInputWidget
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
+import com.dexcare.sample.ui.theme.LocalAppColor
 import org.dexcare.services.models.CreditCard
 import timber.log.Timber
 
@@ -42,7 +42,7 @@ fun CreditCardInput(modifier: Modifier = Modifier, onCardSubmit: (CreditCard) ->
                 text = "Invalid input",
                 modifier = Modifier.padding(vertical = Dimens.Spacing.xSmall),
                 style = MaterialTheme.typography.labelSmall,
-                color = LocalColorScheme.current.error
+                color = LocalAppColor.current.error
             )
         }
 

@@ -11,7 +11,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import org.dexcare.sampleapp.android.BuildConfig
+import com.dexcare.acme.android.BuildConfig
 
 @Module
 @InstallIn(SingletonComponent::class)

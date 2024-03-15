@@ -12,30 +12,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.applyWhen
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
-import org.dexcare.sampleapp.android.R
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 
 @Composable
@@ -45,13 +40,10 @@ fun PracticeRegionScreen(
     onBackPressed: () -> Unit
 ) {
     ActionBarScreen(
-        title = "Regions",
+        title = "Practice Regions",
         onBackPressed = onBackPressed
     ) {
-        val context = LocalContext.current
-        viewModel.setPracticeId(context.getString(R.string.virtual_practice_id))
         val uiState = viewModel.uiState.collectAsState().value
-        viewModel.observeLifecycle(lifecycle = LocalLifecycleOwner.current.lifecycle)
         PracticeRegionContent(
             uiState = uiState,
             onSelectRegion = {
@@ -62,17 +54,6 @@ fun PracticeRegionScreen(
     }
 }
 
-
-@Composable
-fun <LO : LifecycleObserver> LO.observeLifecycle(lifecycle: Lifecycle) {
-    DisposableEffect(lifecycle) {
-        lifecycle.addObserver(this@observeLifecycle)
-        onDispose {
-            lifecycle.removeObserver(this@observeLifecycle)
-        }
-    }
-}
-
 @Composable
 private fun PracticeRegionContent(
     uiState: PracticeRegionViewModel.UiState,
@@ -80,7 +61,7 @@ private fun PracticeRegionContent(
 ) {
     Box(Modifier.fillMaxSize()) {
         if (uiState.inProgress) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
+            AcmeCircularProgress(Modifier.align(Alignment.Center))
         }
 
         Column(
@@ -97,7 +78,7 @@ private fun PracticeRegionContent(
 
             uiState.practiceRegions.forEach { region ->
                 val isEnabled = !region.busy
-                val colors = LocalColorScheme.current
+                val colors = LocalAppColor.current
                 Card(
                     Modifier
                         .padding(vertical = Dimens.Spacing.small)
@@ -122,7 +103,7 @@ private fun PracticeRegionContent(
                         Column(Modifier.weight(1f)) {
                             Text(
                                 text = region.displayName,
-                                color = if (isEnabled) colors.onPrimary else Color.Unspecified,
+                                color = if (isEnabled) colors.light else Color.Unspecified,
                             )
 
                             if (region.busy) {
@@ -133,10 +114,10 @@ private fun PracticeRegionContent(
                             }
                         }
                         Image(
-                            painter = rememberVectorPainter(image = Icons.Default.KeyboardArrowRight),
+                            painter = rememberVectorPainter(image = Icons.AutoMirrored.Filled.KeyboardArrowRight),
                             contentDescription = null,
                             colorFilter = ColorFilter.tint(
-                                color = if (isEnabled) colors.onPrimary else Color.Unspecified
+                                color = if (isEnabled) colors.light else Color.Unspecified
                             ),
                         )
                     }

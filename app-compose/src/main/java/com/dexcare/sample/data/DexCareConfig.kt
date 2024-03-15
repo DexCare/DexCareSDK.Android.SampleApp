@@ -1,7 +1,7 @@
 package com.dexcare.sample.data
 
 import android.content.Context
-import org.dexcare.sampleapp.android.R
+import com.dexcare.acme.android.R
 
 interface DexCareConfig {
 
@@ -10,6 +10,8 @@ interface DexCareConfig {
     fun tenant(): String
 
     fun getNationalProviderId(): String
+
+    fun virtualPracticeId(): String
 }
 
 class DexCareConfigImpl constructor(private val context: Context) :
@@ -25,5 +27,9 @@ class DexCareConfigImpl constructor(private val context: Context) :
 
     override fun getNationalProviderId(): String {
         return context.getString(R.string.hardcoded_national_provider_id)
+    }
+
+    override fun virtualPracticeId(): String {
+        return context.getString(R.string.virtual_practice_id)
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -24,10 +25,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.sample.ui.theme.LocalColorScheme
+import com.dexcare.sample.ui.theme.LocalAppColor
 
 @Suppress("LongParameterList")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextInput(
     input: MutableState<String>,
@@ -38,7 +38,7 @@ fun TextInput(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
     Column(
         modifier
             .fillMaxWidth()
@@ -49,13 +49,15 @@ fun TextInput(
             onValueChange = {
                 input.value = it
             },
+            isError = error != null,
             colors = if (error != null) {
-                TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = colors.error,
-                    errorBorderColor = colors.error
+                OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = colors.error,
+                    errorBorderColor = colors.error,
+                    errorTextColor = colors.error
                 )
             } else {
-                TextFieldDefaults.outlinedTextFieldColors()
+                OutlinedTextFieldDefaults.colors()
             },
             label = {
                 Text(text = label, style = MaterialTheme.typography.bodyMedium)
@@ -79,7 +81,6 @@ fun TextInput(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClickableTextInput(
     input: String,
@@ -88,7 +89,7 @@ fun ClickableTextInput(
     error: String? = null,
     onClick: () -> Unit,
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
     Column(
         modifier
             .fillMaxWidth()
@@ -97,18 +98,20 @@ fun ClickableTextInput(
         OutlinedTextField(
             value = input,
             enabled = false,
+            isError = error != null,
             onValueChange = {
             },
             colors = if (error != null) {
-                TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = colors.error,
-                    errorBorderColor = colors.error
+                OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = colors.error,
+                    errorBorderColor = colors.error,
+                    errorTextColor = colors.error
                 )
             } else {
-                TextFieldDefaults.outlinedTextFieldColors(
-                    disabledBorderColor = colors.outline,
-                    disabledTextColor = colors.onSurface,
-                    disabledLabelColor = colors.onSurface
+                OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                 )
             },
             label = {
@@ -137,10 +140,11 @@ fun ClickableTextInput(
 fun LongTextInput(
     value: String,
     modifier: Modifier = Modifier,
+    hint: String? = null,
     error: String? = null,
     onValueChange: (String) -> Unit
 ) {
-    val colors = LocalColorScheme.current
+    val colors = LocalAppColor.current
     Column {
         TextField(
             value = value,
@@ -154,7 +158,10 @@ fun LongTextInput(
             modifier = modifier
                 .sizeIn(minHeight = 120.dp)
                 .border(width = 2.dp, color = colors.primary, RoundedCornerShape(size = 8.dp)),
-            textStyle = MaterialTheme.typography.bodySmall
+            textStyle = MaterialTheme.typography.bodyMedium,
+            placeholder = {
+                Text(text = hint.orEmpty())
+            }
         )
         if (error != null) {
             Text(

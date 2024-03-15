@@ -15,17 +15,20 @@ class ReasonForVisitViewModel @Inject constructor(private val schedulingDataStor
     private val _state = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _state
 
-    fun onReasonInput(reason: String) {
+    fun onReasonInput(reason: String): Boolean {
         _state.update { it.copy(reason = reason) }
-        if (validateReason(reason)) {
+        return if (validateReason(reason)) {
             schedulingDataStore.setReasonForVisit(reason)
+            true
+        } else {
+            false
         }
     }
 
     private fun validateReason(reason: String): Boolean {
         val isValid = reason.isNotEmpty()
         _state.update {
-            it.copy(isValidReason = isValid, error = if (isValid) null else "This is required")
+            it.copy(error = if (isValid) null else "This is required")
         }
         return isValid
     }
@@ -33,6 +36,5 @@ class ReasonForVisitViewModel @Inject constructor(private val schedulingDataStor
     data class UiState(
         val reason: String = "",
         val error: String? = null,
-        val isValidReason: Boolean = false,
     )
 }
