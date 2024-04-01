@@ -79,7 +79,7 @@ class PaymentViewModel @Inject constructor(
                 ) { intent, throwable ->
                     setLoading(false)
                     if (intent != null) {
-                        activity.startActivity(intent)
+                        activity.startActivityForResult(intent, 11)
                     }
 
                     if (throwable != null) {

@@ -69,8 +69,6 @@ class SchedulingDataStore @Inject constructor() {
     }
 
     fun createVirtualVisitDetails(context: Context): VirtualVisitDetails {
-        val stateLicensure =
-            scheduleRequest.appUserDemographics?.addresses?.firstOrNull()?.state.orEmpty()
         return VirtualVisitDetails(
             // patient has accepted terms of service
             acceptedTerms = true,
@@ -79,7 +77,7 @@ class SchedulingDataStore @Inject constructor() {
             // is this visit being submitted by the patient or by a proxy
             patientDeclaration = scheduleRequest.patientDeclaration,
             // state licensure required for provider to see patient
-            stateLicensure = stateLicensure,
+            stateLicensure = scheduleRequest.virtualPracticeRegion?.regionCode.orEmpty(),
             visitReason = scheduleRequest.reasonForVisit.orEmpty(),
             visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
             practiceId = context.getString(R.string.virtual_practice_id),
@@ -113,7 +111,7 @@ class SchedulingDataStore @Inject constructor() {
         )
     }
 
-    fun retailInformation():RetailVisitInformation{
+    fun retailInformation(): RetailVisitInformation {
         return RetailVisitInformation(
             visitReason = scheduleRequest.reasonForVisit!!,
             patientDeclaration = scheduleRequest.patientDeclaration,

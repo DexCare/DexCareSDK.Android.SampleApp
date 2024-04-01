@@ -1,5 +1,6 @@
 package com.dexcare.sample.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -39,6 +40,7 @@ import com.dexcare.sample.presentation.retailclinic.timeslot.RetailTimeSlotScree
 import com.dexcare.sample.ui.components.FullScreen
 import com.dexcare.sample.ui.theme.DexCareSampleTheme
 import dagger.hilt.android.AndroidEntryPoint
+import org.dexcare.services.virtualvisit.VirtualService
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -72,6 +74,15 @@ class MainActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.onResume(authProvider)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == VirtualService.VISIT_CANCELLED_RESULT_CODE ||
+            resultCode == VirtualService.VISIT_SUCCESS_RESULT_CODE
+        ) {
+            Timber.i("Visit Ended")
+        }
     }
 }
 

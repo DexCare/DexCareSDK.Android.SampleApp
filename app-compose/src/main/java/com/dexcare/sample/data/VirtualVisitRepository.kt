@@ -2,6 +2,7 @@ package com.dexcare.sample.data
 
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
+import com.dexcare.sample.data.virtualvisit.VirtualVisitStorage
 import org.dexcare.DexCareSDK
 import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.patient.models.DexCarePatient
@@ -13,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class VirtualVisitRepository @Inject constructor() {
+class VirtualVisitRepository @Inject constructor(private val storage:VirtualVisitStorage) {
 
     fun scheduleVisit(
         activity: FragmentActivity,
@@ -35,6 +36,7 @@ class VirtualVisitRepository @Inject constructor() {
                 val visitId = it.second
                 val intent = it.third
                 Timber.d("visit created; type=$visitType and visitId=$visitId")
+                storage.saveVisit(visitId)
                 onComplete(intent, null)
             },
             onError = {
@@ -45,11 +47,11 @@ class VirtualVisitRepository @Inject constructor() {
     }
 
     fun rejoinVisit(
-        visitId: String,
         activity: FragmentActivity,
         dexCarePatient: DexCarePatient,
         onComplete: (Intent?, Throwable?) -> Unit,
     ) {
+        val visitId = storage.getVisitId().orEmpty()
         DexCareSDK.virtualService.resumeVirtualVisit(visitId, activity, null, dexCarePatient)
             .subscribe(
                 onSuccess = {
