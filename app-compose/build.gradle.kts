@@ -1,10 +1,23 @@
+import java.time.Instant
+import java.time.ZoneId
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.hilt)
     alias(libs.plugins.navigation.safeArg)
+    alias(libs.plugins.appVersioning)
     kotlin("kapt")
+}
+
+appVersioning {
+    overrideVersionCode { _, _, _ ->
+        Instant.now().atZone(ZoneId.of("UTC+00:00")).toEpochSecond().toInt()
+    }
+
+    overrideVersionName { gitTag, _, _ ->
+        "1.0-${gitTag.commitHash}"
+    }
 }
 
 android {
