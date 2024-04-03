@@ -1,5 +1,6 @@
 package com.dexcare.sample.presentation.payment
 
+import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,6 @@ import com.dexcare.sample.data.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
-import com.dexcare.sample.presentation.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,13 +78,12 @@ class PaymentViewModel @Inject constructor(
                     scheduleDataStore.createVirtualVisitDetails(activity),
                     paymentMethod
                 ) { intent, throwable ->
-                    setLoading(false)
-                    if (intent != null) {
-                        activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_VIRTUAL_VISIT)
-                    }
-
-                    if (throwable != null) {
-                        Timber.e(throwable)
+                    _state.update {
+                        it.copy(
+                            loading = false,
+                            visitIntent = intent,
+                            error = throwable?.toError()
+                        )
                     }
                 }
             }
@@ -134,7 +133,8 @@ class PaymentViewModel @Inject constructor(
         val retailBookingComplete: Boolean = false,
         val insurancePayers: List<InsurancePayer> = emptyList(),
         val selectedPayer: InsurancePayer? = null,
-        val selectedPaymentType: PaymentMethod.PaymentMethod = PaymentMethod.PaymentMethod.CreditCard
+        val selectedPaymentType: PaymentMethod.PaymentMethod = PaymentMethod.PaymentMethod.CreditCard,
+        val visitIntent: Intent? = null
     )
 
 }

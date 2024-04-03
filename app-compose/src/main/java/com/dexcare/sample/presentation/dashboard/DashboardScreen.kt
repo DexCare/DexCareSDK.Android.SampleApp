@@ -1,5 +1,6 @@
 package com.dexcare.sample.presentation.dashboard
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.data.virtualvisit.VirtualVisitContract
 import com.dexcare.sample.presentation.LocalActivity
 import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
@@ -23,6 +26,7 @@ import com.dexcare.sample.ui.components.SelectionOption
 import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.PreviewUi
+import timber.log.Timber
 
 @Composable
 fun DashboardScreen(
@@ -34,6 +38,17 @@ fun DashboardScreen(
     val activity = LocalActivity.current
     val uiState = viewModel.uiState.collectAsState().value
     val showErrorAlert = remember { mutableStateOf(false) }
+
+    val visitLauncher =
+        rememberLauncherForActivityResult(VirtualVisitContract.LaunchVisit()) { resultCode ->
+            Timber.d("visit ended with result code $resultCode")
+        }
+
+    if (uiState.visitIntent != null) {
+        LaunchedEffect(key1 = uiState.visitIntent) {
+            visitLauncher.launch(uiState.visitIntent)
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         DashboardContent(

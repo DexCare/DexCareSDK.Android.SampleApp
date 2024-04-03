@@ -1,5 +1,6 @@
 package com.dexcare.sample.presentation.dashboard
 
+import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.dexcare.sample.common.toError
@@ -41,20 +42,12 @@ class DashboardViewModel @Inject constructor(
                 activity,
                 patient,
                 onComplete = { intent, error ->
-                    if (intent != null) {
-                        _state.update { it.copy(error = null, isLoading = false) }
-                        activity.startActivityForResult(
-                            intent,
-                            MainActivity.REQUEST_CODE_VIRTUAL_VISIT
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            visitIntent = intent,
+                            error = error?.toError(title = "Error rejoining visit")
                         )
-                    } else if (error != null) {
-                        Timber.d("error $error")
-                        _state.update {
-                            it.copy(
-                                error = error.toError(title = "Error rejoining visit"),
-                                isLoading = false
-                            )
-                        }
                     }
                 })
         }, onError = {
@@ -74,6 +67,10 @@ class DashboardViewModel @Inject constructor(
         _state.update { it.copy(error = null) }
     }
 
-    data class UiState(val isLoading: Boolean = false, val error: ErrorResult? = null)
+    data class UiState(
+        val isLoading: Boolean = false,
+        val visitIntent: Intent? = null,
+        val error: ErrorResult? = null
+    )
 
 }

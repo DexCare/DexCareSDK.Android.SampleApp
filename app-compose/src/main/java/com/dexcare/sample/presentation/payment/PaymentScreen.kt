@@ -1,5 +1,6 @@
 package com.dexcare.sample.presentation.payment
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dexcare.sample.data.virtualvisit.VirtualVisitContract
 import com.dexcare.sample.presentation.LocalActivity
 import com.dexcare.sample.presentation.provider.ProgressMessage
 import com.dexcare.sample.ui.components.ActionBarScreen
@@ -34,6 +37,7 @@ import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import org.dexcare.services.models.PaymentMethod
+import timber.log.Timber
 
 /**
  * Screen to collect different types of payment as supported by the system.
@@ -49,6 +53,19 @@ fun PaymentScreen(
     val showInsurancePayer = remember {
         mutableStateOf(false)
     }
+
+    val visitLauncher =
+        rememberLauncherForActivityResult(VirtualVisitContract.LaunchVisit()) { resultCode ->
+            Timber.d("visit ended with result code $resultCode")
+            onExit()
+        }
+
+    if (uiState.visitIntent != null) {
+        LaunchedEffect(key1 = uiState.visitIntent) {
+            visitLauncher.launch(uiState.visitIntent)
+        }
+    }
+
     when {
         uiState.error != null -> {
             InformationScreen(
