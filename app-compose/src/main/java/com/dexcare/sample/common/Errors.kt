@@ -10,11 +10,11 @@ fun Throwable.displayMessage(): String {
     }
 }
 
-fun Throwable.toError(): ErrorResult {
+fun Throwable.toError(title: String = "Error"): ErrorResult {
     val message = if (!message.isNullOrBlank()) {
         message.toString()
     } else {
         "Error: ${this.javaClass.simpleName}"
     }
-    return ErrorResult(title = "Error", message = message)
+    return ErrorResult(title = title, message = message)
 }

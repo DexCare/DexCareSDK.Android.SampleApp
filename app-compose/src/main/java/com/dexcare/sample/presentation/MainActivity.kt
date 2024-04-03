@@ -84,6 +84,10 @@ class MainActivity : FragmentActivity() {
             Timber.i("Visit Ended")
         }
     }
+
+    companion object {
+        const val REQUEST_CODE_VIRTUAL_VISIT = 101
+    }
 }
 
 val LocalActivity = staticCompositionLocalOf<FragmentActivity> {

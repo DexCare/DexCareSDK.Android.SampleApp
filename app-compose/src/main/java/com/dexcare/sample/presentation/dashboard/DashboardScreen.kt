@@ -1,6 +1,5 @@
 package com.dexcare.sample.presentation.dashboard
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,8 +9,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,6 +20,7 @@ import com.dexcare.sample.presentation.LocalActivity
 import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SelectionOption
+import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.PreviewUi
 
@@ -32,12 +33,7 @@ fun DashboardScreen(
 ) {
     val activity = LocalActivity.current
     val uiState = viewModel.uiState.collectAsState().value
-
-    if (uiState.error != null) {
-        LaunchedEffect(key1 = uiState.error) {
-            Toast.makeText(activity, uiState.error, Toast.LENGTH_SHORT).show()
-        }
-    }
+    val showErrorAlert = remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         DashboardContent(
@@ -61,6 +57,20 @@ fun DashboardScreen(
         if (uiState.isLoading) {
             AcmeCircularProgress(Modifier.align(Alignment.Center))
         }
+
+        if (uiState.error != null) {
+            showErrorAlert.value = true
+            SimpleAlert(
+                title = uiState.error.title,
+                message = uiState.error.message,
+                buttonText = "Got it",
+                enabledState = showErrorAlert,
+                actionAlertClosed = {
+                    viewModel.clearError()
+                }
+            )
+        }
+
     }
 }
 

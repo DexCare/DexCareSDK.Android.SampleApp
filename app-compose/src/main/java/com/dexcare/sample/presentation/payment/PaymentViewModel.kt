@@ -11,6 +11,7 @@ import com.dexcare.sample.data.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.presentation.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -79,7 +80,7 @@ class PaymentViewModel @Inject constructor(
                 ) { intent, throwable ->
                     setLoading(false)
                     if (intent != null) {
-                        activity.startActivityForResult(intent, 11)
+                        activity.startActivityForResult(intent, MainActivity.REQUEST_CODE_VIRTUAL_VISIT)
                     }
 
                     if (throwable != null) {

@@ -2,10 +2,13 @@ package com.dexcare.sample.presentation.dashboard
 
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import com.dexcare.sample.common.toError
+import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.presentation.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,17 +43,37 @@ class DashboardViewModel @Inject constructor(
                 onComplete = { intent, error ->
                     if (intent != null) {
                         _state.update { it.copy(error = null, isLoading = false) }
-                        activity.startActivity(intent)
+                        activity.startActivityForResult(
+                            intent,
+                            MainActivity.REQUEST_CODE_VIRTUAL_VISIT
+                        )
                     } else if (error != null) {
                         Timber.d("error $error")
-                        _state.update { it.copy(error = error.message, isLoading = false) }
+                        _state.update {
+                            it.copy(
+                                error = error.toError(title = "Error rejoining visit"),
+                                isLoading = false
+                            )
+                        }
                     }
                 })
         }, onError = {
-            _state.update { it.copy(isLoading = false, error = "Error loading patient record") }
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    error = ErrorResult(
+                        "Error rejoining visit",
+                        "We were unable to load the patient record."
+                    )
+                )
+            }
         })
     }
 
-    data class UiState(val isLoading: Boolean = false, val error: String? = null)
+    fun clearError() {
+        _state.update { it.copy(error = null) }
+    }
+
+    data class UiState(val isLoading: Boolean = false, val error: ErrorResult? = null)
 
 }
