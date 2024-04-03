@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class VirtualVisitRepository @Inject constructor(private val storage:VirtualVisitStorage) {
+class VirtualVisitRepository @Inject constructor(private val storage: VirtualVisitStorage) {
 
     fun scheduleVisit(
         activity: FragmentActivity,
@@ -51,7 +51,12 @@ class VirtualVisitRepository @Inject constructor(private val storage:VirtualVisi
         dexCarePatient: DexCarePatient,
         onComplete: (Intent?, Throwable?) -> Unit,
     ) {
-        val visitId = storage.getVisitId().orEmpty()
+        val visitId = storage.getVisitId()
+        if (visitId.isNullOrEmpty()) {
+            onComplete(null, Throwable("VisitId is not available. We couldn't find information about your last visit. Please create a new visit."))
+            return
+        }
+
         DexCareSDK.virtualService.resumeVirtualVisit(visitId, activity, null, dexCarePatient)
             .subscribe(
                 onSuccess = {
