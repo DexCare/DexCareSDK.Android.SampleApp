@@ -67,7 +67,7 @@ fun PaymentScreen(
 
     when {
         uiState.loading -> {
-            FullScreenProgress("We are scheduling your appointment. Please do not close the screen.")
+            FullScreenProgress(uiState.loadingMessage.orEmpty())
         }
 
         uiState.error != null -> {
