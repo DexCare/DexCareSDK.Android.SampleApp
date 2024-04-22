@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dexcare.services.models.InsurancePayer
 import org.dexcare.services.models.PaymentMethod
+import org.dexcare.services.virtualvisit.errors.InvalidCouponCodeError
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -46,6 +47,49 @@ class PaymentViewModel @Inject constructor(
             }, { throwable ->
                 _state.update { it.copy(loading = false, error = throwable.toError()) }
             })
+        }
+        if (visitType != null) {
+            setUpSupportedPayments(visitType!!)
+        } else {
+            Timber.e("Selected VisitType is Invalid. Make sure VisitType is initialized in SchedulingDataStore.")
+        }
+    }
+
+    private fun setUpSupportedPayments(visitType: VisitType) {
+        val supportedPayments = when (visitType) {
+            VisitType.Virtual -> {
+                listOf(
+                    PaymentMethod.PaymentMethod.CreditCard,
+                    PaymentMethod.PaymentMethod.Insurance,
+                    PaymentMethod.PaymentMethod.CouponCode
+                )
+            }
+
+            VisitType.Provider -> {
+                listOf(
+                    PaymentMethod.PaymentMethod.Self,
+                    PaymentMethod.PaymentMethod.Insurance,
+                )
+            }
+
+            VisitType.Retail -> {
+                listOf(
+                    PaymentMethod.PaymentMethod.Self,
+                    PaymentMethod.PaymentMethod.Insurance,
+                )
+            }
+        }
+
+        val visitCost = scheduleDataStore.scheduleRequest.virtualPracticeRegion?.let {
+            "$ ${it.visitPrice}"
+        }
+
+        _state.update {
+            it.copy(
+                supportedPaymentMethods = supportedPayments,
+                selectedPaymentType = supportedPayments.first(),
+                originalVisitCost = visitCost
+            )
         }
     }
 
@@ -80,7 +124,6 @@ class PaymentViewModel @Inject constructor(
                 ) { intent, throwable ->
                     _state.update {
                         it.copy(
-                            loading = false,
                             visitIntent = intent,
                             error = throwable?.toError()
                         )
@@ -122,6 +165,42 @@ class PaymentViewModel @Inject constructor(
         _state.update { it.copy(selectedPayer = insurancePayer) }
     }
 
+    fun onApplyCouponCode(code: String) {
+        if (code.isEmpty()) {
+            return
+        }
+        _state.update { it.copy(isCouponVerificationInProgress = true) }
+        paymentRepository.verifyCouponCode(code).subscribe({ discount ->
+            var newCost = (scheduleDataStore.scheduleRequest.virtualPracticeRegion?.visitPrice
+                ?: 0.0) - discount
+            if (newCost < 0) {
+                newCost = 0.0
+            }
+
+            _state.update {
+                it.copy(
+                    isCouponVerificationInProgress = false,
+                    couponCodeError = null,
+                    visitCostAfterCoupon = "$ $newCost",
+                    couponCodeInput = code
+                )
+            }
+        }, { error ->
+            val message = if (error is InvalidCouponCodeError) {
+                "Invalid Service key"
+            } else {
+                "Failed to verify service key"
+            }
+            _state.update {
+                it.copy(
+                    isCouponVerificationInProgress = false,
+                    couponCodeError = message,
+                    visitCostAfterCoupon = null
+                )
+            }
+        })
+    }
+
     private fun setLoading(isLoading: Boolean) {
         _state.update { it.copy(loading = isLoading) }
     }
@@ -134,7 +213,20 @@ class PaymentViewModel @Inject constructor(
         val insurancePayers: List<InsurancePayer> = emptyList(),
         val selectedPayer: InsurancePayer? = null,
         val selectedPaymentType: PaymentMethod.PaymentMethod = PaymentMethod.PaymentMethod.CreditCard,
-        val visitIntent: Intent? = null
+        val visitIntent: Intent? = null,
+        val supportedPaymentMethods: List<PaymentMethod.PaymentMethod> = emptyList(),
+        val couponCodeInput: String = "",
+        val isCouponVerificationInProgress: Boolean = false,
+        val originalVisitCost: String? = null,
+        val visitCostAfterCoupon: String? = null,
+        val couponCodeError: String? = null,
     )
-
 }
+
+fun PaymentMethod.PaymentMethod.displayLabel(): String =
+    when (this) {
+        PaymentMethod.PaymentMethod.CreditCard -> "Credit Card"
+        PaymentMethod.PaymentMethod.Insurance -> "Insurance"
+        PaymentMethod.PaymentMethod.CouponCode -> "Service Key"
+        PaymentMethod.PaymentMethod.Self -> "In Person"
+    }

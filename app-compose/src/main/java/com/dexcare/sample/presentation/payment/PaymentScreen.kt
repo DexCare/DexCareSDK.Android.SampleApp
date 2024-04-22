@@ -23,15 +23,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.data.virtualvisit.VirtualVisitContract
 import com.dexcare.sample.presentation.LocalActivity
-import com.dexcare.sample.presentation.provider.ProgressMessage
 import com.dexcare.sample.ui.components.ActionBarScreen
+import com.dexcare.sample.ui.components.FullScreenProgress
 import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.LocalAppColor
@@ -67,6 +66,10 @@ fun PaymentScreen(
     }
 
     when {
+        uiState.loading -> {
+            FullScreenProgress("We are scheduling your appointment. Please do not close the screen.")
+        }
+
         uiState.error != null -> {
             InformationScreen(
                 title = uiState.error.title,
@@ -113,11 +116,11 @@ fun PaymentScreen(
                         },
                         onPaymentTypeSelected = {
                             viewModel.onPaymentTypeSelected(it)
+                        },
+                        onApplyCouponCode = {
+                            viewModel.onApplyCouponCode(it)
                         }
                     )
-                    if (uiState.loading) {
-                        ProgressMessage()
-                    }
                 }
             }
         }
@@ -130,6 +133,7 @@ fun PaymentContent(
     onShowInsurancePayers: () -> Unit,
     onSubmit: (PaymentMethod) -> Unit,
     onPaymentTypeSelected: (PaymentMethod.PaymentMethod) -> Unit,
+    onApplyCouponCode: (String) -> Unit,
 ) {
     Column(
         Modifier
@@ -138,6 +142,7 @@ fun PaymentContent(
     ) {
 
         PaymentOptionInput(
+            supportedMethods = uiState.supportedPaymentMethods,
             selectedMethod = uiState.selectedPaymentType,
             onInputSelected = { method ->
                 onPaymentTypeSelected(method)
@@ -165,7 +170,11 @@ fun PaymentContent(
             }
 
             PaymentMethod.PaymentMethod.CouponCode -> {
-
+                CouponCodeInput(
+                    uiState = uiState,
+                    onApplyCode = onApplyCouponCode,
+                    onSubmitPayment = onSubmit,
+                )
             }
 
             else -> {
@@ -177,6 +186,7 @@ fun PaymentContent(
 
 @Composable
 fun PaymentOptionInput(
+    supportedMethods: List<PaymentMethod.PaymentMethod>,
     selectedMethod: PaymentMethod.PaymentMethod,
     onInputSelected: (PaymentMethod.PaymentMethod) -> Unit
 ) {
@@ -197,15 +207,9 @@ fun PaymentOptionInput(
 
         ) {
 
-            val text = when (selectedMethod) {
-                PaymentMethod.PaymentMethod.CreditCard -> "Credit Card"
-                PaymentMethod.PaymentMethod.Insurance -> "Insurance"
-                PaymentMethod.PaymentMethod.CouponCode -> "Coupon Code"
-                PaymentMethod.PaymentMethod.Self -> "In Person"
-            }
-
             Text(
-                text = text, modifier = Modifier
+                text = selectedMethod.displayLabel(),
+                modifier = Modifier
                     .padding(start = Dimens.Spacing.medium)
                     .weight(1f)
             )
@@ -217,26 +221,14 @@ fun PaymentOptionInput(
 
         AnimatedVisibility(visible = showDropdown.value) {
             Column(Modifier.padding(start = Dimens.Spacing.medium.plus(Dimens.Spacing.small))) {
-                PaymentOption(
-                    title = "Credit Card",
-                    isSelected = selectedMethod == PaymentMethod.PaymentMethod.CreditCard
-                ) {
-                    showDropdown.value = false
-                    onInputSelected(PaymentMethod.PaymentMethod.CreditCard)
-                }
-                PaymentOption(
-                    title = "Insurance",
-                    isSelected = selectedMethod == PaymentMethod.PaymentMethod.Insurance
-                ) {
-                    showDropdown.value = false
-                    onInputSelected(PaymentMethod.PaymentMethod.Insurance)
-                }
-                PaymentOption(
-                    title = "Coupon Code",
-                    isSelected = selectedMethod == PaymentMethod.PaymentMethod.CouponCode
-                ) {
-                    showDropdown.value = false
-                    onInputSelected(PaymentMethod.PaymentMethod.CouponCode)
+                supportedMethods.forEach { paymentMethodType ->
+                    PaymentOption(
+                        title = paymentMethodType.displayLabel(),
+                        isSelected = selectedMethod == paymentMethodType
+                    ) {
+                        showDropdown.value = false
+                        onInputSelected(paymentMethodType)
+                    }
                 }
             }
         }
@@ -254,7 +246,7 @@ fun PaymentOption(title: String, isSelected: Boolean, onSelect: () -> Unit) {
         if (isSelected) {
             Image(
                 painter = rememberVectorPainter(image = Icons.Default.Check),
-                colorFilter = ColorFilter.tint(Color.Green),
+                colorFilter = ColorFilter.tint(LocalAppColor.current.success),
                 contentDescription = null
             )
         }
@@ -267,10 +259,18 @@ fun PaymentOption(title: String, isSelected: Boolean, onSelect: () -> Unit) {
 fun PreviewPaymentContent() {
     PreviewUi {
         PaymentContent(
-            uiState = PaymentViewModel.UiState(),
+            uiState = PaymentViewModel.UiState(
+                supportedPaymentMethods = listOf(
+                    PaymentMethod.PaymentMethod.CreditCard,
+                    PaymentMethod.PaymentMethod.Insurance,
+                    PaymentMethod.PaymentMethod.CouponCode
+                ),
+                selectedPaymentType = PaymentMethod.PaymentMethod.CouponCode,
+            ),
             onShowInsurancePayers = {},
             onSubmit = {},
             onPaymentTypeSelected = {},
+            onApplyCouponCode = {}
         )
     }
 }

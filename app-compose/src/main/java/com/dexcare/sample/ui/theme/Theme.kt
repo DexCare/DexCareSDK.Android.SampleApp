@@ -56,7 +56,7 @@ fun PreviewUi(
 ) {
     DexCareSampleTheme(isDarkTheme) {
         Surface {
-            Box(modifier = modifier, contentAlignment = Alignment.Center) {
+            Box(modifier = modifier) {
                 ui()
             }
         }

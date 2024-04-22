@@ -41,7 +41,9 @@ fun TextInput(
     val colors = LocalAppColor.current
     Column(
         modifier
-            .fillMaxWidth()
+            .applyWhen(fillMaxWidth) {
+                fillMaxWidth()
+            }
             .padding(vertical = Dimens.Spacing.medium)
     ) {
         OutlinedTextField(
@@ -135,7 +137,6 @@ fun ClickableTextInput(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LongTextInput(
     value: String,
@@ -149,8 +150,8 @@ fun LongTextInput(
         TextField(
             value = value,
             onValueChange = onValueChange,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
                 cursorColor = colors.primary,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -212,6 +213,13 @@ object InputOptions {
         capitalization = KeyboardCapitalization.None,
         autoCorrect = true,
         keyboardType = KeyboardType.Number,
+        imeAction = ImeAction.Done
+    )
+
+    val text = KeyboardOptions(
+        capitalization = KeyboardCapitalization.None,
+        autoCorrect = true,
+        keyboardType = KeyboardType.Text,
         imeAction = ImeAction.Done
     )
 }

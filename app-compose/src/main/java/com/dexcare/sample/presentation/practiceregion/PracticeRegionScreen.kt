@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -103,6 +102,11 @@ private fun PracticeRegionContent(
                         Column(Modifier.weight(1f)) {
                             Text(
                                 text = region.displayName,
+                                color = if (isEnabled) colors.light else Color.Unspecified,
+                            )
+
+                            Text(
+                                text = "$ ${region.visitPrice}",
                                 color = if (isEnabled) colors.light else Color.Unspecified,
                             )
 

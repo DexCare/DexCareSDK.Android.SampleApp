@@ -216,7 +216,6 @@ fun InsuranceInput(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun hideKeyBoard() {
     LocalSoftwareKeyboardController.current?.hide()

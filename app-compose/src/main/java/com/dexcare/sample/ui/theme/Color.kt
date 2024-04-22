@@ -8,7 +8,7 @@ data class AppColor(
     val primaryDark: Color = Color(0xff075c87),
     val accent: Color = Color(0xff56a1d5),
     val error: Color = Color(0xffDA3510),
-    val success: Color = Color(0xff00aa55),
+    val success: Color = Color(0xFF43A047),
     val link: Color = Color(0xff0070a9),
     val light: Color = Color(0xffffffff),
     val background: Color = Color(0xFFDAD5D9),
