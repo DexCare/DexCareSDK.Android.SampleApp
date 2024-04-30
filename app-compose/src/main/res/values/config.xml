@@ -3,6 +3,7 @@
     <string name="auth0_domain">TBD</string>
     <string name="auth0_client_id">TBD</string>
     <string name="brand">TBD</string>
+    <string name="tenant">TBD</string>
     <string name="dexcare_domain">TBD</string>
     <string name="dexcare_api_key">TBD</string>
     <string name="dexcare_fhirorch_url">TBD</string>
