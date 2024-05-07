@@ -13,8 +13,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.dexcare.acme.android.R
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.DateInput
 import com.dexcare.sample.ui.components.FullScreenProgress
@@ -22,7 +20,6 @@ import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.patient.models.Gender
-import timber.log.Timber
 import java.time.LocalDate
 
 @Composable
@@ -36,8 +33,6 @@ fun DemographicsScreen(
         onBackPressed = onBackPressed
     ) {
         val uiState = viewModel.uiState.collectAsState().value
-        val context = LocalContext.current
-        viewModel.setBrandName(context.getString(R.string.brand))
         DemographicsContent(
             uiState = uiState,
             onSubmitForSelf = {
@@ -178,5 +173,3 @@ fun DemographicsContent(
         }
     }
 }
-
-
