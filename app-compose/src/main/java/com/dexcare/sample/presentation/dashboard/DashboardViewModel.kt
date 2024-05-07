@@ -2,6 +2,7 @@ package com.dexcare.sample.presentation.dashboard
 
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import com.dexcare.sample.auth.LogoutHandler
 import com.dexcare.sample.data.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
@@ -14,7 +15,8 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
     private val virtualVisitRepository: VirtualVisitRepository,
-    private val schedulingDataStore: SchedulingDataStore
+    private val schedulingDataStore: SchedulingDataStore,
+    private val logoutHandler: LogoutHandler,
 ) : ViewModel() {
 
     init {
@@ -39,6 +41,10 @@ class DashboardViewModel @Inject constructor(
                     }
                 })
         })
+    }
+
+    fun logOut() {
+        logoutHandler.logOut()
     }
 
 }

@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.data.VisitType
-import com.dexcare.sample.presentation.LocalActivity
+import com.dexcare.sample.presentation.main.LocalActivity
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SelectionOption
 import com.dexcare.sample.ui.theme.Dimens
@@ -23,6 +23,7 @@ fun DashboardScreen(
     navLaunchRetail: () -> Unit,
     navLaunchVirtual: () -> Unit,
     navLaunchProvider: () -> Unit,
+    onLogOut: () -> Unit,
 ) {
     val activity = LocalActivity.current
     DashboardContent(
@@ -40,6 +41,10 @@ fun DashboardScreen(
         },
         onRejoinVirtualVisit = {
             viewModel.onRejoinVisit(activity, "")
+        },
+        onLogOut = {
+            viewModel.logOut()
+            onLogOut()
         }
     )
 }
@@ -51,6 +56,7 @@ fun DashboardContent(
     navLaunchVirtual: () -> Unit,
     navLaunchProvider: () -> Unit,
     onRejoinVirtualVisit: () -> Unit,
+    onLogOut: () -> Unit,
 ) {
     ActionBarScreen(title = "") {
         Column(
@@ -96,6 +102,14 @@ fun DashboardContent(
                 onRejoinVirtualVisit()
             }
 
+            SelectionOption(
+                Modifier.padding(top = Dimens.Spacing.large),
+                title = "Log out",
+                description = ""
+            ) {
+                onLogOut()
+            }
+
         }
     }
 }
@@ -104,6 +118,6 @@ fun DashboardContent(
 @Composable
 private fun PreviewDashboard() {
     PreviewUi {
-        DashboardContent({}, {}, {}, {})
+        DashboardContent({}, {}, {}, {}, {})
     }
 }

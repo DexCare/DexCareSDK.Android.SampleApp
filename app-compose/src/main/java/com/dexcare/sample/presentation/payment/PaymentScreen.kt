@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.dexcare.sample.presentation.LocalActivity
+import com.dexcare.sample.presentation.main.LocalActivity
 import com.dexcare.sample.presentation.provider.ProgressMessage
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.InformationScreen
@@ -99,6 +99,7 @@ fun PaymentScreen(
                         }
                     )
                     if (uiState.loading) {
+                        hideKeyBoard()
                         ProgressMessage()
                     }
                 }
@@ -130,6 +131,7 @@ fun PaymentContent(
         when (uiState.selectedPaymentType) {
             PaymentMethod.PaymentMethod.CreditCard -> {
                 CreditCardInput(
+                    stripeKey = uiState.stripeKey,
                     onCardSubmit = {
                         onSubmit(it)
                     }

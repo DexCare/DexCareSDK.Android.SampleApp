@@ -1,7 +1,6 @@
 package com.dexcare.sample.data
 
-import android.content.Context
-import com.dexcare.acme.android.R
+import com.dexcare.sample.data.model.AppEnvironment
 import org.dexcare.services.models.PatientDeclaration
 import org.dexcare.services.models.RelationshipToPatient
 import org.dexcare.services.patient.models.DexCarePatient
@@ -68,7 +67,9 @@ class SchedulingDataStore @Inject constructor() {
         scheduleRequest = ScheduleRequest()
     }
 
-    fun createVirtualVisitDetails(context: Context): VirtualVisitDetails {
+    fun createVirtualVisitDetails(
+        appEnvironment: AppEnvironment
+    ): VirtualVisitDetails {
         val stateLicensure =
             scheduleRequest.appUserDemographics?.addresses?.firstOrNull()?.state.orEmpty()
         return VirtualVisitDetails(
@@ -82,10 +83,10 @@ class SchedulingDataStore @Inject constructor() {
             stateLicensure = stateLicensure,
             visitReason = scheduleRequest.reasonForVisit.orEmpty(),
             visitTypeName = DefaultVirtualVisitTypes.Virtual.type,
-            practiceId = context.getString(R.string.virtual_practice_id),
+            practiceId = appEnvironment.virtualPracticeId,
             // if patient has done preassessment, which tool was used
             assessmentToolUsed = "ada",
-            brand = context.getString(R.string.brand),
+            brand = appEnvironment.brand,
             // optional language requested if interpreter services are available; ISO 639-3 Individual Language codes
             interpreterLanguage = Locale.getDefault().toLanguageTag(),
             userEmail = scheduleRequest.appUserDemographics!!.email,
@@ -113,7 +114,7 @@ class SchedulingDataStore @Inject constructor() {
         )
     }
 
-    fun retailInformation():RetailVisitInformation{
+    fun retailInformation(): RetailVisitInformation {
         return RetailVisitInformation(
             visitReason = scheduleRequest.reasonForVisit!!,
             patientDeclaration = scheduleRequest.patientDeclaration,

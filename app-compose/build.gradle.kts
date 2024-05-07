@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.navigation.safeArg)
     kotlin("kapt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -23,7 +24,7 @@ android {
             useSupportLibrary = true
         }
 
-        manifestPlaceholders["auth0Domain"] = "@string/auth0_domain"
+        manifestPlaceholders["auth0Domain"] = ""
         manifestPlaceholders["auth0Scheme"] = "https"
     }
 
@@ -88,8 +89,10 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugaring.jdk)
 
-    implementation(libs.dexcare)///
+    implementation(libs.dexcare)
     implementation(libs.stripe)
+
+    implementation(libs.kotlin.serialization)
 
     debugImplementation(libs.chucker.debug)
     releaseImplementation(libs.chucker.release)

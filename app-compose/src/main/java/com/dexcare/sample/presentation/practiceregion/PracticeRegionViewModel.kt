@@ -3,7 +3,7 @@ package com.dexcare.sample.presentation.practiceregion
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dexcare.sample.data.DexCareConfig
+import com.dexcare.sample.data.EnvironmentsRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class PracticeRegionViewModel @Inject constructor(
     private val virtualVisitRepository: VirtualVisitRepository,
     private val schedulingDataStore: SchedulingDataStore,
-    private val dexCareConfig: DexCareConfig,
+    private val environmentsRepository: EnvironmentsRepository,
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private val _state = MutableStateFlow(UiState())
@@ -28,7 +28,7 @@ class PracticeRegionViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(inProgress = true) }
             virtualVisitRepository.getPracticeRegion(
-                dexCareConfig.virtualPracticeId(),
+                environmentsRepository.findSelectedEnvironment()!!.virtualPracticeId,
                 onSuccess = { practice ->
                     _state.update {
                         it.copy(

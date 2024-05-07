@@ -1,6 +1,7 @@
 package com.dexcare.sample.data
 
 import com.dexcare.sample.common.displayMessage
+import com.dexcare.sample.data.model.AppEnvironment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.dexcare.DexCareSDK
@@ -17,14 +18,20 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProviderRepository @Inject constructor(private val dexCareConfig: DexCareConfig) {
+class ProviderRepository @Inject constructor(private val environmentsRepository: EnvironmentsRepository) {
+
+    private val appEnvironment: AppEnvironment by lazy {
+        environmentsRepository.findSelectedEnvironment() ?: run {
+            throw IllegalStateException("Can not continue without a nationalProviderId. Make sure an AppEnvironment is selected.")
+        }
+    }
 
     private var provider: Provider? = null
     private val providerTimeSlot =
         MutableStateFlow<ResultState<ProviderTimeSlot>>(ResultState.UnInitialized)
 
     fun getProvider(onResult: (Result<Provider>) -> Unit) {
-        DexCareSDK.providerService.getProvider(dexCareConfig.getNationalProviderId())
+        DexCareSDK.providerService.getProvider(appEnvironment.nationProviderId)
             .subscribe(
                 onSuccess = { provider ->
                     this.provider = provider

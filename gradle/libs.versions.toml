@@ -10,6 +10,7 @@ chucker = "4.0.0"
 navigation = "2.7.7"
 appcompat = "1.6.1"
 material = "1.11.0"
+kotlinSerialization = "1.6.3"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -38,6 +39,7 @@ stripe = "com.stripe:stripe-android:20.29.1"
 chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
 chucker-release = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
 
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 
 test-junit = "junit:junit:4.13.2"
 test-androidx-junit = "androidx.test.ext:junit:1.1.5"
@@ -53,3 +55,4 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 navigation-safeArg = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
