@@ -2,6 +2,7 @@ package com.dexcare.sample.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
@@ -71,9 +72,10 @@ fun TertiaryButton(text: String, modifier: Modifier = Modifier, onClick: () -> U
         modifier = modifier,
         colors = ButtonDefaults.textButtonColors(
             contentColor = colors.primary
-        )
+        ),
+        contentPadding = PaddingValues()
     ) {
-        Text(text = text.uppercase())
+        Text(text = text)
     }
 }
 
