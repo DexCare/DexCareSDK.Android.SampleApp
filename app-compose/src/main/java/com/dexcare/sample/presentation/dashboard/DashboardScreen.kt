@@ -1,7 +1,6 @@
 package com.dexcare.sample.presentation.dashboard
 
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.dexcare.sample.common.getPackageInfo
 import com.dexcare.sample.data.VisitType
@@ -30,6 +30,7 @@ import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SelectionOption
 import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
+import com.dexcare.sample.ui.theme.LocalAppColor
 import com.dexcare.sample.ui.theme.PreviewUi
 import timber.log.Timber
 
@@ -163,20 +164,15 @@ fun DashboardContent(
             }
 
             SelectionContainer {
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center,
+                Text(
+                    text = "Version: ${appInfo.versionName}, ${appInfo.versionCode}",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = Dimens.Spacing.x2Large)
-                ) {
-                    Text(text = "App Info:", style = MaterialTheme.typography.titleSmall)
-                    Text(
-                        text = "Version name:${appInfo.versionName}, Version code:${appInfo.versionCode}",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = Dimens.Spacing.xSmall)
-                    )
-                }
+                        .padding(top = Dimens.Spacing.large),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = LocalAppColor.current.textPrimary
+                )
             }
         }
     }
