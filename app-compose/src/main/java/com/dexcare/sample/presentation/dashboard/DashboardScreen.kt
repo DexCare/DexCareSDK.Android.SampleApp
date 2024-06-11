@@ -1,21 +1,37 @@
 package com.dexcare.sample.presentation.dashboard
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.dexcare.sample.common.getPackageInfo
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.data.virtualvisit.VirtualVisitContract
 import com.dexcare.sample.presentation.main.LocalActivity
+import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.SelectionOption
+import com.dexcare.sample.ui.components.SimpleAlert
 import com.dexcare.sample.ui.theme.Dimens
 import com.dexcare.sample.ui.theme.PreviewUi
+import timber.log.Timber
 
 @Composable
 fun DashboardScreen(
@@ -26,27 +42,61 @@ fun DashboardScreen(
     onLogOut: () -> Unit,
 ) {
     val activity = LocalActivity.current
-    DashboardContent(
-        navLaunchRetail = {
-            viewModel.onVisitType(VisitType.Retail)
-            navLaunchRetail()
-        },
-        navLaunchVirtual = {
-            viewModel.onVisitType(VisitType.Virtual)
-            navLaunchVirtual()
-        },
-        navLaunchProvider = {
-            viewModel.onVisitType(VisitType.Provider)
-            navLaunchProvider()
-        },
-        onRejoinVirtualVisit = {
-            viewModel.onRejoinVisit(activity, "")
-        },
-        onLogOut = {
-            viewModel.logOut()
-            onLogOut()
+    val uiState = viewModel.uiState.collectAsState().value
+    val showErrorAlert = remember { mutableStateOf(false) }
+
+    val visitLauncher =
+        rememberLauncherForActivityResult(VirtualVisitContract.LaunchVisit()) { resultCode ->
+            Timber.d("visit ended with result code $resultCode")
         }
-    )
+
+    if (uiState.visitIntent != null) {
+        LaunchedEffect(key1 = uiState.visitIntent) {
+            visitLauncher.launch(uiState.visitIntent)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        DashboardContent(
+            navLaunchRetail = {
+                viewModel.onVisitType(VisitType.Retail)
+                navLaunchRetail()
+            },
+            navLaunchVirtual = {
+                viewModel.onVisitType(VisitType.Virtual)
+                navLaunchVirtual()
+            },
+            navLaunchProvider = {
+                viewModel.onVisitType(VisitType.Provider)
+                navLaunchProvider()
+            },
+            onRejoinVirtualVisit = {
+                viewModel.onRejoinVisit(activity)
+            },
+            onLogOut = {
+                viewModel.logOut()
+                onLogOut()
+            }
+        )
+
+        if (uiState.isLoading) {
+            AcmeCircularProgress(Modifier.align(Alignment.Center))
+        }
+
+        if (uiState.error != null) {
+            showErrorAlert.value = true
+            SimpleAlert(
+                title = uiState.error.title,
+                message = uiState.error.message,
+                buttonText = "Got it",
+                enabledState = showErrorAlert,
+                actionAlertClosed = {
+                    viewModel.clearError()
+                }
+            )
+        }
+
+    }
 }
 
 
@@ -58,6 +108,8 @@ fun DashboardContent(
     onRejoinVirtualVisit: () -> Unit,
     onLogOut: () -> Unit,
 ) {
+    val appInfo = LocalContext.current.getPackageInfo()
+
     ActionBarScreen(title = "") {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -110,6 +162,22 @@ fun DashboardContent(
                 onLogOut()
             }
 
+            SelectionContainer {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Dimens.Spacing.x2Large)
+                ) {
+                    Text(text = "App Info:", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        text = "Version name:${appInfo.versionName}, Version code:${appInfo.versionCode}",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = Dimens.Spacing.xSmall)
+                    )
+                }
+            }
         }
     }
 }

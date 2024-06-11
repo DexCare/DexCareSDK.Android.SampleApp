@@ -1,14 +1,15 @@
 [versions]
-androidGradlePlugin = "8.2.2"
+androidGradlePlugin = "8.3.2"
+appVersioning = "1.3.2"
 kotlin = "1.9.22"
 activity-compose = "1.9.0"
 core-ktx = "1.13.1"
-lifecycle-runtime-ktx = "2.7.0"
+lifecycle-runtime-ktx = "2.8.1"
 compose-bom = "2024.05.00"
 hilt = "2.50"
 chucker = "4.0.0"
 navigation = "2.7.7"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 material = "1.12.0"
 kotlinSerialization = "1.6.3"
 
@@ -56,3 +57,4 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 navigation-safeArg = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+appVersioning = { id = "io.github.reactivecircus.app-versioning", version.ref = "appVersioning" }

@@ -25,7 +25,7 @@ import com.dexcare.sample.presentation.retailclinic.timeslot.RetailTimeSlotScree
 import timber.log.Timber
 
 @Composable
-fun MainNavigation(onReloadApp:()->Unit) {
+fun MainNavigation(onReloadApp: () -> Unit) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "dashboard") {
         composable("dashboard") {
