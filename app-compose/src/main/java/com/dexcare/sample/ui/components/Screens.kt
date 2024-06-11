@@ -2,6 +2,7 @@ package com.dexcare.sample.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -171,9 +172,24 @@ fun AcmeCircularProgress(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FullScreenProgress() {
+fun FullScreenProgress(message: String = "") {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        AcmeCircularProgress()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AcmeCircularProgress()
+            if (message.isNotBlank()) {
+                Text(
+                    text = message,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(Dimens.Spacing.large),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+
     }
 }
 
@@ -191,6 +207,6 @@ private fun PreviewSuccessScreen() {
 @Preview
 private fun PreviewFullScreenProgress() {
     PreviewUi {
-        FullScreenProgress()
+        FullScreenProgress("Please wait. We are scheduling your appointment. Please do not close the screen.")
     }
 }

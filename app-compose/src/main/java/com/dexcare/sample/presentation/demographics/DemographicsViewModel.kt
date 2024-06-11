@@ -159,6 +159,7 @@ class DemographicsViewModel @Inject constructor(
         val demographicsRecord = DemographicsInput.initialize()
             .withFirstName(demographics.name.given)
             .withLastName(demographics.name.family)
+            .withDateOfBirth(demographics.birthdate)
             .withGender(demographics.gender)
             .withEmail(demographics.email)
             .withPhone(demographics.homePhone.orEmpty())

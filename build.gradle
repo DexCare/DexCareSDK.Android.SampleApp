@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.hilt) apply(false)
     alias(libs.plugins.kotlin) apply(false)
     alias(libs.plugins.navigation.safeArg) apply(false)
+    alias(libs.plugins.appVersioning) apply(false)
 }
 
 

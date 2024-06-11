@@ -30,9 +30,9 @@ class PracticeRegionViewModel @Inject constructor(
             virtualVisitRepository.getPracticeRegion(
                 dexCareConfig.virtualPracticeId(),
                 onSuccess = { practice ->
-                    _state.update {
-                        it.copy(
-                            practiceRegions = practice.practiceRegions.sortedBy { region -> region.busy },
+                    _state.update {oldState->
+                        oldState.copy(
+                            practiceRegions = practice.practiceRegions.filter { it.active }.sortedBy { region -> region.busy },
                             inProgress = false
                         )
                     }

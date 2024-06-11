@@ -1,12 +1,19 @@
 package com.dexcare.sample.presentation.dashboard
 
+import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import com.dexcare.sample.common.toError
+import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.presentation.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -17,6 +24,9 @@ class DashboardViewModel @Inject constructor(
     private val schedulingDataStore: SchedulingDataStore
 ) : ViewModel() {
 
+    private val _state = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _state
+
     init {
         schedulingDataStore.reset()
     }
@@ -25,20 +35,42 @@ class DashboardViewModel @Inject constructor(
         schedulingDataStore.setVisitType(visitType)
     }
 
-    fun onRejoinVisit(activity: FragmentActivity, visitId: String) {
+    fun onRejoinVisit(activity: FragmentActivity) {
+        _state.update { it.copy(isLoading = true) }
         patientRepository.findPatient(onSuccess = { patient ->
             virtualVisitRepository.rejoinVisit(
-                visitId,
                 activity,
                 patient,
                 onComplete = { intent, error ->
-                    if (intent != null) {
-                        activity.startActivity(intent)
-                    } else if (error != null) {
-                        Timber.d("error $error")
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            visitIntent = intent,
+                            error = error?.toError(title = "Error rejoining visit")
+                        )
                     }
                 })
+        }, onError = {
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    error = ErrorResult(
+                        "Error rejoining visit",
+                        "We were unable to load the patient record."
+                    )
+                )
+            }
         })
     }
+
+    fun clearError() {
+        _state.update { it.copy(error = null) }
+    }
+
+    data class UiState(
+        val isLoading: Boolean = false,
+        val visitIntent: Intent? = null,
+        val error: ErrorResult? = null
+    )
 
 }

@@ -73,6 +73,7 @@ class MainActivity : FragmentActivity() {
         super.onResume()
         viewModel.onResume(authProvider)
     }
+
 }
 
 val LocalActivity = staticCompositionLocalOf<FragmentActivity> {
