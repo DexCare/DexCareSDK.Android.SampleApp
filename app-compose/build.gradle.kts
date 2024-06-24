@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.navigation.safeArg)
     alias(libs.plugins.appVersioning)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
     kotlin("kapt")
     alias(libs.plugins.kotlin.serialization)
 }
@@ -106,6 +108,9 @@ dependencies {
     implementation(libs.stripe)
 
     implementation(libs.kotlin.serialization)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.messaging)
 
     debugImplementation(libs.chucker.debug)
     releaseImplementation(libs.chucker.release)
