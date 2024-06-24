@@ -3,7 +3,7 @@ package com.dexcare.sample.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.dexcare.sample.auth.SessionManager
-import com.dexcare.sample.data.EnvironmentsRepository
+import com.dexcare.sample.data.repository.EnvironmentsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

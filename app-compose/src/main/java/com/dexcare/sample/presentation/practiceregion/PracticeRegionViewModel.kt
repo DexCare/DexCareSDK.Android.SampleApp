@@ -3,9 +3,9 @@ package com.dexcare.sample.presentation.practiceregion
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dexcare.sample.data.EnvironmentsRepository
+import com.dexcare.sample.data.repository.EnvironmentsRepository
 import com.dexcare.sample.data.SchedulingDataStore
-import com.dexcare.sample.data.VirtualVisitRepository
+import com.dexcare.sample.data.repository.VirtualVisitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

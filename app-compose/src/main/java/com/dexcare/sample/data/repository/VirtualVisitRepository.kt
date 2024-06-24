@@ -1,4 +1,4 @@
-package com.dexcare.sample.data
+package com.dexcare.sample.data.repository
 
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity

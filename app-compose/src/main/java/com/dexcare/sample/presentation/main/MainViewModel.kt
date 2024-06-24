@@ -7,7 +7,7 @@ import com.dexcare.sample.auth.LoginResult
 import com.dexcare.sample.auth.LogoutHandler
 import com.dexcare.sample.auth.Session
 import com.dexcare.sample.auth.SessionManager
-import com.dexcare.sample.data.EnvironmentsRepository
+import com.dexcare.sample.data.repository.EnvironmentsRepository
 import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.ResultState
 import com.dexcare.sample.data.model.AppEnvironment

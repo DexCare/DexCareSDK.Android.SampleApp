@@ -1,7 +1,7 @@
 package com.dexcare.sample.auth
 
-import com.dexcare.sample.data.EnvironmentsRepository
-import com.dexcare.sample.data.VirtualVisitRepository
+import com.dexcare.sample.data.repository.EnvironmentsRepository
+import com.dexcare.sample.data.repository.VirtualVisitRepository
 import javax.inject.Inject
 
 

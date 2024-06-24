@@ -1,7 +1,7 @@
 package com.dexcare.sample
 
 import android.app.Application
-import com.dexcare.sample.data.EnvironmentsRepository
+import com.dexcare.sample.data.repository.EnvironmentsRepository
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject

@@ -1,9 +1,11 @@
-package com.dexcare.sample.data
+package com.dexcare.sample.data.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.dexcare.sample.data.ErrorResult
+import com.dexcare.sample.data.ResultState
 import com.dexcare.sample.data.model.AppEnvironment
 import com.stripe.android.PaymentConfiguration
 import kotlinx.coroutines.CoroutineScope
