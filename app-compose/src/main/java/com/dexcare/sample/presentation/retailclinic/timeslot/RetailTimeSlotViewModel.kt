@@ -6,7 +6,7 @@ import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
-import com.dexcare.sample.presentation.provider.timeslot.TimeSlotUi
+import com.dexcare.sample.presentation.provider.timeslot.TimeSlotUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dexcare.services.retail.models.RetailAppointmentTimeSlot
 import org.dexcare.services.retail.models.ScheduleDay
+import timber.log.Timber
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -29,26 +30,21 @@ class RetailTimeSlotViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
             val departmentName = schedulingDataStore.scheduleRequest.retailClinic?.departmentName
             if (!departmentName.isNullOrEmpty()) {
                 retailClinicRepository.getTimeSlots(departmentName).subscribe({ retailTimeSlot ->
                     setData(retailTimeSlot)
-                    _state.update {
-                        it.copy(
-                            scheduleDays = retailTimeSlot.scheduleDays,
-                            isLoading = false
-                        )
-                    }
                 }, { err ->
                     _state.update { it.copy(isLoading = false, error = err.toError()) }
                 }
                 )
             }
-
         }
     }
 
     private fun setData(timeSlot: RetailAppointmentTimeSlot) {
+        Timber.i("TimeSlotViewModel setData:: $timeSlot")
         val filteredData = timeSlot.scheduleDays.filter { it.timeSlots.isNotEmpty() }
 
         _state.update { oldState ->
@@ -56,7 +52,7 @@ class RetailTimeSlotViewModel @Inject constructor(
                 retailTimeSlot = timeSlot,
                 start = timeSlot.startDate.toLocalDate(),
                 end = timeSlot.endDate.toLocalDate(),
-                scheduleDays = filteredData,
+                scheduleDays = timeSlot.scheduleDays,
                 error = null,
                 isLoading = false,
                 noSchedulesAvailable = filteredData.isEmpty(),
@@ -68,17 +64,26 @@ class RetailTimeSlotViewModel @Inject constructor(
     fun onDateSelected(date: LocalDate) {
         val scheduleDay = _state.value.scheduleDays.firstOrNull { it.localDate == date }
         val newSlots = scheduleDay?.timeSlots?.map {
-            TimeSlotUi(
+            TimeSlotUiState(
                 slotId = it.slotId,
-                time = it.slotDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                time = it.slotDateTime.format(DateTimeFormatter.ofPattern("hh:mm a")),
+                isSelected = false
             )
         }.orEmpty()
 
-        _state.update { it.copy(selectedDate = date, timeSlots = newSlots) }
+        _state.update { it.copy(selectedDate = date, timeSlots = newSlots, selectedSlot = null) }
     }
 
-    fun onSlotSelected(slot: TimeSlotUi) {
-        _state.update { it.copy(selectedSlot = slot) }
+    fun onSlotSelected(slot: TimeSlotUiState) {
+        val newTimeSlots = _state.value.timeSlots.map {
+            it.copy(isSelected = it.slotId == slot.slotId)
+        }
+        _state.update {
+            it.copy(
+                selectedSlot = slot.copy(isSelected = true),
+                timeSlots = newTimeSlots
+            )
+        }
     }
 
     fun onContinue() {
@@ -95,8 +100,8 @@ class RetailTimeSlotViewModel @Inject constructor(
         val noSchedulesAvailable: Boolean = false,
         val error: ErrorResult? = null,
         val selectedDate: LocalDate? = null,
-        val selectedSlot: TimeSlotUi? = null,
-        val timeSlots: List<TimeSlotUi> = emptyList(),
+        val selectedSlot: TimeSlotUiState? = null,
+        val timeSlots: List<TimeSlotUiState> = emptyList(),
         val dateOptions: List<LocalDate> = emptyList(),
         val scheduleDays: List<ScheduleDay> = emptyList(),
         val start: LocalDate? = null,

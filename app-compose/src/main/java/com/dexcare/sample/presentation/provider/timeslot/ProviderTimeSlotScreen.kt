@@ -78,7 +78,7 @@ fun ProviderTimeSlotScreen(
 private fun ProviderTimeSlotContent(
     uiState: ProviderTimeSlotViewModel.UiState,
     onDaySelected: (day: LocalDate) -> Unit,
-    onTimeSlotSelected: (slot: TimeSlotUi) -> Unit,
+    onTimeSlotSelected: (slot: TimeSlotUiState) -> Unit,
     onNextClick: () -> Unit,
 ) {
     if (uiState.noSchedulesAvailable) {

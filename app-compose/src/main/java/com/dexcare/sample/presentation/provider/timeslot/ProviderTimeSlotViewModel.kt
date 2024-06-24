@@ -1,5 +1,6 @@
 package com.dexcare.sample.presentation.provider.timeslot
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.data.ErrorResult
@@ -69,17 +70,26 @@ class ProviderTimeSlotViewModel @Inject constructor(
     fun onDateSelected(date: LocalDate) {
         val scheduleDay = _state.value.scheduleDays.firstOrNull { it.localDate == date }
         val newSlots = scheduleDay?.timeSlots?.map {
-            TimeSlotUi(
+            TimeSlotUiState(
                 slotId = it.slotId,
-                time = it.slotDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                time = it.slotDateTime.format(DateTimeFormatter.ofPattern("hh:mm a")),
+                isSelected = false
             )
         }.orEmpty()
 
-        _state.update { it.copy(selectedDate = date, timeSlots = newSlots) }
+        _state.update { it.copy(selectedDate = date, timeSlots = newSlots, selectedSlot = null) }
     }
 
-    fun onSlotSelected(slot: TimeSlotUi) {
-        _state.update { it.copy(selectedSlot = slot) }
+    fun onSlotSelected(slot: TimeSlotUiState) {
+        val timeSlots = _state.value.timeSlots.map {
+            it.copy(isSelected = it.slotId == slot.slotId)
+        }
+        _state.update {
+            it.copy(
+                selectedSlot = slot.copy(isSelected = true),
+                timeSlots = timeSlots
+            )
+        }
     }
 
     fun onContinue() {
@@ -96,8 +106,8 @@ class ProviderTimeSlotViewModel @Inject constructor(
         val scheduleDays: List<ScheduleDay> = emptyList(),
         val dateOptions: List<LocalDate> = emptyList(),
         val selectedDate: LocalDate? = null,
-        val selectedSlot: TimeSlotUi? = null,
-        val timeSlots: List<TimeSlotUi> = emptyList(),
+        val selectedSlot: TimeSlotUiState? = null,
+        val timeSlots: List<TimeSlotUiState> = emptyList(),
         val providerTimeSlot: ProviderTimeSlot? = null,
         val inProgress: Boolean = false,
         val start: LocalDate? = null,
@@ -105,4 +115,7 @@ class ProviderTimeSlotViewModel @Inject constructor(
         val error: ErrorResult? = null,
     )
 }
-data class TimeSlotUi(val slotId: String, val time: String)
+
+
+@Stable
+data class TimeSlotUiState(val slotId: String, val time: String, val isSelected: Boolean)
