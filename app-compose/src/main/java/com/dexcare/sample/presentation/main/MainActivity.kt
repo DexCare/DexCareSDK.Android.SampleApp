@@ -1,5 +1,8 @@
 package com.dexcare.sample.presentation.main
 
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.fragment.app.FragmentActivity
 import com.dexcare.sample.auth.AuthProvider
+import com.dexcare.sample.data.messaging.NotificationManager
+import com.dexcare.sample.data.messaging.NotificationMessage
 import com.dexcare.sample.data.model.AppEnvironment
 import com.dexcare.sample.ui.components.ErrorScreen
 import com.dexcare.sample.ui.components.FullScreen
@@ -27,6 +32,7 @@ import com.dexcare.sample.ui.components.ListItem
 import com.dexcare.sample.ui.theme.DexCareSampleTheme
 import com.dexcare.sample.ui.theme.Dimens
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,6 +40,9 @@ class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var authProvider: AuthProvider
+
+    @Inject
+    lateinit var notificationManager: NotificationManager
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -47,11 +56,31 @@ class MainActivity : FragmentActivity() {
                 }
             }
         }
+
+        if (!notificationManager.hasNotificationPermission() &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        ) {
+            notificationManager.requestNotificationPermission(this) {
+                Timber.d("Notification permission granted: $it")
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.checkAuthAndNavigate()
+    }
+
+    companion object {
+        private const val BUNDLE_NOTIFICATION = "MainActivity_NotificationBundle"
+        fun createNotificationIntent(
+            context: Context,
+            notificationMessage: NotificationMessage
+        ): Intent {
+            val resultIntent = Intent(context, MainActivity::class.java)
+            resultIntent.putExtra(BUNDLE_NOTIFICATION, notificationMessage)
+            return resultIntent
+        }
     }
 }
 

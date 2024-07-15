@@ -5,14 +5,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.common.toError
-import com.dexcare.sample.data.repository.EnvironmentsRepository
 import com.dexcare.sample.data.ErrorResult
+import com.dexcare.sample.data.SchedulingDataStore
+import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.data.repository.EnvironmentsRepository
 import com.dexcare.sample.data.repository.PaymentRepository
 import com.dexcare.sample.data.repository.ProviderRepository
 import com.dexcare.sample.data.repository.RetailClinicRepository
-import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.repository.VirtualVisitRepository
-import com.dexcare.sample.data.VisitType
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,6 +60,16 @@ class PaymentViewModel @Inject constructor(
             setUpSupportedPayments(visitType!!)
         } else {
             Timber.e("Selected VisitType is Invalid. Make sure VisitType is initialized in SchedulingDataStore.")
+        }
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Timber.d("Received firebase token: $token")
+                _state.update { it.copy(fcmDeviceToken = token) }
+            } else {
+                Timber.w("Did not receive firebase token")
+            }
         }
     }
 
@@ -134,7 +145,9 @@ class PaymentViewModel @Inject constructor(
                     activity,
                     scheduleDataStore.scheduleRequest.patient!!,
                     scheduleDataStore.createVirtualVisitDetails(environmentsRepository.findSelectedEnvironment()!!),
-                    paymentMethod
+                    paymentMethod,
+                    _state.value.fcmDeviceToken,
+                    environmentsRepository.findSelectedEnvironment()?.pushNotificationIdentifier
                 ) { intent, throwable ->
                     _state.update {
                         it.copy(
@@ -248,6 +261,7 @@ class PaymentViewModel @Inject constructor(
         val originalVisitCost: String? = null,
         val visitCostAfterCoupon: String? = null,
         val couponCodeError: String? = null,
+        val fcmDeviceToken: String? = null,
     )
 }
 

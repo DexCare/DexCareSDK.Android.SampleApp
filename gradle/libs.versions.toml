@@ -63,6 +63,7 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 navigation-safeArg = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 appVersioning = { id = "io.github.reactivecircus.app-versioning", version.ref = "appVersioning" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }

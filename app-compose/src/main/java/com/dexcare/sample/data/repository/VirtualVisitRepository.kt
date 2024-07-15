@@ -7,6 +7,7 @@ import org.dexcare.DexCareSDK
 import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.Patient
+import org.dexcare.services.virtualvisit.models.RegisterPushNotification
 import org.dexcare.services.virtualvisit.models.VirtualPractice
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 import org.dexcare.services.virtualvisit.models.VirtualVisitDetails
@@ -22,15 +23,25 @@ class VirtualVisitRepository @Inject constructor(private val storage: VirtualVis
         patient: Patient,
         virtualVisitDetails: VirtualVisitDetails,
         paymentMethod: PaymentMethod,
+        fcmToken: String?,
+        fcmPlatformIdentifier: String?,
         onComplete: (Intent?, Throwable?) -> Unit,
     ) {
+        Timber.d("Firebase token=$fcmToken")
         DexCareSDK.virtualService.createVirtualVisitWithPatientActor(
             activity = activity,
             patient = patient,
             virtualVisitDetails = virtualVisitDetails,
             paymentMethod = paymentMethod,
             virtualActor = null,
-            registerPushNotification = null
+            registerPushNotification = if (fcmToken != null) {
+                RegisterPushNotification(
+                    appId = fcmPlatformIdentifier.orEmpty(),
+                    fcmToken = fcmToken,
+                )
+            } else {
+                null
+            }
         ).subscribe(
             onSuccess = {
                 val visitType = it.first

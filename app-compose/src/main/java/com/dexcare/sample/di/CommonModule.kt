@@ -3,6 +3,7 @@ package com.dexcare.sample.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.dexcare.sample.auth.SessionManager
+import com.dexcare.sample.data.messaging.NotificationManager
 import com.dexcare.sample.data.repository.EnvironmentsRepository
 import dagger.Module
 import dagger.Provides
@@ -43,5 +44,10 @@ class CommonModule {
             prettyPrint = true
             allowTrailingComma = true
         }
+    }
+
+    @Provides
+    fun provideNotificationManager(@ApplicationContext context: Context): NotificationManager {
+        return NotificationManager(context)
     }
 }

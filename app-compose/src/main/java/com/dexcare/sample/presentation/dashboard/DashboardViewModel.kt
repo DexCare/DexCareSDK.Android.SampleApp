@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.dexcare.sample.auth.LogoutHandler
 import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
-import com.dexcare.sample.data.repository.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
-import com.dexcare.sample.data.repository.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.data.repository.PatientRepository
+import com.dexcare.sample.data.repository.VirtualVisitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
