@@ -34,7 +34,7 @@ hilt-navigation = "androidx.hilt:hilt-navigation-compose:1.2.0"
 
 desugaring-jdk = "com.android.tools:desugar_jdk_libs:2.0.4"
 
-dexcare = "org.dexcare:dexcare:9.1.0"
+dexcare = "org.dexcare:dexcare:9.2.0"
 stripe = "com.stripe:stripe-android:20.29.1"
 
 chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
