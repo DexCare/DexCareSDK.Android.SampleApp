@@ -35,15 +35,21 @@ class PracticeRegionViewModel @Inject constructor(
                     }.sortedBy { region ->
                         region.busy
                     }
+
+                    //map to the one selected in last visit if available.
+                    val previousRegion = practiceRegions.firstOrNull {
+                        it.practiceRegionId == virtualVisitRepository.findPreviousRegionId()
+                    }
+
                     _state.update { oldState ->
                         oldState.copy(
                             practiceRegions = practiceRegions,
                             inProgress = false,
-                            selectedRegion = practiceRegions.firstOrNull {
-                                //map to the one selected in last visit if available.
-                                it.practiceRegionId == virtualVisitRepository.findPreviousRegionId()
-                            }
+                            selectedRegion = previousRegion
                         )
+                    }
+                    if (previousRegion != null) {
+                        selectRegion(previousRegion)
                     }
                 },
                 onError = {
