@@ -24,7 +24,7 @@ class EnvironmentsRepository(
 ) {
     private val errorResult = ErrorResult(
         title = "Configuration error",
-        message = "Please make sure you have a valid JSON in a file named 'dexcare_sdk_config.dexconfig' in 'raw' resource directory."
+        message = "Please make sure you have a valid JSON in a file named 'dexcare_sdk.dexconfig' in 'raw' resource directory."
     )
 
     private val results =
@@ -110,7 +110,7 @@ class EnvironmentsRepository(
     }
 
     companion object {
-        private const val CONFIG_FILE = "dexcare_sdk_config"
+        private const val CONFIG_FILE = "dexcare_sdk"
         private const val KEY_ENVIRONMENT = "selected_app_environment"
     }
 

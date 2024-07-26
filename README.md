@@ -1,13 +1,5 @@
-> **NOTE**
->
-> The default app module supports SDK version 8.5.0.
-> For samples and updates for 9.0.0, please refer to `app-compose` module. The compose UI based
-> module
-> will be default implementation module going forward.
-
-# DexCareSDK.Android.SampleApp
-
-An Android sample app using the DexCare SDK.
+# ACME Sample App
+ACME is a fictitious health organization. This sample app uses DexCare's Android SDK to demonstrate some of the functionality of the [DexCare SDK](https://developers.dexcarehealth.com/).
 
 ## Set up sample app
 
@@ -33,7 +25,7 @@ then download successfully.
 
 ### Set up config
 The sample app supports configuration to multiple environments from the single application. You can 
-define the required configuration in a JSON file. Create a file named `dexcare_sdk_config.dexconfig`
+define the required configuration in a JSON file. Create a file named `dexcare_sdk.dexconfig`
 in `res/raw` directory. 
 
 Here is a sample for JSON that shows the supported fields;
