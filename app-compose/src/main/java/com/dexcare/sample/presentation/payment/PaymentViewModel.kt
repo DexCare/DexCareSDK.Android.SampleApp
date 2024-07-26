@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.common.toError
+import com.dexcare.sample.data.EnvironmentsRepository
 import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.PaymentRepository
 import com.dexcare.sample.data.ProviderRepository
@@ -30,6 +31,7 @@ class PaymentViewModel @Inject constructor(
     private val providerRepository: ProviderRepository,
     private val paymentRepository: PaymentRepository,
     private val retailClinicRepository: RetailClinicRepository,
+    private val environmentsRepository: EnvironmentsRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -47,6 +49,11 @@ class PaymentViewModel @Inject constructor(
             }, { throwable ->
                 _state.update { it.copy(loading = false, error = throwable.toError()) }
             })
+
+            environmentsRepository.findSelectedEnvironment()?.let { env ->
+                _state.update { it.copy(stripeKey = env.stripePublishableKey) }
+            }
+
         }
         if (visitType != null) {
             setUpSupportedPayments(visitType!!)
@@ -126,7 +133,7 @@ class PaymentViewModel @Inject constructor(
                 virtualVisitRepository.scheduleVisit(
                     activity,
                     scheduleDataStore.scheduleRequest.patient!!,
-                    scheduleDataStore.createVirtualVisitDetails(activity),
+                    scheduleDataStore.createVirtualVisitDetails(environmentsRepository.findSelectedEnvironment()!!),
                     paymentMethod
                 ) { intent, throwable ->
                     _state.update {
@@ -228,6 +235,7 @@ class PaymentViewModel @Inject constructor(
         val loading: Boolean = false,
         val loadingMessage: String? = null,
         val error: ErrorResult? = null,
+        val stripeKey: String = "",
         val providerBookingComplete: Boolean = false,
         val retailBookingComplete: Boolean = false,
         val insurancePayers: List<InsurancePayer> = emptyList(),

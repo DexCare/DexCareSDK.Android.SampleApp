@@ -8,8 +8,9 @@ import com.auth0.android.lock.InitialScreen
 import com.auth0.android.lock.Lock
 import com.auth0.android.lock.UsernameStyle
 import com.auth0.android.result.Credentials
+import com.dexcare.sample.data.ErrorResult
+import com.dexcare.sample.data.model.AppEnvironment
 import dagger.hilt.android.qualifiers.ActivityContext
-import com.dexcare.acme.android.R
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -18,17 +19,24 @@ import kotlin.coroutines.suspendCoroutine
 class Auth0LoginProvider @Inject constructor(@ActivityContext private val context: Context) :
     AuthProvider {
 
-    override suspend fun login(): LoginResult {
+    override suspend fun login(appEnvironment: AppEnvironment): LoginResult {
         val auth0 = Auth0(
-            context.getString(R.string.auth0_client_id),
-            context.getString(R.string.auth0_domain)
+            appEnvironment.auth0ClientId,
+            appEnvironment.auth0Domain
         )
         return suspendCoroutine {
             val builder = Lock.newBuilder(
                 auth0,
                 object : AuthenticationCallback() {
                     override fun onError(error: AuthenticationException) {
-                        it.resume(LoginResult.Error(message = error.message ?: "Login Error"))
+                        it.resume(
+                            LoginResult.Error(
+                                ErrorResult(
+                                    title = "Login Error",
+                                    message = error.message ?: "Failed to authenticate with Auth0."
+                                )
+                            )
+                        )
                     }
 
                     override fun onAuthentication(credentials: Credentials) {
@@ -46,7 +54,7 @@ class Auth0LoginProvider @Inject constructor(@ActivityContext private val contex
 
                 }
             ).apply {
-                withAudience("https://${context.getString(R.string.auth0_domain)}/api/v2/")
+                withAudience("https://${appEnvironment.auth0Domain}/api/v2/")
                 withScope("openid offline_access")
                 closable(true)
                 useLabeledSubmitButton(true)

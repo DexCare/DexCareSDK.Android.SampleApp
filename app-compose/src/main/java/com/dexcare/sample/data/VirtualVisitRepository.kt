@@ -8,6 +8,7 @@ import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.Patient
 import org.dexcare.services.virtualvisit.models.VirtualPractice
+import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 import org.dexcare.services.virtualvisit.models.VirtualVisitDetails
 import timber.log.Timber
 import javax.inject.Inject
@@ -53,7 +54,10 @@ class VirtualVisitRepository @Inject constructor(private val storage: VirtualVis
     ) {
         val visitId = storage.getVisitId()
         if (visitId.isNullOrEmpty()) {
-            onComplete(null, Throwable("VisitId is not available. We couldn't find information about your last visit. Please create a new visit."))
+            onComplete(
+                null,
+                Throwable("VisitId is not available. We couldn't find information about your last visit. Please create a new visit.")
+            )
             return
         }
 
@@ -77,5 +81,17 @@ class VirtualVisitRepository @Inject constructor(private val storage: VirtualVis
         DexCareSDK.practiceService
             .getVirtualPractice(practiceId)
             .subscribe(onSuccess, onError)
+    }
+
+    fun savePracticeRegion(virtualPracticeRegion: VirtualPracticeRegion) {
+        storage.saveRegion(virtualPracticeRegion)
+    }
+
+    fun findPreviousRegionId(): String {
+        return storage.getRegionId()
+    }
+
+    fun clear() {
+        storage.clearData()
     }
 }

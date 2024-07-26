@@ -1,10 +1,11 @@
 package com.dexcare.sample.auth
 
+import com.dexcare.sample.data.ErrorResult
+import com.dexcare.sample.data.model.AppEnvironment
 import java.time.Instant
-import java.time.LocalDateTime
 
 interface AuthProvider {
-    suspend fun login(): LoginResult
+    suspend fun login(appEnvironment: AppEnvironment): LoginResult
 }
 
 sealed class LoginResult {
@@ -14,5 +15,5 @@ sealed class LoginResult {
         val expiresAt: Instant
     ) : LoginResult()
 
-    data class Error(val message: String) : LoginResult()
+    data class Error(val errorResult: ErrorResult) : LoginResult()
 }

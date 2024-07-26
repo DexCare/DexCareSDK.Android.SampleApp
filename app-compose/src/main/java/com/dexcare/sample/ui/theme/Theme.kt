@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -36,9 +35,7 @@ fun DexCareSampleTheme(
         }
     }
 
-    MaterialTheme(
-        typography = Typography,
-    ) {
+    MaterialTheme {
         CompositionLocalProvider(
             LocalAppColor provides colorScheme,
         ) {

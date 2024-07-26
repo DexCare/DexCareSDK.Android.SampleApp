@@ -2,6 +2,7 @@ package com.dexcare.sample.presentation.retailclinic
 
 import androidx.lifecycle.ViewModel
 import com.dexcare.sample.common.toError
+import com.dexcare.sample.data.EnvironmentsRepository
 import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
@@ -14,18 +15,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RetailClinicViewModel @Inject constructor(
-    private val retailClinicRepository: RetailClinicRepository,
-    private val schedulingDataStore: SchedulingDataStore
+    private val schedulingDataStore: SchedulingDataStore,
+    retailClinicRepository: RetailClinicRepository,
+    environmentsRepository: EnvironmentsRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _state
 
-    fun initialize(brandName: String) {
-        if (_state.value.clinics.isNotEmpty()) {
-            return
-        }
+    init {
         setLoading(true)
+        val brandName = environmentsRepository.findSelectedEnvironment()?.brand.orEmpty()
         retailClinicRepository.getClinics(brandName).subscribe({ clinics ->
             _state.update { it.copy(clinics = clinics, isLoading = false) }
         }, { err ->

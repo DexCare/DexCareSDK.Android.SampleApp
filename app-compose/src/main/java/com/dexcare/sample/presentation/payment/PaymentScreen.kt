@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dexcare.sample.data.virtualvisit.VirtualVisitContract
-import com.dexcare.sample.presentation.LocalActivity
+import com.dexcare.sample.presentation.main.LocalActivity
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.FullScreenProgress
 import com.dexcare.sample.ui.components.InformationScreen
@@ -67,6 +67,7 @@ fun PaymentScreen(
 
     when {
         uiState.loading -> {
+            hideKeyBoard()
             FullScreenProgress(uiState.loadingMessage.orEmpty())
         }
 
@@ -152,6 +153,7 @@ fun PaymentContent(
         when (uiState.selectedPaymentType) {
             PaymentMethod.PaymentMethod.CreditCard -> {
                 CreditCardInput(
+                    stripeKey = uiState.stripeKey,
                     onCardSubmit = {
                         onSubmit(it)
                     }

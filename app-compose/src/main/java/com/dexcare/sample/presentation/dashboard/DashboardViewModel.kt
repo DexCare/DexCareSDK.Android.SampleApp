@@ -3,25 +3,25 @@ package com.dexcare.sample.presentation.dashboard
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
+import com.dexcare.sample.auth.LogoutHandler
 import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
-import com.dexcare.sample.presentation.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
     private val virtualVisitRepository: VirtualVisitRepository,
-    private val schedulingDataStore: SchedulingDataStore
+    private val schedulingDataStore: SchedulingDataStore,
+    private val logoutHandler: LogoutHandler,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -63,6 +63,10 @@ class DashboardViewModel @Inject constructor(
         })
     }
 
+    fun logOut() {
+        logoutHandler.logOut()
+    }
+
     fun clearError() {
         _state.update { it.copy(error = null) }
     }
@@ -72,5 +76,4 @@ class DashboardViewModel @Inject constructor(
         val visitIntent: Intent? = null,
         val error: ErrorResult? = null
     )
-
 }

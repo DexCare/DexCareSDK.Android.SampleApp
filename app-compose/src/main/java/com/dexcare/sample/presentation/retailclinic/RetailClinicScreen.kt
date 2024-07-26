@@ -9,19 +9,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import com.dexcare.sample.ui.components.AcmeCircularProgress
 import com.dexcare.sample.ui.components.ActionBarScreen
 import com.dexcare.sample.ui.components.InformationScreen
 import com.dexcare.sample.ui.theme.Dimens
-import com.dexcare.acme.android.R
-import com.dexcare.sample.ui.components.AcmeCircularProgress
 import org.dexcare.services.retail.models.RetailDepartment
 
 @Composable
@@ -34,8 +31,6 @@ fun RetailClinicScreen(
         title = "Retail Clinic",
         onBackPressed = onBackPressed
     ) {
-        val context = LocalContext.current
-        viewModel.initialize(context.getString(R.string.brand))
         val uiState = viewModel.uiState.collectAsState().value
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             if (uiState.isLoading) {

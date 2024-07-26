@@ -1,18 +1,6 @@
-package com.dexcare.sample.presentation
+package com.dexcare.sample.presentation.main
 
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -20,8 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.dexcare.sample.areConfigValuesSetUp
-import com.dexcare.sample.auth.AuthProvider
 import com.dexcare.sample.presentation.dashboard.DashboardScreen
 import com.dexcare.sample.presentation.dashboard.DashboardViewModel
 import com.dexcare.sample.presentation.demographics.DemographicsScreen
@@ -36,78 +22,10 @@ import com.dexcare.sample.presentation.reasonforvisit.ReasonForVisitScreen
 import com.dexcare.sample.presentation.reasonforvisit.ReasonForVisitViewModel
 import com.dexcare.sample.presentation.retailclinic.RetailClinicScreen
 import com.dexcare.sample.presentation.retailclinic.timeslot.RetailTimeSlotScreen
-import com.dexcare.sample.ui.components.FullScreen
-import com.dexcare.sample.ui.theme.DexCareSampleTheme
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import javax.inject.Inject
-
-@AndroidEntryPoint
-class MainActivity : FragmentActivity() {
-
-    @Inject
-    lateinit var authProvider: AuthProvider
-
-    private val viewModel: MainViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!areConfigValuesSetUp(this)) {
-            setContent {
-                DexCareSampleTheme {
-                    LoginError(message = "Required values in config.xml are missing. Make sure the values are properly set, otherwise the app will not work.")
-                }
-            }
-        } else {
-            setContent {
-                DexCareSampleTheme {
-                    CompositionLocalProvider(LocalActivity provides this) {
-                        MainContent(viewModel)
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume(authProvider)
-    }
-
-}
-
-val LocalActivity = staticCompositionLocalOf<FragmentActivity> {
-    noLocalProvidedFor()
-}
-
-private fun noLocalProvidedFor(): Nothing {
-    error("noLocalProvidedFor LocalActivity")
-}
 
 @Composable
-fun MainContent(viewModel: MainViewModel) {
-    val uiState = viewModel.uiState.collectAsState().value
-    if (uiState.loginComplete) {
-        MainNavigation()
-    } else if (uiState.errorMessage != null) {
-        LoginError(message = uiState.errorMessage)
-    }
-}
-
-@Composable
-fun LoginError(message: String) {
-    FullScreen {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = message,
-            style = MaterialTheme.typography.displayMedium,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun MainNavigation() {
+fun MainNavigation(onReloadApp: () -> Unit) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "dashboard") {
         composable("dashboard") {
@@ -122,7 +40,8 @@ fun MainNavigation() {
                 },
                 navLaunchProvider = {
                     navController.navigate("providerFlow")
-                }
+                },
+                onLogOut = onReloadApp
             )
         }
 
@@ -299,7 +218,8 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
         }
 
         composable("retailFlow/payments") {
-            PaymentScreen(hiltViewModel(),
+            PaymentScreen(
+                hiltViewModel(),
                 onBackPressed = { navController.popBackStack() },
                 onExit = {
                     navController.popBackStack("retailFlow/clinics", inclusive = true)
@@ -308,5 +228,3 @@ fun NavGraphBuilder.retailNavigation(navController: NavController) {
         }
     }
 }
-
-

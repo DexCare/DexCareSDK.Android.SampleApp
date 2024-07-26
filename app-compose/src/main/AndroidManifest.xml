@@ -12,7 +12,7 @@
         android:theme="@style/Theme.DexCareSampleApp"
         tools:replace="android:theme">
         <activity
-            android:name="com.dexcare.sample.presentation.MainActivity"
+            android:name="com.dexcare.sample.presentation.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.DexCareSampleApp"
             android:windowSoftInputMode="adjustResize">

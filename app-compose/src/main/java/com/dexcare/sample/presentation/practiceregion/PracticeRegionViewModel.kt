@@ -3,7 +3,7 @@ package com.dexcare.sample.presentation.practiceregion
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dexcare.sample.data.DexCareConfig
+import com.dexcare.sample.data.EnvironmentsRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VirtualVisitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class PracticeRegionViewModel @Inject constructor(
     private val virtualVisitRepository: VirtualVisitRepository,
     private val schedulingDataStore: SchedulingDataStore,
-    private val dexCareConfig: DexCareConfig,
+    private val environmentsRepository: EnvironmentsRepository,
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private val _state = MutableStateFlow(UiState())
@@ -28,13 +28,28 @@ class PracticeRegionViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(inProgress = true) }
             virtualVisitRepository.getPracticeRegion(
-                dexCareConfig.virtualPracticeId(),
+                environmentsRepository.findSelectedEnvironment()!!.virtualPracticeId,
                 onSuccess = { practice ->
-                    _state.update {oldState->
+                    val practiceRegions = practice.practiceRegions.filter {
+                        it.active
+                    }.sortedBy { region ->
+                        region.busy
+                    }
+
+                    //map to the one selected in last visit if available.
+                    val previousRegion = practiceRegions.firstOrNull {
+                        it.practiceRegionId == virtualVisitRepository.findPreviousRegionId()
+                    }
+
+                    _state.update { oldState ->
                         oldState.copy(
-                            practiceRegions = practice.practiceRegions.filter { it.active }.sortedBy { region -> region.busy },
-                            inProgress = false
+                            practiceRegions = practiceRegions,
+                            inProgress = false,
+                            selectedRegion = previousRegion
                         )
+                    }
+                    if (previousRegion != null) {
+                        selectRegion(previousRegion)
                     }
                 },
                 onError = {
@@ -45,11 +60,19 @@ class PracticeRegionViewModel @Inject constructor(
     }
 
     fun selectRegion(region: VirtualPracticeRegion) {
+        _state.update { it.copy(selectedRegion = region, displaySelectionList = false) }
         schedulingDataStore.setVirtualPracticeRegion(region)
+        virtualVisitRepository.savePracticeRegion(region)
+    }
+
+    fun onToggleListDisplay(display: Boolean) {
+        _state.update { it.copy(displaySelectionList = display) }
     }
 
     data class UiState(
         val practiceRegions: List<VirtualPracticeRegion> = emptyList(),
         val inProgress: Boolean = false,
+        val displaySelectionList: Boolean = false,
+        val selectedRegion: VirtualPracticeRegion? = null
     )
 }

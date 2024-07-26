@@ -31,6 +31,11 @@ class SessionManager @Inject constructor(private val sharedPreferences: SharedPr
 
     fun clear() {
         session = null
+        sharedPreferences.edit {
+            remove(KEY_ACCESS_TOKEN)
+            remove(KEY_REFRESH_TOKEN)
+            remove(KEY_EXPIRY)
+        }
     }
 
     fun isLoggedIn(): Boolean {

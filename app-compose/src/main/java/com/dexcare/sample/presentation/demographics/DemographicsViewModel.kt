@@ -179,10 +179,6 @@ class DemographicsViewModel @Inject constructor(
         }
     }
 
-    fun setBrandName(brandName: String) {
-        _state.update { it.copy(brandName = brandName) }
-    }
-
     fun onTabSelected(patientDeclaration: PatientDeclaration) {
         _state.update { it.copy(patientDeclaration = patientDeclaration) }
         schedulingDataStore.setPatientDeclaration(patientDeclaration)
@@ -323,7 +319,6 @@ class DemographicsViewModel @Inject constructor(
         val actorDemographicsInput: DemographicsInput = DemographicsInput.initialize(),
         val demographicsComplete: Boolean = false,
         val inProgress: Boolean = false,
-        val brandName: String = "",
         val patientDeclaration: PatientDeclaration = PatientDeclaration.Self,
         val errorMessage: String? = null,
         val ehrSystemName: String? = null,

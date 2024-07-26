@@ -12,7 +12,8 @@ data class AppColor(
     val link: Color = Color(0xff0070a9),
     val light: Color = Color(0xffffffff),
     val background: Color = Color(0xFFDAD5D9),
-    val surface: Color = Color(0xFFDAD5D9)
+    val surface: Color = Color(0xFFDAD5D9),
+    val textPrimary :Color = Color(0xff333333)
 )
 
 val AppLightColor = AppColor()
