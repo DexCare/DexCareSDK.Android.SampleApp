@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "TBD",
+    "project_id": "TBD",
+    "storage_bucket": "TBD"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "TBD",
+        "android_client_info": {
+          "package_name": "com.dexcare.acme.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "TBD"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
