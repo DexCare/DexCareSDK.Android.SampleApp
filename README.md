@@ -59,3 +59,6 @@ These JSON objects are mapped to list of `com.dexcare.sample.data.model.AppEnvir
 Once the config is set up, run the build and you should be able to select environment on the first run.
 Note: if there is only one environment configured in the JSON, the app will use the environment
 by default.
+
+### Google Services
+You need to add `google-services.json` file in order to set up push notification. This is optional. 
