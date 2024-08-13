@@ -153,7 +153,8 @@ class PaymentViewModel @Inject constructor(
                         it.copy(
                             visitIntent = intent,
                             error = throwable?.toError(),
-                            loadingMessage = null
+                            loadingMessage = null,
+                            loading = false,
                         )
                     }
                 }

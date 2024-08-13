@@ -1,5 +1,7 @@
 package com.dexcare.sample.presentation.main
 
+import android.content.Intent
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.auth.AuthProvider
@@ -7,17 +9,19 @@ import com.dexcare.sample.auth.LoginResult
 import com.dexcare.sample.auth.LogoutHandler
 import com.dexcare.sample.auth.Session
 import com.dexcare.sample.auth.SessionManager
-import com.dexcare.sample.data.repository.EnvironmentsRepository
+import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
 import com.dexcare.sample.data.ResultState
 import com.dexcare.sample.data.model.AppEnvironment
+import com.dexcare.sample.data.repository.EnvironmentsRepository
+import com.dexcare.sample.data.repository.PatientRepository
+import com.dexcare.sample.data.repository.VirtualVisitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dexcare.DexCareSDK
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +29,8 @@ class MainViewModel @Inject constructor(
     private val sessionManager: SessionManager,
     private val environmentsRepository: EnvironmentsRepository,
     private val logoutHandler: LogoutHandler,
+    private val virtualVisitRepository: VirtualVisitRepository,
+    private val patientRepository: PatientRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _state
@@ -63,21 +69,71 @@ class MainViewModel @Inject constructor(
                             )
                         )
                         signInToDexCare(result.accessToken)
-                        _state.update { it.copy(loginComplete = true, error = null) }
+                        _state.update { it.copy(showMainContent = true, error = null) }
                     }
 
                     is LoginResult.Error -> {
                         _state.update {
                             it.copy(
                                 error = result.errorResult,
-                                loginComplete = false,
+                                showMainContent = false,
                             )
                         }
                     }
                 }
             }
         } else {
-            _state.update { it.copy(loginComplete = true) }
+            _state.update { it.copy(showMainContent = true) }
+        }
+    }
+
+    fun onRejoinVisit(visitId: String) {
+        _state.update { it.copy(visitId = visitId, rejoiningVisit = true) }
+        viewModelScope.launch {
+            val isActive = virtualVisitRepository.isVisitActive(visitId)
+            _state.update { it.copy(visitActive = isActive) }
+            if (isActive) {
+                //update visitId so that it can be relaunched on next session
+                virtualVisitRepository.updateVisitId(visitId)
+            }
+        }
+    }
+
+    fun onRejoinVisit(activity: FragmentActivity) {
+        _state.update { it.copy(rejoiningVisit = true) }
+        patientRepository.findPatient(onSuccess = { patient ->
+            virtualVisitRepository.rejoinVisit(
+                activity,
+                patient,
+                onComplete = { intent, error ->
+                    _state.update {
+                        it.copy(
+                            rejoiningVisit = false,
+                            visitIntent = intent,
+                            error = error?.toError(title = "Error rejoining visit")
+                        )
+                    }
+                })
+        }, onError = {
+            _state.update {
+                it.copy(
+                    rejoiningVisit = false,
+                    error = ErrorResult(
+                        "Error rejoining visit",
+                        "We were unable to load the patient record."
+                    )
+                )
+            }
+        })
+    }
+
+    fun resetToMainContent() {
+        _state.update {
+            it.copy(
+                rejoiningVisit = false,
+                showMainContent = true,
+                visitActive = null
+            )
         }
     }
 
@@ -108,21 +164,15 @@ class MainViewModel @Inject constructor(
     * */
     private fun findDefaultEnvironmentIfAvailable(allEnvironments: List<AppEnvironment>) {
         val savedEnvironment = environmentsRepository.findSelectedEnvironment()
-        Timber.d("savedEnvironment: $savedEnvironment")
         if (savedEnvironment == null) {
             if (allEnvironments.size == 1) {
                 _state.update { it.copy(selectedEnvironment = allEnvironments.first()) }
                 environmentsRepository.selectEnvironment(allEnvironments.first())
             }
         } else {
-            allEnvironments.firstOrNull { it.configId == savedEnvironment.configId }
-                ?.let { environment ->
-                    _state.update { oldState ->
-                        environmentsRepository.selectEnvironment(environment)
-                        oldState.copy(selectedEnvironment = environment)
-                    }
-                } ?: run {
-                Timber.e("Invalid App State")
+
+            _state.update { oldState ->
+                oldState.copy(selectedEnvironment = savedEnvironment)
             }
         }
     }
@@ -134,7 +184,11 @@ class MainViewModel @Inject constructor(
     data class UiState(
         val selectedEnvironment: AppEnvironment? = null,
         val allEnvironments: List<AppEnvironment> = emptyList(),
-        val loginComplete: Boolean = false,
+        val showMainContent: Boolean = false,
         val error: ErrorResult? = null,
+        val rejoiningVisit: Boolean = false,
+        val visitId: String? = null,
+        val visitActive: Boolean? = null,
+        val visitIntent: Intent? = null,
     )
 }

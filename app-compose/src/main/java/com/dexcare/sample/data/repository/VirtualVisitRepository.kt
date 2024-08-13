@@ -11,9 +11,12 @@ import org.dexcare.services.virtualvisit.models.RegisterPushNotification
 import org.dexcare.services.virtualvisit.models.VirtualPractice
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 import org.dexcare.services.virtualvisit.models.VirtualVisitDetails
+import org.dexcare.services.virtualvisit.models.isVisitStatusActive
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class VirtualVisitRepository @Inject constructor(private val storage: VirtualVisitStorage) {
@@ -104,5 +107,19 @@ class VirtualVisitRepository @Inject constructor(private val storage: VirtualVis
 
     fun clear() {
         storage.clearData()
+    }
+
+    suspend fun isVisitActive(visitId: String): Boolean {
+        return suspendCoroutine { coroutine ->
+            DexCareSDK.virtualService.getVirtualVisitStatus(visitId).subscribe(onSuccess = {
+                coroutine.resume(isVisitStatusActive(it))
+            }, onError = {
+                coroutine.resume(false)
+            })
+        }
+    }
+
+    fun updateVisitId(visitId: String) {
+        storage.saveVisit(visitId)
     }
 }
