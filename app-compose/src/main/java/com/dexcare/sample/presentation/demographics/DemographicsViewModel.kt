@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.common.displayMessage
-import com.dexcare.sample.data.PatientRepository
+import com.dexcare.sample.data.repository.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.data.VisitType
 import dagger.hilt.android.lifecycle.HiltViewModel

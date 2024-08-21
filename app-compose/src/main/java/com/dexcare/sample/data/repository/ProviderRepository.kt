@@ -1,6 +1,8 @@
-package com.dexcare.sample.data
+package com.dexcare.sample.data.repository
 
 import com.dexcare.sample.common.displayMessage
+import com.dexcare.sample.data.ErrorResult
+import com.dexcare.sample.data.ResultState
 import com.dexcare.sample.data.model.AppEnvironment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,9 +1,11 @@
-package com.dexcare.sample.data
+package com.dexcare.sample.data.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.dexcare.sample.data.ErrorResult
+import com.dexcare.sample.data.ResultState
 import com.dexcare.sample.data.model.AppEnvironment
 import com.stripe.android.PaymentConfiguration
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +62,7 @@ class EnvironmentsRepository(
                     results.value = ResultState.Error(errorResult)
                 } else {
                     results.value = ResultState.Complete(environments)
+                    findSelectedEnvironment() //load default environment if available.
                 }
             }
         }
@@ -72,19 +75,12 @@ class EnvironmentsRepository(
      * and also saves the selected environment for next run.
      * */
     fun selectEnvironment(environment: AppEnvironment) {
-        DexCareSDK.init(context,
-            object : Environment {
-                override val isProd: Boolean = false
-                override val fhirOrchUrl: String = environment.fhirOrchUrl
-                override val virtualVisitUrl: String = environment.virtualVisitUrl
-            }
-        )
-
         val environmentString = jsonParser.encodeToString(environment)
         sharedPreferences.edit {
             putString(KEY_ENVIRONMENT, environmentString)
         }
-        PaymentConfiguration.init(context, environment.stripePublishableKey)
+        selectedEnvironment = environment
+        configureDexCare(environment)
     }
 
     fun findSelectedEnvironment(): AppEnvironment? {
@@ -106,6 +102,25 @@ class EnvironmentsRepository(
         selectedEnvironment = null
         sharedPreferences.edit {
             remove(KEY_ENVIRONMENT)
+        }
+    }
+
+    private fun configureDexCare(environment: AppEnvironment) {
+        Timber.i("Selected environment for this session:$environment")
+        DexCareSDK.init(context,
+            object : Environment {
+                override val isProd: Boolean = false
+                override val fhirOrchUrl: String = environment.fhirOrchUrl
+                override val virtualVisitUrl: String = environment.virtualVisitUrl
+            }
+        )
+        PaymentConfiguration.init(context, environment.stripePublishableKey)
+    }
+
+    //initialize the DexCare SDK if an environment is already selected.
+    fun initDexCare() {
+        selectedEnvironment?.let {
+            configureDexCare(it)
         }
     }
 

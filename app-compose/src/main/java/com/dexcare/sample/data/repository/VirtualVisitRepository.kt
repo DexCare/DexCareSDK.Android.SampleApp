@@ -1,4 +1,4 @@
-package com.dexcare.sample.data
+package com.dexcare.sample.data.repository
 
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
@@ -7,12 +7,16 @@ import org.dexcare.DexCareSDK
 import org.dexcare.services.models.PaymentMethod
 import org.dexcare.services.patient.models.DexCarePatient
 import org.dexcare.services.patient.models.Patient
+import org.dexcare.services.virtualvisit.models.RegisterPushNotification
 import org.dexcare.services.virtualvisit.models.VirtualPractice
 import org.dexcare.services.virtualvisit.models.VirtualPracticeRegion
 import org.dexcare.services.virtualvisit.models.VirtualVisitDetails
+import org.dexcare.services.virtualvisit.models.isVisitStatusActive
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class VirtualVisitRepository @Inject constructor(private val storage: VirtualVisitStorage) {
@@ -22,15 +26,25 @@ class VirtualVisitRepository @Inject constructor(private val storage: VirtualVis
         patient: Patient,
         virtualVisitDetails: VirtualVisitDetails,
         paymentMethod: PaymentMethod,
+        fcmToken: String?,
+        fcmPlatformIdentifier: String?,
         onComplete: (Intent?, Throwable?) -> Unit,
     ) {
+        Timber.d("Firebase token=$fcmToken")
         DexCareSDK.virtualService.createVirtualVisitWithPatientActor(
             activity = activity,
             patient = patient,
             virtualVisitDetails = virtualVisitDetails,
             paymentMethod = paymentMethod,
             virtualActor = null,
-            registerPushNotification = null
+            registerPushNotification = if (fcmToken != null) {
+                RegisterPushNotification(
+                    appId = fcmPlatformIdentifier.orEmpty(),
+                    fcmToken = fcmToken,
+                )
+            } else {
+                null
+            }
         ).subscribe(
             onSuccess = {
                 val visitType = it.first
@@ -93,5 +107,19 @@ class VirtualVisitRepository @Inject constructor(private val storage: VirtualVis
 
     fun clear() {
         storage.clearData()
+    }
+
+    suspend fun isVisitActive(visitId: String): Boolean {
+        return suspendCoroutine { coroutine ->
+            DexCareSDK.virtualService.getVirtualVisitStatus(visitId).subscribe(onSuccess = {
+                coroutine.resume(isVisitStatusActive(it))
+            }, onError = {
+                coroutine.resume(false)
+            })
+        }
+    }
+
+    fun updateVisitId(visitId: String) {
+        storage.saveVisit(visitId)
     }
 }

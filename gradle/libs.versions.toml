@@ -12,6 +12,9 @@ navigation = "2.7.7"
 appcompat = "1.7.0"
 material = "1.12.0"
 kotlinSerialization = "1.6.3"
+firebase-bom = "33.1.1"
+googleServices = "4.4.2"
+crashlyitcsPlugin = "3.0.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -42,6 +45,10 @@ chucker-release = { module = "com.github.chuckerteam.chucker:library-no-op", ver
 
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+
 test-junit = "junit:junit:4.13.2"
 test-androidx-junit = "androidx.test.ext:junit:1.1.5"
 test-espresso = "androidx.test.espresso:espresso-core:3.5.1"
@@ -56,5 +63,8 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 navigation-safeArg = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 appVersioning = { id = "io.github.reactivecircus.app-versioning", version.ref = "appVersioning" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyitcsPlugin" }

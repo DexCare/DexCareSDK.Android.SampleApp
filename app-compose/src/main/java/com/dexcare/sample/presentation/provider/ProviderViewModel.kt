@@ -1,7 +1,7 @@
 package com.dexcare.sample.presentation.provider
 
 import androidx.lifecycle.ViewModel
-import com.dexcare.sample.data.ProviderRepository
+import com.dexcare.sample.data.repository.ProviderRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

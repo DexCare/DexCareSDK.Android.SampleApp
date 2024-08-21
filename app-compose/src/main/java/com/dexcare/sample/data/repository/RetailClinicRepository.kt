@@ -1,4 +1,4 @@
-package com.dexcare.sample.data
+package com.dexcare.sample.data.repository
 
 import org.dexcare.DexCareSDK
 import org.dexcare.dal.DataObserver

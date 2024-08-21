@@ -6,10 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.dexcare.sample.auth.LogoutHandler
 import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
-import com.dexcare.sample.data.PatientRepository
 import com.dexcare.sample.data.SchedulingDataStore
-import com.dexcare.sample.data.VirtualVisitRepository
 import com.dexcare.sample.data.VisitType
+import com.dexcare.sample.data.repository.EnvironmentsRepository
+import com.dexcare.sample.data.repository.PatientRepository
+import com.dexcare.sample.data.repository.VirtualVisitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,12 +23,14 @@ class DashboardViewModel @Inject constructor(
     private val virtualVisitRepository: VirtualVisitRepository,
     private val schedulingDataStore: SchedulingDataStore,
     private val logoutHandler: LogoutHandler,
+    environmentsRepository: EnvironmentsRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _state
 
     init {
+        environmentsRepository.initDexCare()
         schedulingDataStore.reset()
     }
 

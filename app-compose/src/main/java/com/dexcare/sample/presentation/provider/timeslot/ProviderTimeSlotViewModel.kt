@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.data.ErrorResult
-import com.dexcare.sample.data.ProviderRepository
+import com.dexcare.sample.data.repository.ProviderRepository
 import com.dexcare.sample.data.ResultState
 import com.dexcare.sample.data.SchedulingDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel

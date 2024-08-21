@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dexcare.sample.common.toError
 import com.dexcare.sample.data.ErrorResult
-import com.dexcare.sample.data.RetailClinicRepository
+import com.dexcare.sample.data.repository.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import com.dexcare.sample.presentation.provider.timeslot.TimeSlotUiState
 import dagger.hilt.android.lifecycle.HiltViewModel

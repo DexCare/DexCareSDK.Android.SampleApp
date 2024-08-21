@@ -1,4 +1,4 @@
-package com.dexcare.sample.data
+package com.dexcare.sample.data.repository
 
 import com.dexcare.sample.data.model.AppEnvironment
 import org.dexcare.DexCareSDK

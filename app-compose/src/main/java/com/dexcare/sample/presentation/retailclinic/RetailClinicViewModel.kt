@@ -2,9 +2,9 @@ package com.dexcare.sample.presentation.retailclinic
 
 import androidx.lifecycle.ViewModel
 import com.dexcare.sample.common.toError
-import com.dexcare.sample.data.EnvironmentsRepository
+import com.dexcare.sample.data.repository.EnvironmentsRepository
 import com.dexcare.sample.data.ErrorResult
-import com.dexcare.sample.data.RetailClinicRepository
+import com.dexcare.sample.data.repository.RetailClinicRepository
 import com.dexcare.sample.data.SchedulingDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
